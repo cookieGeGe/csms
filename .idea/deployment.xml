@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData">
+  <component name="PublishConfigData" autoUpload="Always" serverName="47.106.140.239">
     <serverData>
+      <paths name="47.106.140.239">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/app/csms" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@192.168.230.128:22">
         <serverdata>
           <mappings>
@@ -17,5 +24,6 @@
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

@@ -1,5 +1,5 @@
-# from verify.views import indexs
+from User.urls import user
 
 
 def blue_regist(app):
-    pass
+    app.register_blueprint(user, url_prefix='/userinfo')
