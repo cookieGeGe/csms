@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class BaseView(View, metaclass=ABCMeta):
-    decorators = (coon_mysql)
+    decorators = (coon_mysql,)
 
     def __init__(self):
         super(BaseView, self).__init__()
@@ -18,7 +18,7 @@ class BaseView(View, metaclass=ABCMeta):
         self._roles = None
         self.success = deepcopy(status_code.SUCCESS)
 
-    def dispatch_request(self, db, token):
+    def dispatch_request(self, db, token=None):
         self._db = db
         self._token = token
         self._uid = token['uid']
