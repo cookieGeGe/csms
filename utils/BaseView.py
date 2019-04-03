@@ -1,4 +1,5 @@
 from copy import deepcopy
+from flask import session
 from flask.views import View
 
 from utils import status_code
@@ -11,22 +12,16 @@ class BaseView(View, metaclass=ABCMeta):
 
     def __init__(self):
         super(BaseView, self).__init__()
-        self._token = None
         self._permissions = None
         self._uid = None
         self._db = None
-        self._roles = None
         self.success = deepcopy(status_code.SUCCESS)
 
-    def dispatch_request(self, db, token=None):
+    def dispatch_request(self, db):
         self._db = db
-        self._token = token
-        self._uid = token['uid']
-        self._permissions = token['permission']
-        self._roles = token['roles']
-        if 'superadmin' in self._roles:
+        if int(session['AdminType']) == 0:
             return self.administrator()
-        elif 'admin' in self._roles:
+        elif int(session['AdminType']) == 1:
             return self.admin()
         else:
             return self.guest()

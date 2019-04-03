@@ -72,6 +72,10 @@ class UserLogin(BaseView):
         self._insert_sql = None
         self.uid = None
 
+    def dispatch_request(self, db):
+        self._db = db
+        return self.administrator()
+
     def filter(self):
         form = request.form
         self._form = form
@@ -94,7 +98,8 @@ class UserLogin(BaseView):
 
     def views(self):
         args = request.json
-        sql = r"""select id,UserName,LoginName,Password from tb_user where loginname='{}';""".format(args['LoginName'])
+        sql = r"""select id,UserName,LoginName,Password,AdminType from tb_user where loginname='{}';""".format(
+            args['LoginName'])
         result = self._db.query(sql)
         self.uid = result[0]['id']
         if not result:
@@ -103,7 +108,9 @@ class UserLogin(BaseView):
         if not check_password_hash(pwd, args['Password']):
             return jsonify(status_code.PASSWORD_ERROR)
         session['id'] = self.uid
-        session['area_ids'] = self.get_area_ids(self.uid)
+        session['AdminType'] = result[0]['AdminType']
+        if result[0]['AdminType']:
+            session['area_ids'] = self.get_area_ids(self.uid)
         session['login'] = True
         return jsonify(status_code.SUCCESS)
 
