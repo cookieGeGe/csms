@@ -98,12 +98,14 @@ class UserLogin(BaseView):
 
     def views(self):
         args = request.json
-        sql = r"""select id,UserName,LoginName,Password,AdminType from tb_user where loginname='{}';""".format(
+        sql = r"""select id,UserName,LoginName,Password,AdminType,Status from tb_user where loginname='{}';""".format(
             args['LoginName'])
         result = self._db.query(sql)
         self.uid = result[0]['id']
         if not result:
             return jsonify(status_code.LOGINNAME_IS_NOT_EXISTS)
+        if result[0]['Status'] != 1:
+            return jsonify(status_code.USER_IS_DISABLED)
         pwd = result[0]['Password']
         if not check_password_hash(pwd, args['Password']):
             return jsonify(status_code.PASSWORD_ERROR)
