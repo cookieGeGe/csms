@@ -44,8 +44,8 @@ class UserRegist(BaseView):
         loginname_sql = r"""select id from tb_user where LoginName = {LoginName}""".format(**self._form)
         if len(self._db.query(loginname_sql)):
             return jsonify(status_code.USER_EXISTS)
-        self._insert_sql = r"""insert into tb_user(LoginName,UserName,Password,Email,Phone,Description,AdminType,CompanyID,Avatar) 
-                                value('{}', '{}','{}','{}','{}', '{}',{},{},'{}')"""
+        self._insert_sql = r"""insert into tb_user(LoginName,UserName,Password,Email,Phone,Description,AdminType,CompanyID,Avatar,Status) 
+                                value('{}', '{}','{}','{}','{}', '{}',{},{},'{}',1)"""
         self._insert_sql = self._insert_sql.format(
             self._form.get('LoginName', ''),
             self._form.get('UserName', ''),
@@ -144,6 +144,54 @@ class UserLogout(BaseView):
     def administrator(self):
         session['login'] = False
         return jsonify(status_code.SUCCESS)
+
+    def admin(self):
+        return self.administrator()
+
+    def guest(self):
+        return self.administrator()
+
+
+class UserDelete(BaseView):
+
+    def __init__(self):
+        super(UserDelete, self).__init__()
+        self._form = None
+        self._insert_sql = None
+        self.uid = None
+
+    def administrator(self):
+        args = request.args()
+        sql = r"""delete from tb_user where id = {};""".format(args.get('ID'))
+        try:
+            self._db.delete(sql)
+            return jsonify(status_code.SUCCESS)
+        except Exception as e:
+            return jsonify(status_code.DELETE_USER_FAILD)
+
+    def admin(self):
+        return self.administrator()
+
+    def guest(self):
+        return self.administrator()
+
+
+class StopUser(BaseView):
+
+    def __init__(self):
+        super(StopUser, self).__init__()
+        self._form = None
+        self._insert_sql = None
+        self.uid = None
+
+    def administrator(self):
+        args = request.args()
+        sql = r"""update tb_user set status=0 where id = {};""".format(args.get('ID'))
+        try:
+            self._db.update(sql)
+            return jsonify(status_code.SUCCESS)
+        except Exception as e:
+            return jsonify(status_code.DELETE_USER_FAILD)
 
     def admin(self):
         return self.administrator()

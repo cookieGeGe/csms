@@ -13,4 +13,5 @@ LOGINNAME_IS_NOT_EXISTS = {'code': 50007, 'msg': '用户名不存在，请输入
 PASSWORD_ERROR = {'code': 50008, 'msg': '密码错误！'}
 USER_NOT_LOGIN = {'code': 50009, 'msg': '用户未登录，请登录后重试'}
 USER_IS_DISABLED = {'code': 50010, 'msg': '用户已停用，请联系管理员！'}
+DELETE_USER_FAILD = {'code': 50011, 'msg': '删除用户失败1'}
 
