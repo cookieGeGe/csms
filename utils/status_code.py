@@ -3,6 +3,7 @@ SUCCESS = {'code': 0, 'res': 0, 'msg': '请求成功!'}
 
 DB_ERROR = {'code': 50001, 'res': 0, 'msg': '数据库错误，请稍后再试'}
 OTHER_ERROR = {'code': 50002, 'msg': '网络错误，请稍后再试'}
+PERMISSION_NOT_EXISTS = {'code': 50012, 'msg': '权限不足，请联系管理员'}
 
 
 CONTENT_IS_NULL = {'code': 50003, 'res': 0, 'msg': '存在必填字段为空，请填写必填字段！'}

@@ -53,8 +53,8 @@ class UserRegist(BaseView):
             self._form.get('Email', ''),
             self._form.get('Phone', ''),
             self._form.get('Description', ''),
-            int(self._form.get('Avatar', 0)),
-            int(self._form.get('Avatar', 0)),
+            int(self._form.get('AdminType', 0)),
+            int(self._form.get('CompanyID', 0)),
             img_url,
         )
         try:
@@ -113,8 +113,27 @@ class UserLogin(BaseView):
         session['AdminType'] = result[0]['AdminType']
         if result[0]['AdminType']:
             session['area_ids'] = self.get_area_ids(self.uid)
+        success = deepcopy(status_code.SUCCESS)
+        success['PerName'],session['api'] = self.get_permissions(self.uid)
         session['login'] = True
         return jsonify(status_code.SUCCESS)
+
+    def get_permissions(self, uid):
+        query_sql = r"""select t2.ID,t2.PerName, t2.Permission, t3.Name from tb_user_per as t1
+                        LEFT JOIN tb_permission as t2 on t1.PID = t2.ID
+                        LEFT JOIN tb_api as t3 on t3.PID = t2.ID
+                        WHERE t1.UID = {};""".format(uid)
+        per_name_list = []
+        per_id_list = []
+        permission_list = []
+        api_list = []
+        total = self._db.query(query_sql)
+        for item in total:
+            per_id_list.append(item['ID'])
+            per_name_list.append(item['PerName'])
+            permission_list.append(item['Permission'])
+            api_list.append(item['Name'])
+        return per_name_list, api_list
 
     def get_area_ids(self, uid):
         """
