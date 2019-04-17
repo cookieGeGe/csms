@@ -1,7 +1,8 @@
-
+import redis
 
 from APP.settings import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MAX_OVERFLOW, SQLALCHEMY_POOL_RECYCLE, \
     SQLALCHEMY_POOL_SIZE, SQLALCHEMY_POOL_TIMEOUT
+from utils.RedisUtil import RedisCon
 
 
 class Config(object):
@@ -13,12 +14,12 @@ class Config(object):
     SQLALCHEMY_MAX_OVERFLOW = SQLALCHEMY_MAX_OVERFLOW
 
     # session会话配置
-    # SESSION_TYPE = 'redis'
-    SESSION_KEY = 'wdtoken'
-    # SESSION_KEY_PREFIX = 'WD_S:'
-    # SESSION_REDIS = redis.Redis(connection_pool=RedisCon.getpool())
-    # SESSION_USE_SIGNER = True
-    # SESSION_PERMANENT = False
+    SESSION_TYPE = 'redis'
+    # SESSION_KEY = 'wdtoken'
+    SESSION_KEY_PREFIX = 'WD_S:'
+    SESSION_REDIS = redis.Redis(connection_pool=RedisCon.getpool())
+    SESSION_USE_SIGNER = True
+    SESSION_PERMANENT = False
     PERMANENT_SESSION_LIFETIME = 3600
 
     SECRET_KEY = 'wdtokenkey'
