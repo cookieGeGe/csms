@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>csms系统接口</title>
+	<style type="text/css" media="screen">
+		div {
+			margin-top: 20px;
+			display: block;
+			margin-left: 0px;
+		}
+		div p {
+			margin-top: 15px;
+			margin-left: 50px;
+		}
+	</style>
+</head>
+<body>
+<div>
+	<h4>注册接口：</h4>
+	<p>URL：/user/regist;</p>
+	<p>请求方式：POST; </p>
+	<p>请求参数：{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;LoginName：'登录名称 str',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;UserName： '用户名称  str',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Email:'邮箱  str',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Password:'密码  str',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Phone: '电话  str',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Description:'描述  str ' ,<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;CompanyID： '公司ID  int',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;AdminType: '管理员类型 int',<br>
+            AreaID: '区域ID， int',<br>
+	} 头像文件（如果有的话，可以没有）</p>
+	<p>失败返回值：{'code': 50006, 'msg': '该用户已存在！'}<br>
+	{'code': 50003, 'res': 0, 'msg': '存在必填字段为空，请填写必填字段！'}<br></p>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+	<h4>登录接口：</h4>
+	<p>URL：/user/login;</p>
+	<p>请求方式：POST; </p>
+	<p>请求参数：{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;LoginName：'登录名称 str',<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Password:'密码  str',<br>
+	} </p>
+	<p>失败返回值：{'code': 50007, 'msg': '用户名不存在，请输入正确的用户名！'};<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;{'code': 50008, 'msg': '密码错误！'};<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;{'code': 50010, 'msg': '用户已停用，请联系管理员！'};<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;{'code': 50003, 'res': 0, 'msg': '存在必填字段为空，请填写必填字段！'}<br></p>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+	<h4>退出登录接口：</h4>
+	<p>URL：/user/logout;</p>
+	<p>请求方式：GET; </p>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+	<h4>删除用户接口：</h4>
+	<p>URL：/user/delete;</p>
+	<p>请求方式：DELETE; </p>
+	<p>请求参数： {<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;ID: int 用户userID <br>
+	}</p>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+	<h4>用户停用接口：</h4>
+	<p>URL：/user/down;</p>
+	<p>请求方式：GET; </p>
+	<p>请求参数： {<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;ID: int 用户userID <br>
+	}</p>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+</body>
+</html>

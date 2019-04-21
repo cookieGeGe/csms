@@ -58,7 +58,9 @@ class UserRegist(BaseView):
             img_url,
         )
         try:
-            self._db.insert(self._insert_sql)
+            id = self._db.insert(self._insert_sql)
+            area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(id, self._form.get('AreaID'))
+            self._db.insert(area_sql)
         except:
             return jsonify(status_code.DB_ERROR)
         return jsonify(deepcopy(status_code.SUCCESS))

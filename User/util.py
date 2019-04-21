@@ -9,7 +9,7 @@ from APP.settings import upload_dir
 from utils import status_code
 
 
-def save_image(image_file):
+def save_image(image_file, base='ava'):
     if not re.match('^image/.*$', image_file.mimetype):
         return jsonify(status_code.USER_UPLOAD_IMG_TYPE_ERROR)
     img_name = image_file.filename
@@ -17,10 +17,10 @@ def save_image(image_file):
     temp = ''
     for i in range(10):
         temp += random.choice(ticket)
-    save_name = str(int(time.time())) + '_' + temp + '_' + img_name
+    save_name = base + '/' + str(int(time.time())) + '_' + temp + '_' + img_name
     url = os.path.join(upload_dir, save_name)
     image_file.save(url)
-    img_url = os.path.join('/static/media/ava/', save_name)
+    img_url = os.path.join('/static/media/', save_name)
     return img_url
 
 

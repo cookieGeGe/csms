@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>省市区API</title>
+    <style type="text/css" media="screen">
+		div {
+			margin-top: 20px;
+			display: block;
+			margin-left: 0px;
+		}
+		div p {
+			margin-top: 15px;
+			margin-left: 50px;
+		}
+	</style>
+</head>
+<body>
+<div>
+	<h4>获取所有省接口：</h4>
+	<p>URL：/province/ID;</p>
+	<p>请求方式：GET; </p>
+	<>请求参数：{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;ID: url传参，0表示获取所有省，513表示四川省<br>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', province_list:[<br>
+        {ID:1, Name:省},<br>
+        ]<br>
+        }</p>
+</div>
+
+<div>
+	<h4>获取所有市接口：</h4>
+	<p>URL：/city/ID;</p>
+	<p>请求方式：GET; </p>
+	<>请求参数：{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;ID: url传参，省ID<br>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', city_list:[<br>
+        {ID:1, Name:省},<br>
+        ]<br>
+        }</p>
+</div>
+
+<div>
+	<h4>获取所有区县接口：</h4>
+	<p>URL：/district/ID;</p>
+	<p>请求方式：GET; </p>
+	<>请求参数：{<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;ID: url传参，市ID<br>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', district_list:[<br>
+        {ID:1, Name:省},<br>
+        ]<br>
+        }</p>
+</div>
+
+
+</body>
+</html>

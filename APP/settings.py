@@ -8,7 +8,7 @@ templates_dir = os.path.join(BASE_DIR, 'templates')
 
 static_dir = os.path.join(BASE_DIR, 'static')
 
-upload_dir = os.path.join(static_dir, 'media/ava')
+upload_dir = os.path.join(static_dir, 'media')
 
 DATABASE = {
     # 用户
