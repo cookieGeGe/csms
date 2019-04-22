@@ -13,12 +13,15 @@
 			margin-top: 15px;
 			margin-left: 50px;
 		}
+        span {
+            color: red;
+        }
 	</style>
 </head>
 <body>
 <div>
-	<h4>获取所有省接口：</h4>
-	<p>URL：/province/ID;</p>
+	<h4>获取所有省接口：<span>已完成</span></h4>
+	<p>URL：/area/province/ID;</p>
 	<p>请求方式：GET; </p>
 	<>请求参数：{<br>
 		&nbsp;&nbsp;&nbsp;&nbsp;ID: url传参，0表示获取所有省，513表示四川省<br>
@@ -29,8 +32,8 @@
 </div>
 
 <div>
-	<h4>获取所有市接口：</h4>
-	<p>URL：/city/ID;</p>
+	<h4>获取所有市接口：<span>已完成</span></h4>
+	<p>URL：/area/city/ID;</p>
 	<p>请求方式：GET; </p>
 	<>请求参数：{<br>
 		&nbsp;&nbsp;&nbsp;&nbsp;ID: url传参，省ID<br>
@@ -41,8 +44,8 @@
 </div>
 
 <div>
-	<h4>获取所有区县接口：</h4>
-	<p>URL：/district/ID;</p>
+	<h4>获取所有区县接口：<span>已完成</span></h4>
+	<p>URL：/area/district/ID;</p>
 	<p>请求方式：GET; </p>
 	<>请求参数：{<br>
 		&nbsp;&nbsp;&nbsp;&nbsp;ID: url传参，市ID<br>

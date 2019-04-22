@@ -1,5 +1,5 @@
 from copy import deepcopy
-from flask import session
+from flask import session, request, jsonify
 from flask.views import View
 
 from utils import status_code
@@ -19,12 +19,13 @@ class BaseView(View, metaclass=ABCMeta):
 
     def dispatch_request(self, db):
         self._db = db
-        if int(session['AdminType']) == 0:
-            return self.administrator()
-        elif int(session['AdminType']) == 1:
-            return self.admin()
-        else:
-            return self.guest()
+        return self.administrator()
+        # if int(session['AdminType']) == 0:
+        #     return self.administrator()
+        # elif int(session['AdminType']) == 1:
+        #     return self.admin()
+        # else:
+        #     return self.guest()
 
     @abstractmethod
     def administrator(self):
@@ -37,3 +38,27 @@ class BaseView(View, metaclass=ABCMeta):
     @abstractmethod
     def guest(self):
         pass
+
+
+class DelteBase(BaseView):
+
+    def __init__(self):
+        super(DelteBase, self).__init__()
+        self.table_name = ''
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def guest(self):
+        return self.views()
+
+    def views(self):
+        ID = request.args.get('ID', None)
+        if ID is None:
+            return jsonify(status_code.ID_ERROR)
+        delete_sql = r"""delete from {} where id={}""".format(self.table_name, ID)
+        self._db.delete(delete_sql)
+        return jsonify(status_code.SUCCESS)
