@@ -158,6 +158,10 @@ class GetCompanyList(BaseView):
 
     def views(self):
         args = request.args
+        for i in ('Name', 'PID', 'CID', 'DID', 'Page', 'PageSize'):
+            temp = args.get(i, None)
+            if temp == None:
+                return jsonify(status_code.CONTENT_IS_NULL)
         if int(args.get('Type')) == 0:
             query_sql = r"""select * from tb_company where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'
                         OR CONCAT(IFNULL(ProvinceID,'')) LIKE '%{PID}%'
