@@ -16,4 +16,6 @@ USER_NOT_LOGIN = {'code': 50009, 'msg': '用户未登录，请登录后重试'}
 USER_IS_DISABLED = {'code': 50010, 'msg': '用户已停用，请联系管理员！'}
 DELETE_USER_FAILD = {'code': 50011, 'msg': '删除用户失败1'}
 ID_ERROR = {'code': 50012, 'msg': '删除失败！'}
+FILE_NOT_EXISTS = {'code': 50013, 'msg': '上传出片不存在！'}
+GET_COMPANY_INFO_FAILD = {'code': 50014, 'msg': '没有找到当前用户！'}
 

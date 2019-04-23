@@ -20,7 +20,7 @@ class Config(object):
     SESSION_REDIS = redis.Redis(connection_pool=RedisCon.getpool())
     SESSION_USE_SIGNER = True
     SESSION_PERMANENT = False
-    PERMANENT_SESSION_LIFETIME = 3600
+    # PERMANENT_SESSION_LIFETIME = 3600
 
     SECRET_KEY = 'wdtokenkey'
     LOG_NAME = "log/log.txt"

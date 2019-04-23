@@ -20,11 +20,31 @@
 </head>
 <body>
 <div>
-	<h4>公司注册接口：编辑同样的接口<span>已完成</span></h4>
+	<h4>公司注册接口:<span>已完成</span></h4>
 	<p>URL：/company/regist;</p>
 	<p>请求方式：POST; </p>
 	<p>请求参数：{<br>
-        isedit: 是否是编辑 bool<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;Name: 公司名字 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Legal: 法人（企业负责人） str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Address: 公司地址 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Phone: 联系方式 list  [{name:'', post:'',phone:''}]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;License: 公司资质图片 filelist<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Type: 公司类型 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProvinceID: 所属省ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CityID: 所属市ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DistrictID: 所属区县ID int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;BadRecord: 不良记录 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
+    }<br></p>
+	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+<div>
+	<h4>公司注册接口:<span>已完成</span></h4>
+	<p>URL：/company/update;</p>
+	<p>请求方式：POST; </p>
+	<p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID: 公司ID int<br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name: 公司名字 str<br>
     &nbsp;&nbsp;&nbsp;&nbsp;Legal: 法人（企业负责人） str<br>
     &nbsp;&nbsp;&nbsp;&nbsp;Address: 公司地址 str<br>
@@ -65,7 +85,7 @@
 </div>
 
 <div>
-    <h4>上传图片：（公司照片，公司执照）</h4>
+    <h4>上传图片：（公司照片，公司执照）<span>已完成</span></h4>
     <p>URL：/company/uploadgrouppic;</p>
 	<p>请求方式：POST; </p>
     <p>请求参数：{<br>
@@ -137,7 +157,7 @@
 
 
 <div>
-    <h4>获取企业详情：</h4>
+    <h4>获取企业详情：<span>已完成</span></h4>
     <p>URL：/company/info;</p>
 	<p>请求方式：GET; </p>
     <p>请求参数：{<br>

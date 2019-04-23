@@ -15,6 +15,11 @@ class UserRegist(BaseView):
         self._form = None
         self._insert_sql = None
 
+    def dispatch_request(self, db):
+        self.get_args()
+        self._db = db
+        return self.administrator()
+
     def filter(self):
         form = request.form
         self._form = form
@@ -59,7 +64,8 @@ class UserRegist(BaseView):
         )
         try:
             id = self._db.insert(self._insert_sql)
-            area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(id, self._form.get('AreaID'))
+            area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(id,
+                                                                                             self._form.get('AreaID'))
             self._db.insert(area_sql)
         except:
             return jsonify(status_code.DB_ERROR)
@@ -75,14 +81,14 @@ class UserLogin(BaseView):
         self.uid = None
 
     def dispatch_request(self, db):
+        self.get_args()
         self._db = db
         return self.administrator()
 
     def filter(self):
-        form = request.form
-        self._form = form
-        name = form.get('LoginName', '')
-        password = form.get('PassWord', '')
+        self._form = self.args
+        name = self.args.get('LoginName', '')
+        password = self.args.get('PassWord', '')
         if name == '' or password == '':
             return False
         return True
@@ -99,7 +105,7 @@ class UserLogin(BaseView):
         return self.administrator()
 
     def views(self):
-        args = request.json
+        args = self.args
         sql = r"""select id,UserName,LoginName,Password,AdminType,Status from tb_user where loginname='{}';""".format(
             args['LoginName'])
         result = self._db.query(sql)
@@ -109,14 +115,15 @@ class UserLogin(BaseView):
         if result[0]['Status'] != 1:
             return jsonify(status_code.USER_IS_DISABLED)
         pwd = result[0]['Password']
-        if not check_password_hash(pwd, args['Password']):
+        if not check_password_hash(pwd, args['PassWord']):
             return jsonify(status_code.PASSWORD_ERROR)
         session['id'] = self.uid
         session['AdminType'] = result[0]['AdminType']
+        session['url'] = self.get_all_url()
         if result[0]['AdminType']:
             session['area_ids'] = self.get_area_ids(self.uid)
         success = deepcopy(status_code.SUCCESS)
-        success['PerName'],session['api'] = self.get_permissions(self.uid)
+        success['PerName'], session['api'] = self.get_permissions(self.uid)
         session['login'] = True
         return jsonify(status_code.SUCCESS)
 
@@ -137,7 +144,7 @@ class UserLogin(BaseView):
             api_list.append(item['Name'])
         return per_name_list, api_list
 
-    def get_area_ids(self, uid):
+    def get_area_ids(self):
         """
         获取登录用户所能管控的地区ID
         :param uid:
@@ -145,13 +152,18 @@ class UserLogin(BaseView):
         """
         query_sql = r"""select t1.* from tb_user_area as t1
                         left join tb_area as t2 on t1.areaid=t2.id
-                        where t1.userid={}""".format(uid)
+                        where t1.userid={}""".format(self.uid)
         area_list = self._db.query(query_sql)
         all_area_id = get_all_area_id(self._db, area_list)
         return all_area_id
 
-    def get_all_permission(self, uid):
-        pass
+    def get_all_url(self):
+        query_sql = r"""select url,name from tb_user_per as t1
+                        right join tb_per_url as t2 on t1.pid = t2.pid
+                        where t1.UID = {};""".format(self.uid)
+        result = self._db.query(query_sql)
+        url_list = [item['url'] for item in result]
+        return url_list
 
 
 class UserLogout(BaseView):
@@ -182,7 +194,7 @@ class UserDelete(BaseView):
         self.uid = None
 
     def administrator(self):
-        args = request.args()
+        args = self.args
         sql = r"""delete from tb_user where id = {};""".format(args.get('ID'))
         try:
             self._db.delete(sql)
@@ -206,7 +218,7 @@ class StopUser(BaseView):
         self.uid = None
 
     def administrator(self):
-        args = request.args()
+        args = self.args
         sql = r"""update tb_user set status=0 where id = {};""".format(args.get('ID'))
         try:
             self._db.update(sql)

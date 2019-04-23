@@ -15,17 +15,30 @@ class BaseView(View, metaclass=ABCMeta):
         self._permissions = None
         self._uid = None
         self._db = None
+        self.args = None
         self.success = deepcopy(status_code.SUCCESS)
+        # self.get_args()
+
+    def get_args(self):
+        args = dict(request.form.items())
+        if dict(args) == {}:
+            args = request.args
+        if dict(args) == {}:
+            args = request.json
+            if args is None:
+                args = {}
+        self.args = args
 
     def dispatch_request(self, db):
+        self.get_args()
         self._db = db
-        return self.administrator()
-        # if int(session['AdminType']) == 0:
-        #     return self.administrator()
-        # elif int(session['AdminType']) == 1:
-        #     return self.admin()
-        # else:
-        #     return self.guest()
+        # return self.administrator()
+        if int(session['AdminType']) == 0:
+            return self.administrator()
+        elif int(session['AdminType']) == 1:
+            return self.admin()
+        else:
+            return self.guest()
 
     @abstractmethod
     def administrator(self):
@@ -35,9 +48,9 @@ class BaseView(View, metaclass=ABCMeta):
     def admin(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def guest(self):
-        pass
+        return self.admin()
 
 
 class DelteBase(BaseView):
@@ -56,7 +69,7 @@ class DelteBase(BaseView):
         return self.views()
 
     def views(self):
-        ID = request.args.get('ID', None)
+        ID = self.args.get('ID', None)
         if ID is None:
             return jsonify(status_code.ID_ERROR)
         delete_sql = r"""delete from {} where id={}""".format(self.table_name, ID)

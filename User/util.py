@@ -5,11 +5,11 @@ import random
 import re
 from flask import jsonify
 
-from APP.settings import upload_dir
+from APP.settings import BASE_DIR, upload_dir
 from utils import status_code
 
 
-def save_image(image_file, base='ava'):
+def save_image(image_file, base='static/media/ava'):
     if not re.match('^image/.*$', image_file.mimetype):
         return jsonify(status_code.USER_UPLOAD_IMG_TYPE_ERROR)
     img_name = image_file.filename
@@ -17,10 +17,11 @@ def save_image(image_file, base='ava'):
     temp = ''
     for i in range(10):
         temp += random.choice(ticket)
+    save_name = os.path.join(base, str(int(time.time())), temp, img_name)
     save_name = base + '/' + str(int(time.time())) + '_' + temp + '_' + img_name
-    url = os.path.join(upload_dir, save_name)
+    url = os.path.join(BASE_DIR, save_name)
     image_file.save(url)
-    img_url = os.path.join('/static/media/', save_name)
+    img_url = os.path.join('/static/media', save_name)
     return img_url
 
 
