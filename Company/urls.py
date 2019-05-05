@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from Company.views import CreatePicGroup, DeletePicGroup, DeletePic, GetGroupList, GetCompanyList, \
-    UploadPic, GetCompanyInfo, UpdateCompany, CreateCompany
+    UploadPic, GetCompanyInfo, UpdateCompany, CreateCompany,EditGroup,GetOnePic,GetGroupPicList
 
 company = Blueprint('company', __name__)
 # 创建图片分组
@@ -22,3 +22,9 @@ company.add_url_rule('/uploadgrouppic', methods=['post'], view_func=UploadPic.as
 company.add_url_rule('/regist', methods=['post'], view_func=CreateCompany.as_view('create_company'))
 # 更新企业信息
 company.add_url_rule('/update', methods=['post'], view_func=UpdateCompany.as_view('update_company'))
+# 修改图片分组名称
+company.add_url_rule('/group/edit', methods=['post'], view_func=EditGroup.as_view('editgroup'))
+# 查看单个图片
+company.add_url_rule('/pic/getone', methods=['GET'], view_func=GetOnePic.as_view('GET_one_pic'))
+# 获取分组下图片列表
+company.add_url_rule('/pic/list', methods=['get'], view_func=GetGroupPicList.as_view('get_pic_list'))

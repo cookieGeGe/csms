@@ -40,6 +40,11 @@ class BaseView(View, metaclass=ABCMeta):
         else:
             return self.guest()
 
+    def args_is_null(self, *args):
+        for i in args:
+            if self.args.get(i, None) is None:
+                return jsonify(status_code.CONTENT_IS_NULL)
+
     @abstractmethod
     def administrator(self):
         pass
