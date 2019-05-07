@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>劳工API</title>
+    <style type="text/css" media="screen">
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h4>劳工注册接口：<span>已完成</span></h4>
+    <p>URL：/labor/regist;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name：'名称 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Age：'登录名称 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Sex：'登录名称 int（0表示女，1表示男）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Birthday：'出生日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Address：'地址 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Nationality：'民族 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDCard：'身份证号码 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Phone：'电话 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyID：'公司ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;JobType：'工种类型 str(钢筋工--->安装工)',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ClassID：'班组ID int（如果IsLeader为true的时候填班组ID）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Identity：'身份 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DepartureDate：'离场日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EntryDate：'进场日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Hardhatnum：'安全帽号 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Education：'学历 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CreateTime：'创建时间 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectID：'项目ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsPM：'是否是项目管理员 int(0表示否，1表示是)',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IssueAuth：'发证机关 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Political：'政治面貌 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Train：'是否培训 str（如果培训则上传图片，否则为空字符串‘’）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EmerCon：'紧急联系人号码 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDP：'身份证正面照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDB：'身份证背面照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID：'省ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID：'市ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID：'区县ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;SVP：'开始有效期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EVP：'结束有效期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Superiors：'上级领导 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsLeader：'是否是班组长 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CloseupPhoto：'近身照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Remark：'描述 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;BadRecord：'不良记录 list [{file:'', desc:''},]'（如果没有则为空）<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Group_list：'图片分组ID list',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Img_list：'图片ID list',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;classname：'班组名称 str（如果IsLeader为true的时候填写）',<br>
+        } 头像文件（如果有的话，可以没有）</p>
+    <p>失败返回值：{'code': 50006, 'msg': '该用户已存在！'}<br>
+        {'code': 50003, 'res': 0, 'msg': '存在必填字段为空，请填写必填字段！'}<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>更新劳工信息：<span>已完成</span></h4>
+    <p>URL：/labor/update;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID：'劳工ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name：'名称 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Age：'登录名称 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Sex：'登录名称 int（0表示女，1表示男）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Birthday：'出生日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Address：'地址 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Nationality：'民族 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDCard：'身份证号码 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Phone：'电话 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyID：'公司ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;JobType：'工种类型 str(钢筋工--->安装工)',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ClassID：'班组ID int（如果IsLeader为true的时候填班组ID）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Identity：'身份 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DepartureDate：'离场日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EntryDate：'进场日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Hardhatnum：'安全帽号 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Education：'学历 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CreateTime：'创建时间 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectID：'项目ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsPM：'是否是项目管理员 int(0表示否，1表示是)',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IssueAuth：'发证机关 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Political：'政治面貌 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Train：'是否培训 str（如果培训则上传图片，否则为空字符串‘’）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EmerCon：'紧急联系人号码 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDP：'身份证正面照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDB：'身份证背面照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID：'省ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID：'市ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID：'区县ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;SVP：'开始有效期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EVP：'结束有效期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Superiors：'上级领导 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsLeader：'是否是班组长 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CloseupPhoto：'近身照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Remark：'描述 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;BadRecord：'不良记录 list [{file:'', desc:''},]'（如果没有则为空）<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Group_list：'图片分组ID list',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Img_list：'图片ID list',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;classname：'班组名称 str（如果IsLeader为true的时候填写）',<br>
+        } 头像文件（如果有的话，可以没有）</p>
+    <p>失败返回值：{'code': 50006, 'msg': '该用户已存在！'}<br>
+        {'code': 50003, 'res': 0, 'msg': '存在必填字段为空，请填写必填字段！'}<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>新建图片分组：<span>已完成</span></h4>
+    <p>URL：/labor/addgroup;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int (0表示公司照片分组，1表示公司执照)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 劳工ID int（新建的时候创建分组CID填0）<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>获取劳工信息：<span>已完成</span></h4>
+    <p>URL：/labor/info;</p>
+    <p>请求方式：GET; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 劳工ID int<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'labor':{
+        Name：'名称 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Age：'登录名称 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Sex：'登录名称 int（0表示女，1表示男）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Birthday：'出生日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Address：'地址 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Nationality：'民族 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDCard：'身份证号码 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Phone：'电话 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyID：'公司ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;JobType：'工种类型 str(钢筋工--->安装工)',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ClassID：'班组ID int（如果IsLeader为true的时候填班组ID）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Identity：'身份 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DepartureDate：'离场日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EntryDate：'进场日期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Hardhatnum：'安全帽号 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Education：'学历 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CreateTime：'创建时间 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectID：'项目ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsPM：'是否是项目管理员 int(0表示否，1表示是)',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IssueAuth：'发证机关 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Political：'政治面貌 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Train：'是否培训 str（如果培训则上传图片，否则为空字符串‘’）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EmerCon：'紧急联系人号码 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDP：'身份证正面照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDB：'身份证背面照 str（如果有这是图片文件，否则图片文件为空）',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID：'省ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID：'市ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID：'区县ID int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;SVP：'开始有效期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;EVP：'结束有效期 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Superiors：'上级领导 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsLeader：'是否是班组长 int',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CloseupPhoto：'近身照 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Remark：'描述 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;BadRecord：'不良记录 list [{file:'', desc:''},]'<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ClassName：'班组名称 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectName：'项目名称 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyName：'公司名称 str',<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;pic_group：'图片分组 str',<br>
+        }}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>新建图片分组：<span>已完成</span></h4>
+    <p>URL：/labor/query;</p>
+    <p>请求方式：GET; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectName: 项目名字 str (没有则为空)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyName: 公司名字 str (没有则为空)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID: 区ID int (没有则为0)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 市ID int (没有则为0)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID: 省ID int (没有则为0)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Isbad: 是否有不良记录 int (没有则为0)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 劳工名字 str (没有则为空)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IDCard: 身份证号码 str (没有则为空)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Sex: 是否有不良记录 int (全部则为2)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;JobType: 工种 str (全部则为空，直接传工种名称)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Education: 学历 str (全部则为空， 直接传学历名称)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Page: 页数 int (默认为1)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PageSize: 没有显示数量 int (默认为10)<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'labor_list':[{对象1},{对象2}]}（对象里面的内容同详细信息的内容）</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>上传合同图片:<span>已完成</span></h4>
+    <p>URL：/company/uploadpic;</p>
+	<p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;GID: 图片分组ID int <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;图片file<br>
+    }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+</body>
+</html>

@@ -26,9 +26,11 @@ class CreateProject(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('Name', 'Type', 'GuanranType', 'Price', 'PID', 'CID', 'DID',
-                          'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager',
-                          'Supervisor')
+        isnull = self.args_is_null('Name', 'Type', 'GuanranType', 'Price', 'PID', 'CID', 'DID',
+                                   'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager',
+                                   'Supervisor')
+        if isnull:
+            return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
         args['Status'] = int(args['Status'])
         insert_sql = r"""insert into tb_project(name,type,guarantype,price,duration,gamount,prinpical,
@@ -60,11 +62,13 @@ class UpdateProject(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('Name', 'Type', 'GuanranType', 'Price', 'PID', 'CID', 'DID',
-                          'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager',
-                          'Supervisor')
+        isnull = self.args_is_null('Name', 'Type', 'GuanranType', 'Price', 'PID', 'CID', 'DID',
+                                   'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager',
+                                   'Supervisor')
+        if isnull:
+            return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
-        args['Status']=int(args['Status'])
+        args['Status'] = int(args['Status'])
         if args.get('PrinPical', 'null') != 'null':
             args['PrinPical'] = dumps(args['PrinPical'])
         for i in ('ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor'):
@@ -94,7 +98,8 @@ class DeleteProject(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('ID')
+        if self.args_is_null('ID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
         delete_sql = r"""delete from tb_project where id={}""".format(self.args.get('ID'))
         self._db.delete(delete_sql)
         return jsonify(status_code.SUCCESS)
@@ -115,7 +120,8 @@ class QueryProject(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('ID')
+        if self.args_is_null('ID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select * from tb_project where id={}""".format(self.args.get('ID'))
         result = self._db.query(query_sql)[0]
         if result.get('PrinPical', 'null') != 'null':
@@ -146,7 +152,8 @@ class ProgressProject(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('ProgressID')
+        if self.args_is_null('ProgressID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select * from tb_progress where id = {}""".format(self.args.get('ProgressID'))
         result = self._db.query(query_sql)[0]
         result['Person'] = loads(result['Person'])
@@ -181,8 +188,10 @@ class ADDProgressProject(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwages',
-                          'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID')
+        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwages',
+                                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID')
+        if isnull:
+            return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
         query_sql = r"""select * from tb_project where id={};""".format(args.get('ProjectID'))
         result = self._db.query(query_sql)
@@ -226,6 +235,7 @@ class CreateProPicGroup(CreatePicGroup):
         super(CreateProPicGroup, self).__init__()
         self.dir = 'project/'
         self.ptype = 1
+        self.db_dir = '/static/media/' + self.dir
 
 
 class GetComAndPer(BaseView):
@@ -274,7 +284,9 @@ class GetProgressGicList(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('ID')
+
+        if self.args_is_null('ID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select * from tb_pic_group where CID={}, ptype={}""".format(self.args.get('ID'), 1)
         reslut = self._db.query(query_sql)
         group_list = {
@@ -338,7 +350,8 @@ class UploadProjectIMG(BaseView):
         return self.views()
 
     def views(self):
-        self.args_is_null('ID', 'IsCreate', 'ProgressID', )
+        if self.args_is_null('ID', 'IsCreate', 'ProgressID', ):
+            return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select id,gurl,ptype,type,name,cid from tb_pic_group where id={}""".format(self.args.get('ID'))
         result = self._db.query(query_sql)
         if not result:
@@ -350,8 +363,8 @@ class UploadProjectIMG(BaseView):
         iamge_url = save_image(image_file, temp_img_dir)
         success = deepcopy(status_code.SUCCESS)
         if self.args.get('IsCreate'):
-            insert_sql = r"""insert into tb_pics(GroupID, prul, name, Ptype, type) 
-                                value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url,
+            insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type) 
+                                value ({},'{}', '{}', {},{})""".format(result[0]['id'], iamge_url,
                                                                        image_file.filename[:-4],
                                                                        result[0]['ptype'],
                                                                        result[0]['type'])
@@ -361,8 +374,8 @@ class UploadProjectIMG(BaseView):
             success['name'] = image_file.filename[:-4]
             success['url'] = iamge_url
         else:
-            insert_sql = r"""insert into tb_pics(GroupID, prul, name, Ptype, type,progressid) 
-                                            value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url,
+            insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type,progressid) 
+                                            value ({},'{}', '{}', {},{})""".format(result[0]['id'], iamge_url,
                                                                                    image_file.filename[:-4],
                                                                                    result[0]['ptype'],
                                                                                    result[0]['type'],
@@ -371,10 +384,10 @@ class UploadProjectIMG(BaseView):
         return jsonify(success)
 
 
-class ProgressMainQuery(BaseView):
+class ProjectMainQuery(BaseView):
 
     def __init__(self):
-        super(ProgressMainQuery, self).__init__()
+        super(ProjectMainQuery, self).__init__()
 
     def administrator(self):
         self.views()
@@ -383,4 +396,39 @@ class ProgressMainQuery(BaseView):
         self.views()
 
     def views(self):
+        args = self.args
+        query_sql_base = r"""select t1.*,t2.Name as CompanyName, count(t3.id) as Persons from tb_project as t1
+                            left join tb_company as t2 on t2.id = t1.cons
+                            left join tb_laborinfo as t3 on t3.ProjectID = t1.id """
+        where_sql_list = []
+        if args.get('ProjectName', '') != '':
+            where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
+        if args.get('CompanyName', '') != '':
+            where_sql_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
+        if args.get('DID', 0):
+            where_sql_list.append(r""" t1.DID={} """.format(args.get('DID')))
+        if args.get('CID', 0):
+            where_sql_list.append(r""" t1.CID={} """.format(args.get('CID')))
+        if args.get('PID', 0):
+            where_sql_list.append(r""" t1.PID={} """.format(args.get('PID')))
+        if args.get('Status', 0):
+            where_sql_list.append(r""" t1.Status={} """.format(args.get('Status')))
+        temp = ' where '
+        for index, i in enumerate(where_sql_list):
+            temp += i
+            if index < len(where_sql_list) - 1:
+                temp += 'and'
+        page = int(args.get('Page', 1))
+        psize = int(args.get('PageSize', 10))
+        limit_sql = r""" limit {},{};""".format(page * psize, psize)
+        query_sql = query_sql_base + " " + temp + limit_sql
+        result = self._db.query(query_sql)
+        projects = []
+        for item in result:
+            # item['BadRecord'] = loads(item['BadRecord'])
+            for i in ('ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor'):
+                item[i] = loads(item[i])
+            projects.append(item)
+        success = deepcopy(status_code.SUCCESS)
+        success['project'] = projects
         return jsonify(status_code.SUCCESS)

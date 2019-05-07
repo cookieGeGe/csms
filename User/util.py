@@ -17,11 +17,12 @@ def save_image(image_file, base='static/media/ava'):
     temp = ''
     for i in range(10):
         temp += random.choice(ticket)
-    save_name = os.path.join(base, str(int(time.time())), temp, img_name)
-    save_name = base + '/' + str(int(time.time())) + '_' + temp + '_' + img_name
+    new_base = os.path.join(*base.split(r'/'))
+    new_name = str(int(time.time())) + '_' + temp + '.' + img_name.split('.')[-1]
+    save_name = os.path.join(new_base, new_name)
     url = os.path.join(BASE_DIR, save_name)
     image_file.save(url)
-    img_url = os.path.join('/static/media', save_name)
+    img_url = '/' + base + '/' + new_name
     return img_url
 
 

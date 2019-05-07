@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
-    ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG
+    ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery
 
 project = Blueprint('project', __name__)
 
@@ -17,13 +17,13 @@ project.add_url_rule('/query', methods=['GET'], view_func=QueryProject.as_view('
 project.add_url_rule('/progress/query', methods=['GET'], view_func=ProgressProject.as_view('progress_pro'))
 # 添加项目进度 -
 project.add_url_rule('/progress/create', methods=['GET'], view_func=ADDProgressProject.as_view('add_progress_pro'))
-# 新建项目图片目录 -
+# 新建项目图片目录 - 已测试
 project.add_url_rule('/group/create', methods=['Post'], view_func=CreateProPicGroup.as_view('create_pro_pic_group'))
-# 获取企业和其负责人 -
+# 获取企业和其负责人 - 已测试
 project.add_url_rule('/companyinfo', methods=['get'], view_func=GetComAndPer.as_view('get_com_and_person'))
-# 获取项目分组目录列表 -
+# 获取项目分组目录列表 - 已测试
 project.add_url_rule('/group/list', methods=['get'], view_func=GetProgressGicList.as_view('get_progress_list'))
-# 上传图片列表 -
+# 上传图片列表 - 已测试
 project.add_url_rule('/img/upload', methods=['post'], view_func=UploadProjectIMG.as_view('upload_img'))
-# 项目分类查询
-
+# 主项目进度查询 - 还差发放情况没有统计
+project.add_url_rule('/search', methods=['get'], view_func=ProjectMainQuery.as_view('main_query'))

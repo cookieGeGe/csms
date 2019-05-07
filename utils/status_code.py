@@ -20,3 +20,6 @@ FILE_NOT_EXISTS = {'code': 50013, 'msg': '上传图片不存在！'}
 DIR_NOT_EXISTS = {'code': 50014, 'msg': '上传目录错误！'}
 GET_COMPANY_INFO_FAILD = {'code': 50015, 'msg': '没有找到当前用户！'}
 
+LABOR_IS_EXISTS = {'code': 50016, 'msg': '身份证号码重复，请勿重复添加！'}
+LABOR_IS_NOT_EXISTS = {'code': 50017, 'msg': '劳工不存在'}
+

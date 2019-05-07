@@ -205,7 +205,7 @@ class GetCompanyList(BaseView):
         start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
         query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
         result = self._db.query(query_sql)
-        success = status_code.SUCCESS
+        success = deepcopy(status_code.SUCCESS)
         success['company_list'] = result
         return jsonify(success)
 
@@ -241,7 +241,7 @@ class UploadPic(BaseView):
         if image_file is None:
             return jsonify(status_code.FILE_NOT_EXISTS)
         iamge_url = save_image(image_file, temp_img_dir)
-        insert_sql = r"""insert into tb_pics(GroupID, prul, name, Ptype, type) 
+        insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type) 
                         value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url, image_file.filename[:-4],
                                                                self.ptype, result[0]['type'])
         id = self._db.insert(insert_sql)
@@ -303,7 +303,7 @@ class CreateCompany(BaseView):
     def views(self):
         self.args['Phone'] = dumps(self.args['Phone'])
         self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] else 0
-        file_list = request.files.get('License')
+        file_list = request.files.get('License', [])
         file_url_list = []
         for image_file in file_list:
             if os.name == 'nt':
@@ -332,10 +332,10 @@ class UpdateCompany(BaseView):
 
     def views(self):
         query_sql = r"""select License from tb_company where id={}""".format(self.args.get('ID'))
-        result = self._db.query(query_sql)
+        result = self._db.query(query_sql)[0]
         self.args['Phone'] = dumps(self.args['Phone'])
         self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] else 0
-        file_list = request.files.get('License')
+        file_list = request.files.get('License', [])
         file_url_list = []
         for image_file in file_list:
             if os.name == 'nt':
@@ -348,10 +348,13 @@ class UpdateCompany(BaseView):
         del self.args['ID']
         temp = ''
         for index, item in enumerate(self.args.keys()):
-            temp = temp + str(item) + '=' + str(self.args[item])
+            if isinstance(self.args[item], int):
+                temp = temp + str(item) + '=' + str(self.args[item])
+            else:
+                temp = temp + str(item) + "='" + str(self.args[item]) + "'"
             if index < len(self.args) - 1:
                 temp += ','
-        update_sql = r"""update tb_company set """ + temp + r""" where id={}""".format(ID)
+        update_sql = r"""update tb_company set """ + temp + r""" where id={};""".format(ID)
         self._db.update(update_sql)
         return jsonify(status_code.SUCCESS)
 
@@ -368,8 +371,8 @@ class EditGroup(BaseView):
 
     def views(self):
         self.args_is_null('Name', 'ID')
-        update_sql = r"""update tb_pic_group set name={} where id ={}""".format(self.args.get('Name'),
-                                                                                self.args.get('ID'))
+        update_sql = r"""update tb_pic_group set name='{}' where id ={}""".format(self.args.get('Name'),
+                                                                                  self.args.get('ID'))
         self._db.update(update_sql)
         return jsonify(status_code.SUCCESS)
 
