@@ -5,7 +5,7 @@ from copy import deepcopy
 from flask import request, jsonify, sessions
 
 from Company.utils import update_pic_and_group, update_progress_pic
-from Company.views import CreatePicGroup
+from Company.views import CreatePicGroup, AllCompanyID
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -432,3 +432,10 @@ class ProjectMainQuery(BaseView):
         success = deepcopy(status_code.SUCCESS)
         success['project'] = projects
         return jsonify(status_code.SUCCESS)
+
+
+class ALLProjectID(AllCompanyID):
+
+    def __init__(self):
+        super(ALLProjectID, self).__init__()
+        self.table = 'tb_project'

@@ -124,7 +124,7 @@
     <p>URL：/labor/addgroup;</p>
     <p>请求方式：POST; </p>
     <p>请求参数：{<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int (0表示公司照片分组，1表示公司执照)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int 合同为0<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;CID: 劳工ID int（新建的时候创建分组CID填0）<br>
         }<br></p>
@@ -184,7 +184,7 @@
 </div>
 
 <div>
-    <h4>新建图片分组：<span>已完成</span></h4>
+    <h4>劳工查询：<span>已完成</span></h4>
     <p>URL：/labor/query;</p>
     <p>请求方式：GET; </p>
     <p>请求参数：{<br>
@@ -207,7 +207,7 @@
 </div>
 
 <div>
-    <h4>上传合同图片:<span>已完成</span></h4>
+    <h4>上传合同图片(保函图片上传用相同接口):<span>已完成</span></h4>
     <p>URL：/company/uploadpic;</p>
 	<p>请求方式：POST; </p>
     <p>请求参数：{<br>

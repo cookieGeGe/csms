@@ -4,73 +4,75 @@
     <meta charset="UTF-8">
     <title>企业信息管理API</title>
     <style type="text/css" media="screen">
-		div {
-			margin-top: 20px;
-			display: block;
-			margin-left: 0px;
-		}
-		div p {
-			margin-top: 15px;
-			margin-left: 50px;
-		}
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
         span {
             color: red;
         }
-	</style>
+    </style>
 </head>
 <body>
 <div>
-	<h4>公司注册接口:<span>已完成</span></h4>
-	<p>URL：/company/regist;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br>
-		&nbsp;&nbsp;&nbsp;&nbsp;Name: 公司名字 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Legal: 法人（企业负责人） str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Address: 公司地址 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Phone: 联系方式 list  [{name:'', post:'',phone:''}]<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;License: 公司资质图片 filelist<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Type: 公司类型 int<br>
+    <h4>公司注册接口:<span>已完成</span></h4>
+    <p>URL：/company/regist;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 公司名字 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Legal: 法人（企业负责人） str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Address: 公司地址 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Phone: 联系方式 list [{name:'', post:'',phone:''}]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;License: 公司资质图片 filelist<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Type: 公司类型 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;ProvinceID: 所属省ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;CityID: 所属市ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;DistrictID: 所属区县ID int<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;BadRecord: 不良记录 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;BadRecord: 不良记录 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;group_list: 分组ID列表 list (没有则为空列表)<br>
         &nbsp;&nbsp;&nbsp;&nbsp;pic_list: 上传的所有图片ID列表 list （没有则为空列表）<br>
-    }<br></p>
-	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
 </div>
 <div>
-	<h4>公司更新接口:<span>已完成</span></h4>
-	<p>URL：/company/update;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br>
+    <h4>公司更新接口:<span>已完成</span></h4>
+    <p>URL：/company/update;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID: 公司ID int<br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name: 公司名字 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Legal: 法人（企业负责人） str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Address: 公司地址 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Phone: 联系方式 list  [{name:'', post:'',phone:''}]<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;License: 公司资质图片 filelist<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Type: 公司类型 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name: 公司名字 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Legal: 法人（企业负责人） str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Address: 公司地址 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Phone: 联系方式 list [{name:'', post:'',phone:''}]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;License: 公司资质图片 filelist<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Type: 公司类型 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;ProvinceID: 所属省ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;CityID: 所属市ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;DistrictID: 所属区县ID int<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;BadRecord: 不良记录 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
-    }<br></p>
-	<p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+        &nbsp;&nbsp;&nbsp;&nbsp;BadRecord: 不良记录 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
 </div>
 <div>
     <h4>新建图片分组：（公司照片，公司执照）<span>已完成</span></h4>
     <p>URL：/company/addgroup;</p>
-	<p>请求方式：POST; </p>
+    <p>请求方式：POST; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int (0表示公司照片分组，1表示公司执照)<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int（新建的时候创建分组CID填0）<br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int (0表示公司照片分组，1表示公司执照)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int（新建的时候创建分组CID填0）<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
@@ -78,10 +80,10 @@
 <div>
     <h4>删除图片分组：<span>已完成</span></h4>
     <p>URL：/company/deletepicgroup;</p>
-	<p>请求方式：Delete; </p>
+    <p>请求方式：Delete; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int <br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int <br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
@@ -89,12 +91,12 @@
 <div>
     <h4>上传图片：（公司照片，公司执照）<span>已完成</span></h4>
     <p>URL：/company/uploadgrouppic;</p>
-	<p>请求方式：POST; </p>
+    <p>请求方式：POST; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;GID: 图片分组ID int <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;图片file<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int（新建企业时CID为0）<br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;GID: 图片分组ID int <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;图片file<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int（新建企业时CID为0）<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
@@ -102,10 +104,10 @@
 <div>
     <h4>删除图片：<span>已完成</span></h4>
     <p>URL：/company/deletepic;</p>
-	<p>请求方式：Delete; </p>
+    <p>请求方式：Delete; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 图片ID int <br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 图片ID int <br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
@@ -113,10 +115,10 @@
 <div>
     <h4>获取分组列表：<span>已完成</span></h4>
     <p>URL：/company/getpicgroup;</p>
-	<p>请求方式：GET; </p>
+    <p>请求方式：GET; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int <br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int <br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', <br>
         &nbsp;&nbsp;&nbsp;&nbsp;'Lgroup_list': 公司执照分组信息 [{ID:'', Name:''}]<br>
         &nbsp;&nbsp;&nbsp;&nbsp;'group_list': 公司照片分组信息 [{ID:'', Name:''}]<br>
@@ -125,12 +127,12 @@
 </div>
 
 <div>
-    <h4>获取分组下图片列表：<span>已完成</span></h4>
+    <h4>获取分组下图片列表（在劳工，保函，项目中共用）：<span>已完成</span></h4>
     <p>URL：/company/pic/list;</p>
-	<p>请求方式：GET; </p>
+    <p>请求方式：GET; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int <br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int <br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', <br>
         &nbsp;&nbsp;&nbsp;&nbsp;'pic_list': 公司执照分组信息 [{ID:'', Name:'', Purl:''},]<br>
         }</p>
@@ -140,9 +142,9 @@
 <div>
     <h4>获取企业列表：<span>已完成</span></h4>
     <p>URL：/company/list;</p>
-	<p>请求方式：GET; </p>
+    <p>请求方式：GET; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Type: 查找类型 int (0表示企业名称，1表示企业负责人)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Type: 查找类型 int (0表示企业名称，1表示企业负责人)<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Name: 名称 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;PID: 省级ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;CID: 市级ID int<br>
@@ -150,7 +152,7 @@
         &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Page: 第几页 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;PageSize: 每页的大小 int<br>
-    }<br></p>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', <br>
         &nbsp;&nbsp;&nbsp;&nbsp;'company_list': 公司执照分组信息 [{ID:'', Name:'', Purl:''},]<br>
         }</p>
@@ -161,10 +163,10 @@
 <div>
     <h4>获取企业详情：<span>已完成</span></h4>
     <p>URL：/company/info;</p>
-	<p>请求方式：GET; </p>
+    <p>请求方式：GET; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 企业ID int<br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 企业ID int<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', <br>
         &nbsp;&nbsp;&nbsp;&nbsp;'company_info': 公司执照分组信息 [{ID:'', Name:'', Purl:''},]<br>
         }</p>
@@ -172,26 +174,35 @@
 </div>
 
 <div>
-    <h4>修改图片分组名称：<span>已完成</span></h4>
+    <h4>修改图片分组名称（在劳工，保函，项目中共用）：<span>已完成</span></h4>
     <p>URL：/company/group/edit;</p>
-	<p>请求方式：POST; </p>
+    <p>请求方式：POST; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Name 新的分组名称 str
-    }<br></p>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', <br>
         }</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
 <div>
-    <h4>查看单个图片：<span>已完成</span></h4>
+    <h4>查看单个图片（在劳工，保函，项目中共用）：<span>已完成</span></h4>
     <p>URL：/company/pic/getone;</p>
-	<p>请求方式：POST; </p>
+    <p>请求方式：POST; </p>
     <p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int<br>
-    }<br></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'url':图片路径<br>
+        }</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>获取所有公司名称和ID：<span>已完成</span></h4>
+    <p>URL：/company/allcompany;</p>
+    <p>请求方式：GET; </p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'list':[{id:'', name:''}]<br>
         }</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>

@@ -394,3 +394,23 @@ class GetOnePic(BaseView):
         success = deepcopy(status_code.SUCCESS)
         success['url'] = result[0]['Purl']
         return jsonify(success)
+
+
+class AllCompanyID(BaseView):
+
+    def __init__(self):
+        super(AllCompanyID, self).__init__()
+        self.table = 'tb_company'
+
+    def administrator(self):
+        self.views()
+
+    def admin(self):
+        self.views()
+
+    def views(self):
+        query_sql = r"""select ID,Name from {};""".format(self.table)
+        result = self._db.query(query_sql)
+        success = deepcopy(status_code.SUCCESS)
+        success['list'] = result
+        return jsonify(result)

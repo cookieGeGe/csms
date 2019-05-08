@@ -6,6 +6,7 @@ from flask import jsonify, request
 
 from Company.utils import update_pic_and_group
 from Company.views import CreatePicGroup
+from Guarantee.views import GetPicGroupList
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -58,7 +59,7 @@ class CreateLabor(LaborBase):
         if idp_img != '':
             args['Train'] = save_image(idp_img, 'static/media/labor')
         bad_list = []
-        for item in args.get('BadRecord'):
+        for item in request.files.get('BadRecord'):
             img_file = item['file']
             img_url = save_image(img_file, 'static/medis/labor')
             item['file'] = img_url
@@ -132,7 +133,7 @@ class UpdateLabor(LaborBase):
         if idp_img != '':
             args['Train'] = save_image(idp_img, 'static/media/labor')
         bad_list = []
-        for item in args.get('BadRecord'):
+        for item in request.files.get('BadRecord'):
             img_file = item['file']
             img_url = save_image(img_file, 'static/medis/labor')
             item['file'] = img_url
@@ -286,3 +287,5 @@ class UploadLaborImg(LaborBase):
         success['name'] = image_file.filename[:-4]
         success['url'] = iamge_url
         return jsonify(success)
+
+

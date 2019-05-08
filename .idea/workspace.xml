@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="csms 完成企业模块内容，接口部分没有验证">
+    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="验证部分简单接口，修改部分接口不足之处，完成企业项目劳工模块">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/APP/url_regist.py" beforeDir="false" afterPath="$PROJECT_DIR$/APP/url_regist.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Company/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Company/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Company/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Company/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Labor/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Labor/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Labor/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Labor/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/User/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/User/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/company.html" beforeDir="false" afterPath="$PROJECT_DIR$/api/company.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/labor.html" beforeDir="false" afterPath="$PROJECT_DIR$/api/labor.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/project.html" beforeDir="false" afterPath="$PROJECT_DIR$/api/project.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/BaseView.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/BaseView.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/status_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/status_code.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,8 +33,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Company/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="47">
-              <caret line="233" column="8" lean-forward="true" selection-start-line="233" selection-start-column="8" selection-end-line="251" selection-end-column="31" />
+            <state relative-caret-position="112">
+              <caret line="398" column="18" selection-start-line="398" selection-start-column="6" selection-end-line="398" selection-end-column="18" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
               </folding>
@@ -45,8 +45,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Project/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="385" lean-forward="true" selection-start-line="385" selection-end-line="385" />
+            <state relative-caret-position="418">
+              <caret line="436" column="18" selection-start-line="436" selection-start-column="6" selection-end-line="436" selection-end-column="18" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
               </folding>
@@ -55,52 +55,37 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="42" column="34" lean-forward="true" selection-start-line="42" selection-start-column="34" selection-end-line="42" selection-end-column="34" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/User/util.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="268">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Labor/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="224" column="19" lean-forward="true" selection-start-line="224" selection-start-column="19" selection-end-line="224" selection-end-column="19" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/api/company.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="131">
-              <caret line="88" selection-start-line="88" selection-end-line="99" selection-end-column="6" />
+            <state relative-caret-position="316">
+              <caret line="200" selection-start-line="200" selection-end-line="207" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Labor/urls.py">
+        <entry file="file://$PROJECT_DIR$/api/project.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" column="61" lean-forward="true" selection-start-line="14" selection-start-column="61" selection-end-line="14" selection-end-column="61" />
+            <state relative-caret-position="350">
+              <caret line="226" lean-forward="true" selection-start-line="226" selection-end-line="226" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APP/url_regist.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="12" column="30" lean-forward="true" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Guarantee/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="16" column="67" selection-start-line="16" selection-start-column="67" selection-end-line="16" selection-end-column="67" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -109,10 +94,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/api/labor.html">
+        <entry file="file://$PROJECT_DIR$/Guarantee/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="210" column="29" selection-start-line="210" selection-start-column="20" selection-end-line="210" selection-end-column="29" />
+            <state relative-caret-position="360">
+              <caret line="35" lean-forward="true" selection-start-line="35" selection-end-line="35" />
+              <folding>
+                <element signature="e#0#22#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -120,10 +108,35 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Project/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="27" column="22" selection-start-line="27" selection-start-column="22" selection-end-line="27" selection-end-column="22" />
+            <state relative-caret-position="333">
+              <caret line="25" column="111" selection-start-line="25" selection-start-column="111" selection-end-line="25" selection-end-column="111" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/guarantee.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="74" lean-forward="true" selection-start-line="74" selection-end-line="74" />
+              <folding>
+                <element signature="e#447#453#0#HTML" expanded="true" />
+                <element signature="e#1181#1187#0#HTML" expanded="true" />
+                <element signature="e#1902#1908#0#HTML" expanded="true" />
+                <element signature="e#1908#1914#0#HTML" expanded="true" />
+                <element signature="e#1914#1920#0#HTML" expanded="true" />
+                <element signature="e#1920#1926#0#HTML" expanded="true" />
+                <element signature="e#1961#1967#0#HTML" expanded="true" />
+                <element signature="e#1967#1973#0#HTML" expanded="true" />
+                <element signature="e#1973#1979#0#HTML" expanded="true" />
+                <element signature="e#1979#1985#0#HTML" expanded="true" />
+                <element signature="e#2012#2018#0#HTML" expanded="true" />
+                <element signature="e#2018#2024#0#HTML" expanded="true" />
+                <element signature="e#2024#2030#0#HTML" expanded="true" />
+                <element signature="e#2030#2036#0#HTML" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -132,8 +145,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Company/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="19" column="72" lean-forward="true" selection-start-line="19" selection-start-column="72" selection-end-line="19" selection-end-column="72" />
+            <state relative-caret-position="401">
+              <caret line="31" column="33" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="33" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -147,8 +160,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Flask Main" />
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -184,22 +197,25 @@
         <option value="$PROJECT_DIR$/APP/config.py" />
         <option value="$PROJECT_DIR$/User/urls.py" />
         <option value="$PROJECT_DIR$/User/views.py" />
-        <option value="$PROJECT_DIR$/api/company.html" />
         <option value="$PROJECT_DIR$/api/city.html" />
         <option value="$PROJECT_DIR$/api/user.html" />
         <option value="$PROJECT_DIR$/Company/utils.py" />
-        <option value="$PROJECT_DIR$/APP/url_regist.py" />
         <option value="$PROJECT_DIR$/utils/status_code.py" />
         <option value="$PROJECT_DIR$/User/util.py" />
         <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/Company/views.py" />
-        <option value="$PROJECT_DIR$/Company/urls.py" />
-        <option value="$PROJECT_DIR$/api/project.html" />
         <option value="$PROJECT_DIR$/utils/BaseView.py" />
+        <option value="$PROJECT_DIR$/APP/url_regist.py" />
         <option value="$PROJECT_DIR$/api/labor.html" />
-        <option value="$PROJECT_DIR$/Labor/urls.py" />
         <option value="$PROJECT_DIR$/Labor/views.py" />
+        <option value="$PROJECT_DIR$/Labor/urls.py" />
+        <option value="$PROJECT_DIR$/api/guarantee.html" />
+        <option value="$PROJECT_DIR$/Guarantee/urls.py" />
+        <option value="$PROJECT_DIR$/Guarantee/views.py" />
+        <option value="$PROJECT_DIR$/Company/views.py" />
         <option value="$PROJECT_DIR$/Project/views.py" />
+        <option value="$PROJECT_DIR$/Company/urls.py" />
+        <option value="$PROJECT_DIR$/api/company.html" />
+        <option value="$PROJECT_DIR$/api/project.html" />
         <option value="$PROJECT_DIR$/Project/urls.py" />
       </list>
     </option>
@@ -212,7 +228,7 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="126" />
-    <option name="y" value="109" />
+    <option name="y" value="108" />
     <option name="width" value="1971" />
     <option name="height" value="1245" />
   </component>
@@ -240,22 +256,22 @@
             <path>
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
               <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Company" type="462c0819:PsiDirectoryNode" />
+              <item name="APP" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
               <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Labor" type="462c0819:PsiDirectoryNode" />
+              <item name="Area" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="csms" type="462c0819:PsiDirectoryNode" />
+              <item name="Guarantee" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
               <item name="csms" type="462c0819:PsiDirectoryNode" />
               <item name="Project" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="User" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -426,20 +442,27 @@
       <option name="project" value="LOCAL" />
       <updated>1557057825732</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="验证部分简单接口，修改部分接口不足之处，完成企业项目劳工模块">
+      <created>1557241098151</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1557241098151</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1455" height="935" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.138869" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14101647" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.2840617" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.3611825" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3611825" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -449,7 +472,7 @@
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.33933163" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" weight="0.32904884" />
       <window_info anchor="bottom" id="Python Console" order="12" />
-      <window_info anchor="bottom" id="File Transfer" order="13" weight="0.2673522" />
+      <window_info anchor="bottom" id="File Transfer" order="13" visible="true" weight="0.2673522" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -470,7 +493,8 @@
     <MESSAGE value="csms 完成部分企业信息接口" />
     <MESSAGE value="csms 修复企业列表接口" />
     <MESSAGE value="csms 完成企业模块内容，接口部分没有验证" />
-    <option name="LAST_COMMIT_MESSAGE" value="csms 完成企业模块内容，接口部分没有验证" />
+    <MESSAGE value="验证部分简单接口，修改部分接口不足之处，完成企业项目劳工模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="验证部分简单接口，修改部分接口不足之处，完成企业项目劳工模块" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -628,13 +652,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/api/city.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/api/user.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -663,13 +680,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APP/url_regist.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="11" column="30" selection-start-line="11" selection-start-column="30" selection-end-line="11" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/media/company/hM1ZL/1557227878_akKF8MkKgg_微信图片_20190419214355.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -687,34 +697,114 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/api/project.html">
+    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="76" column="4" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="4" />
+        <state relative-caret-position="612">
+          <caret line="42" column="34" lean-forward="true" selection-start-line="42" selection-start-column="34" selection-end-line="42" selection-end-column="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/User/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
+        <state relative-caret-position="187">
+          <caret line="11" column="4" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="4" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
+    <entry file="file://$PROJECT_DIR$/api/city.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="42" column="34" lean-forward="true" selection-start-line="42" selection-start-column="34" selection-end-line="42" selection-end-column="34" />
+        <state relative-caret-position="204">
+          <caret line="12" column="29" lean-forward="true" selection-end-line="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/labor.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="219" lean-forward="true" selection-start-line="219" selection-end-line="219" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Labor/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="290" selection-start-line="290" selection-end-line="290" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Labor/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="108" selection-start-line="2" selection-start-column="108" selection-end-line="2" selection-end-column="108" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/guarantee.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="74" lean-forward="true" selection-start-line="74" selection-end-line="74" />
+          <folding>
+            <element signature="e#447#453#0#HTML" expanded="true" />
+            <element signature="e#1181#1187#0#HTML" expanded="true" />
+            <element signature="e#1902#1908#0#HTML" expanded="true" />
+            <element signature="e#1908#1914#0#HTML" expanded="true" />
+            <element signature="e#1914#1920#0#HTML" expanded="true" />
+            <element signature="e#1920#1926#0#HTML" expanded="true" />
+            <element signature="e#1961#1967#0#HTML" expanded="true" />
+            <element signature="e#1967#1973#0#HTML" expanded="true" />
+            <element signature="e#1973#1979#0#HTML" expanded="true" />
+            <element signature="e#1979#1985#0#HTML" expanded="true" />
+            <element signature="e#2012#2018#0#HTML" expanded="true" />
+            <element signature="e#2018#2024#0#HTML" expanded="true" />
+            <element signature="e#2024#2030#0#HTML" expanded="true" />
+            <element signature="e#2030#2036#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Guarantee/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="67" selection-start-line="16" selection-start-column="67" selection-end-line="16" selection-end-column="67" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Guarantee/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="35" lean-forward="true" selection-start-line="35" selection-end-line="35" />
+          <folding>
+            <element signature="e#0#22#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Company/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="398" column="18" selection-start-line="398" selection-start-column="6" selection-end-line="398" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Company/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="19" column="72" lean-forward="true" selection-start-line="19" selection-start-column="72" selection-end-line="19" selection-end-column="72" />
+        <state relative-caret-position="401">
+          <caret line="31" column="33" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="33" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
@@ -723,62 +813,39 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/api/company.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="88" selection-start-line="88" selection-end-line="99" selection-end-column="6" />
+        <state relative-caret-position="316">
+          <caret line="200" selection-start-line="200" selection-end-line="207" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Company/views.py">
+    <entry file="file://$PROJECT_DIR$/api/project.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="47">
-          <caret line="233" column="8" lean-forward="true" selection-start-line="233" selection-start-column="8" selection-end-line="251" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/labor.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="210" column="29" selection-start-line="210" selection-start-column="20" selection-end-line="210" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Labor/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="61" lean-forward="true" selection-start-line="14" selection-start-column="61" selection-end-line="14" selection-end-column="61" />
-          <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Labor/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="224" column="19" lean-forward="true" selection-start-line="224" selection-start-column="19" selection-end-line="224" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="350">
+          <caret line="226" lean-forward="true" selection-start-line="226" selection-end-line="226" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Project/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="385" lean-forward="true" selection-start-line="385" selection-end-line="385" />
+        <state relative-caret-position="418">
+          <caret line="436" column="18" selection-start-line="436" selection-start-column="6" selection-end-line="436" selection-end-column="18" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/APP/url_regist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="12" column="30" lean-forward="true" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Project/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="27" column="22" selection-start-line="27" selection-start-column="22" selection-end-line="27" selection-end-column="22" />
+        <state relative-caret-position="333">
+          <caret line="25" column="111" selection-start-line="25" selection-start-column="111" selection-end-line="25" selection-end-column="111" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>

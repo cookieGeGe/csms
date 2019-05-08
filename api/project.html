@@ -4,76 +4,78 @@
     <meta charset="UTF-8">
     <title>项目和项目进度API</title>
     <style type="text/css" media="screen">
-		div {
-			margin-top: 20px;
-			display: block;
-			margin-left: 0px;
-		}
-		div p {
-			margin-top: 15px;
-			margin-left: 50px;
-		}
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
         span {
             color: red;
         }
-	</style>
+    </style>
 </head>
 <body>
 <div>
-	<h4>创建项目图片分组：<span>已完成</span></h4>
-	<p>URL：/project/group/create;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int (0表示项目分组，1表示进度分组，以此类推，直到工资支付凭证)<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int（新建的时候创建分组CID填0）<br>
-    }<br></p>
+    <h4>创建项目图片分组：<span>已完成</span></h4>
+    <p>URL：/project/group/create;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int (0表示项目分组，1表示进度分组，以此类推，直到工资支付凭证)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 公司ID int（新建的时候创建分组CID填0）<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
 <div>
-	<h4>查询所有公司和公司负责人：<span>已完成</span></h4>
-	<p>URL：/project/companyinfo;</p>
-	<p>请求方式：GET; </p>
-	<p>请求参数：{}</p>
+    <h4>查询所有公司和公司负责人：<span>已完成</span></h4>
+    <p>URL：/project/companyinfo;</p>
+    <p>请求方式：GET; </p>
+    <p>请求参数：{}</p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'companyinfo':[{id:'',name:'', persons:[]},]}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
 <div>
-	<h4>获取项目分组含项目进度图片分组列表：<span>已完成</span></h4>
-	<p>URL：/project/group/list;</p>
-	<p>请求方式：GET; </p>
-	<p>请求参数：{<br>
+    <h4>获取项目分组含项目进度图片分组列表：<span>已完成</span></h4>
+    <p>URL：/project/group/list;</p>
+    <p>请求方式：GET; </p>
+    <p>请求参数：{<br>
         &nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int;<br>
         }</p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'group_list': {<br>
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       'project': [],  # 项目分组<br>
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       'progress': [],  # 进度分组<br>
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       'checkin': [],  # 签到合同分组<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'realname': [],  # 实名制分组<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'attendance': [],  # 考勤分组<br>
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       'payroll_account': [],  # 工资专户分组<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'rights_protection': [],  # 维权公示牌<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'salary': [],  # 工资公示牌<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'labor': [],  # 劳务专员<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'project_manager': [],  # 项目经理<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'arrears': [],  # 欠薪预案<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        'pay': [],  # 工资支付分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'project': [], # 项目分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'progress': [], # 进度分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'checkin': [], # 签到合同分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'realname': [], # 实名制分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'attendance': [], # 考勤分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'payroll_account': [], # 工资专户分组<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'rights_protection': [], # 维权公示牌<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'salary': [], # 工资公示牌<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'labor': [], # 劳务专员<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'project_manager': [], # 项目经理<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'arrears': [], # 欠薪预案<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'pay': [], # 工资支付分组<br>
 
-    &nbsp;&nbsp;&nbsp;&nbsp;    }}</p>
+        &nbsp;&nbsp;&nbsp;&nbsp; }}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
 <div>
-	<h4>上传图片列表：<span>已完成</span></h4>
-	<p>URL：/project/img/upload;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br>
+    <h4>上传图片列表：<span>已完成</span></h4>
+    <p>URL：/project/img/upload;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
         &nbsp;&nbsp;&nbsp;&nbsp;ID: 图片分组ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;IsCreate: 是否是新建 bool  新建项目/新建项目进度<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;ProgressID: 项目进度ID int   如果是新建项目则填0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;IsCreate: 是否是新建 bool 新建项目/新建项目进度<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProgressID: 项目进度ID int 如果是新建项目则填0<br>
         &nbsp;&nbsp;&nbsp;&nbsp;file: file<br>
         }</p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'companyinfo':[{id:'',name:'', persons:[]},]}</p>
@@ -81,26 +83,29 @@
 </div>
 
 <div>
-	<h4>新建项目：<span>已完成</span></h4>
-	<p>URL：/project/create;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br> 
+    <h4>新建项目：<span>已完成</span></h4>
+    <p>URL：/project/create;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Name: 项目名称 str<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Type:  项目类型 int  下拉框的次序，从0开始依次对应<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Type: 项目类型 int 下拉框的次序，从0开始依次对应<br>
         &nbsp;&nbsp;&nbsp;&nbsp;GuaranType: 担保类型 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Price: 中标价格 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Daration: 项目工期（月） int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;GAmount: 担保金额 str<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;PrinPical: 项目委托人  [{name:'', post:'', phone:''}] 如果没有则为空''<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PrinPical: 项目委托人 [{name:'', post:'', phone:''}] 如果没有则为空''<br>
         &nbsp;&nbsp;&nbsp;&nbsp;WagePercent: 农民工工资占比 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;StartTime: 开始时间 datetime<br>
         &nbsp;&nbsp;&nbsp;&nbsp;EndTime: 结束时间 datetime<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Address: 地址 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Build: 建设方公司ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Cons: 施工方公司ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;ConsManager: 施工方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;OwnerManager: 业主方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;LaborManager: 劳务专员 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ConsManager: 施工方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'，
+        phone:'负责人电话'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;OwnerManager: 业主方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'，
+        phone:'负责人电话'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;LaborManager: 劳务专员 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'，
+        phone:'负责人电话'}<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Supervisor: 监理负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Status: 状态 int<br>
@@ -118,49 +123,52 @@
 </div>
 
 <div>
-	<h4>删除项目：<span>已完成</span></h4>
-	<p>URL：/project/delete;</p>
-	<p>请求方式：delete; </p>
-	<p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int<br>
-    }<br></p>
+    <h4>删除项目：<span>已完成</span></h4>
+    <p>URL：/project/delete;</p>
+    <p>请求方式：delete; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
 <div>
-	<h4>查询单个项目：<span>已完成</span></h4>
-	<p>URL：/project/query;</p>
-	<p>请求方式：delete; </p>
-	<p>请求参数：{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int<br>
-    }<br></p>
+    <h4>查询单个项目：<span>已完成</span></h4>
+    <p>URL：/project/query;</p>
+    <p>请求方式：delete; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int<br>
+        }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!' 'project':{} }</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
 <div>
-	<h4>编辑项目：<span>已完成</span></h4>
-	<p>URL：/project/create;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br> 
-		&nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int<br>
+    <h4>编辑项目：<span>已完成</span></h4>
+    <p>URL：/project/create;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 项目ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Name: 项目名称 str<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Type:  项目类型 int  下拉框的次序，从0开始依次对应<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Type: 项目类型 int 下拉框的次序，从0开始依次对应<br>
         &nbsp;&nbsp;&nbsp;&nbsp;GuaranType: 担保类型 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Price: 中标价格 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Daration: 项目工期（月） int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;GAmount: 担保金额 str<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;PrinPical: 项目委托人  [{name:'', post:'', phone:''}] 如果没有则为空''<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PrinPical: 项目委托人 [{name:'', post:'', phone:''}] 如果没有则为空''<br>
         &nbsp;&nbsp;&nbsp;&nbsp;WagePercent: 农民工工资占比 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;StartTime: 开始时间 datetime<br>
         &nbsp;&nbsp;&nbsp;&nbsp;EndTime: 结束时间 datetime<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Address: 地址 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Build: 建设方公司ID int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Cons: 施工方公司ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;ConsManager: 施工方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;OwnerManager: 业主方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;LaborManager: 劳务专员 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ConsManager: 施工方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'，
+        phone:'负责人电话'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;OwnerManager: 业主方负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'，
+        phone:'负责人电话'}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;LaborManager: 劳务专员 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'，
+        phone:'负责人电话'}<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Supervisor: 监理负责人 {id:'公司ID'， name:'公司名字', pname：'负责人名字', post: '职位'， phone:'负责人电话'}<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Description: 备注 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Status: 状态 int<br>
@@ -178,42 +186,51 @@
 </div>
 
 <div>
-	<h4>添加项目进度：<span>已完成</span></h4>
-	<p>URL：/project/progress/create;</p>
-	<p>请求方式：POST; </p>
-	<p>请求参数：{<br> 
-		&nbsp;&nbsp;&nbsp;&nbsp;ProjectID: 项目ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Status:  项目状态 int  <br>
+    <h4>添加项目进度：<span>已完成</span></h4>
+    <p>URL：/project/progress/create;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectID: 项目ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Status: 项目状态 int <br>
         &nbsp;&nbsp;&nbsp;&nbsp;UploadTime: 项目进度时间 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Person: 询问人员 [{name:'',phone:'', time:'', class:''}]<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Remark: 备注 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Rtype: 监管类型 int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Contract: 是否与员工有合同  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Contract_list: 增加员工合同图片ID列表  []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Contract: 是否与员工有合同 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Contract_list: 增加员工合同图片ID列表 []如果没有则为空列表<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Content: 巡查情况 str<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;RealName: 是否是否实名制  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;RealName_list: 新增实名制图片ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Attend: 是否有考勤  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Attend_list: 新增考勤图片ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Wage: 是否建立工资专户  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Wage_list: 新增工资专户图片ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Rights: 是否有维权公示牌  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Rights_list: 新增维权公示牌ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Lwages: 是否有农民工工资公示牌  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Lwages_list: 新增农民工工资公示牌ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;LAB: 是否有劳务专员任命书  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;LAB_list: 新增劳务专员任命书ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;PAB: 是否有项目经理任命书  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;PAB_list: 新增项目经理任命书ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Arrears: 是否有欠薪预案  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;Arrears_list: 新增欠薪预案ID列表  []如果没有则为空列表<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;LPayCert: 是否有工资支付凭证  int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;LPayCert_list: 新增工资支付凭证ID列表  []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;RealName: 是否是否实名制 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;RealName_list: 新增实名制图片ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Attend: 是否有考勤 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Attend_list: 新增考勤图片ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Wage: 是否建立工资专户 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Wage_list: 新增工资专户图片ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Rights: 是否有维权公示牌 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Rights_list: 新增维权公示牌ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Lwages: 是否有农民工工资公示牌 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Lwages_list: 新增农民工工资公示牌ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;LAB: 是否有劳务专员任命书 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;LAB_list: 新增劳务专员任命书ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PAB: 是否有项目经理任命书 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PAB_list: 新增项目经理任命书ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Arrears: 是否有欠薪预案 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Arrears_list: 新增欠薪预案ID列表 []如果没有则为空列表<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;LPayCert: 是否有工资支付凭证 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;LPayCert_list: 新增工资支付凭证ID列表 []如果没有则为空列表<br>
         &nbsp;&nbsp;&nbsp;&nbsp;PPay: 进度款项 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;LPay: 农民工工资支付项 str<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Total: 总产值 str<br>
         }</p> 以上参数如无说明或者格式之外的限制的字段为空是为null
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>获取所有公司名称和ID：<span>已完成</span></h4>
+    <p>URL：/project/allproject;</p>
+    <p>请求方式：GET; </p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'list':[{id:'', name:''}]<br>
+        }</p>
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 

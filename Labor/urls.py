@@ -1,7 +1,6 @@
 from flask import Blueprint
 
 from Labor.views import CreateLabor, CreateLaborPicGroup, UpdateLabor, LaborInfo, QueryLabor, UploadLaborImg
-
 labor = Blueprint('labor', __name__)
 # 创建劳工
 labor.add_url_rule('/regist', methods=['post'], view_func=CreateLabor.as_view('create_labor'))

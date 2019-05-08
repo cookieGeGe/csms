@@ -1,7 +1,8 @@
 from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
-    ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery
+    ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery, \
+    ALLProjectID
 
 project = Blueprint('project', __name__)
 
@@ -27,3 +28,5 @@ project.add_url_rule('/group/list', methods=['get'], view_func=GetProgressGicLis
 project.add_url_rule('/img/upload', methods=['post'], view_func=UploadProjectIMG.as_view('upload_img'))
 # 主项目进度查询 - 还差发放情况没有统计
 project.add_url_rule('/search', methods=['get'], view_func=ProjectMainQuery.as_view('main_query'))
+# 获取所有项目列表
+project.add_url_rule('/allproject', methods=['get'], view_func=ALLProjectID.as_view('all_project'))
