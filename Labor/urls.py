@@ -13,4 +13,4 @@ labor.add_url_rule('/info', methods=['get'], view_func=LaborInfo.as_view('info_l
 # 劳工列表查询
 labor.add_url_rule('/query', methods=['get'], view_func=QueryLabor.as_view('query_labor'))
 # 上传劳工合同图片
-labor.add_url_rule('/uploadpic', methods=['POST'], view_func=UploadLaborImg.as_view('query_labor'))
+labor.add_url_rule('/uploadpic', methods=['POST'], view_func=UploadLaborImg.as_view('update_pic_labor'))

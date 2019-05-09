@@ -195,19 +195,19 @@ class QueryLabor(LaborBase):
             where_sql_list.append(r""" CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t4.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
-        if args.get('DID', 0):
+        if int(args.get('DID', 0)):
             where_sql_list.append(r""" t1.DID={} """.format(args.get('DID')))
-        if args.get('CID', 0):
+        if int(args.get('CID', 0)):
             where_sql_list.append(r""" t1.CID={} """.format(args.get('CID')))
-        if args.get('PID', 0):
+        if int(args.get('PID', 0)):
             where_sql_list.append(r""" t1.PID={} """.format(args.get('PID')))
-        if args.get('Isbad', 0):
+        if int(args.get('Isbad', 0)):
             where_sql_list.append(r""" t1.BadRecord != '0' """)
         if args.get('Name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('Name')))
         if args.get('IDCard', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.IDCard,''))='{}' """.format(args.get('IDCard')))
-        if args.get('Sex', 2) != 2:
+        if int(args.get('Sex', 2)) != 2:
             where_sql_list.append(r""" t1.Sex={} """.format(args.get('Sex')))
         if args.get('JobType', '') != '':
             where_sql_list.append(r""" t1.JobType='{}' """.format(args.get('JobType')))
@@ -220,7 +220,7 @@ class QueryLabor(LaborBase):
                 temp += 'and'
         page = int(args.get('Page', 1))
         psize = int(args.get('PageSize', 10))
-        limit_sql = r""" limit {},{};""".format(page * psize, psize)
+        limit_sql = r""" limit {},{};""".format((page-1) * psize, psize)
         query_sql = query_sql_base + " " + temp + limit_sql
         result = self._db.query(query_sql)
         labors = []

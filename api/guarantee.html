@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>省市区API</title>
+    <style type="text/css" media="screen">
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h4>创建反担保人：<span>已完成</span></h4>
+    <p>URL：/guarantee/cguarantee/create;</p>
+    <p>请求方式：GET; </p>
+    请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;GID: 保函ID int (新建时为0或者无此选项)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Name: 反担保人名字 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;IDCard: 反担保人身份证号码 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Address: 反担保人地址 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Phone: 反担保人电话 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Area: 房产面积 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Pvalue: 房产价值 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Proportion: 产权比例 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Paddress: 房产证地址 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;IDimg: 身份证图片 filelist<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Pimg: 房产证图片 filelist<br>
+    }<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', cguarantee:id<br>
+        }</p>
+</div>
+
+<div>
+    <h4>更新反担保人：<span>已完成</span></h4>
+    <p>URL：/guarantee/cguarantee/update;</p>
+    <p>请求方式：GET; </p>
+    请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;GID: 保函ID int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Name: 反担保人名字 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;IDCard: 反担保人身份证号码 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Address: 反担保人地址 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Phone: 反担保人电话 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Area: 房产面积 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Pvalue: 房产价值 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Proportion: 产权比例 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Paddress: 房产证地址 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;IDimg: 身份证图片 filelist 没有上传为空<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Pimg: 房产证图片 filelist 没有上传为空<br>
+    }<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>新建图片分组：<span>已完成</span></h4>
+    <p>URL：/guarantee/addgroup;</p>
+    <p>请求方式：POST; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Gtype: 图片分组类型 int 保函为0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 分组名称 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 劳工ID int（新建的时候创建分组CID填0）<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', id: 整数, name:'xxx'}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>新建保函：<span>已完成</span></h4>
+    <p>URL：/guarantee/create;</p>
+    <p>请求方式：get; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyID: 公司ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Capital: 注册资本 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Nature: 企业性质 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 保函名称 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Amount: 金额 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Kind: 保函种类 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectID: 项目ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Status: 状态 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Category: 担保类别 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Deadline: 保函期限 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Expiretime: 保函到期日 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Totalrate: 总费率 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Total: 总收费 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Real: 实际收费 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Marginratio: 保证金比例 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Margin: 保证金 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Bene: 受益人 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID: 省ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 市ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID: 区县ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Description: 描述 str<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>编辑保函：<span>已完成</span></h4>
+    <p>URL：/guarantee/update;</p>
+    <p>请求方式：get; </p>
+    <p>请求参数：{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 保函ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CompanyID: 公司ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Capital: 注册资本 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Nature: 企业性质 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Name: 保函名称 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Amount: 金额 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Kind: 保函种类 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ProjectID: 项目ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Status: 状态 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Category: 担保类别 int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Deadline: 保函期限 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Expiretime: 保函到期日 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Totalrate: 总费率 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Total: 总收费 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Real: 实际收费 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Marginratio: 保证金比例 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Margin: 保证金 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Bene: 受益人 str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID: 省ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 市ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID: 区县ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Description: 描述 str<br>
+        }<br></p>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+<div>
+    <h4>编辑保函：<span>已完成</span></h4>
+    <p>URL：/guarantee/query;</p>
+    <p>请求方式：get; </p>
+    <p>请求参数：<img src="args1.png"></p>
+    <p>成功返回值：<img src="json1.png"><img src="json2.png"></p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
+
+
+</body>
+</html>
