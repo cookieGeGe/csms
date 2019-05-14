@@ -36,11 +36,12 @@ class CreateGuarantee(GuaranteeBase):
     def views(self):
         args = self.args
         # 时间格式化
+        args['Expiretime'] = self.time_format(args['Expiretime'])
         args['Number'] = 'BSHS-' + str(int(time.time() * 1000))
         insert_sql = r"""insert into tb_guarantee(CompanyID,Capital, Nature,Name,Number,Amount,Kind,ProjectID,
-            Status,Category, Deadline, Expiretime,Totalrate,Total,Real,Marginratio,Margin,Bene,PID,CID,DID,Description)
+            Category, Deadline, Expiretime,Totalrate,Total,Real,Marginratio,Margin,Bene,PID,CID,DID,Description)
             value ({CompanyID},'{Capital}','{Nature}','{Name}','{Number}','{Amount}','{Kind}',{ProjectID},
-            {Status},{Category},'{Deadline}','{Expiretime}','{Totalrate}','{Total}','{Real}','{Marginratio}','{Margin}',
+            {Category},'{Deadline}','{Expiretime}','{Totalrate}','{Total}','{Real}','{Marginratio}','{Margin}',
             '{Bene}',{PID},{CID},{DID},'{Description}');""".format(**args)
         guarantee_id = self._db.query(insert_sql)
         if args.get('CGuarantee_list', []):
@@ -60,8 +61,17 @@ class QueryGuarantee(GuaranteeBase):
     def __init__(self):
         super(QueryGuarantee, self).__init__()
 
+    def admin(self):
+        query_sql = r"""select t2.* from tb_project as t1
+                        RIGHT JOIN tb_guarantee as t2 on t1.id = t2.ProjectID
+                        where t1.DID in ({})""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
+        return self.views()
+
     def views(self):
         args = self.args
+        args['StartTime'] = self.time_format(args['StartTime'])
+        args['EndTime'] = self.time_format(args['EndTime'])
         query_sql = r"""select t1.*, t2.name as CompanyName, t3.name as ProjectName, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
                         left join tb_company as t2 on t1.CompanyID=t2.id
                         LEFT JOIN tb_project as t3 on t1.ProjectID=t3.id
@@ -69,6 +79,8 @@ class QueryGuarantee(GuaranteeBase):
                         INNER JOIN tb_area as t5 on t1.CID = t5.id
                         INNER JOIN tb_area as t6 on t1.DID = t6.id"""
         where_list = []
+        if self.ids:
+            where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         for name in ('Number', 'Kind', 'Bene', 'Total'):
             if args.get(name, '') != '':
                 where_list.append(r""" CONCAT(IFNULL(t1.'{}','')) LIKE '%{}%' """.format(name, args.get(name)))
@@ -97,7 +109,7 @@ class QueryGuarantee(GuaranteeBase):
                     temp += 'and'
         page = int(args.get('Page', 1))
         psize = int(args.get('PageSize', 10))
-        limit_sql = r""" limit {},{};""".format((page-1) * psize, psize)
+        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql = query_sql + " " + temp + limit_sql
         result = self._db.query(query_sql)
         nowdate = datetime.datetime.now()
@@ -105,7 +117,8 @@ class QueryGuarantee(GuaranteeBase):
         for item in result:
             item['SignTime'] = item['SignTime'].strftime("%Y-%m-%d %H:%M:%S")
             item['Expiretime'] = item['Expiretime'].strftime("%Y-%m-%d %H:%M:%S")
-            item['IsExpire'] = '已过期' if datetime.datetime.strptime(item['Expiretime'], "%Y-%m-%d %H:%M:%S") > nowdate else '未过期'
+            item['IsExpire'] = '已过期' if datetime.datetime.strptime(item['Expiretime'],
+                                                                   "%Y-%m-%d %H:%M:%S") > nowdate else '未过期'
             item['Category'] = GKind[int(item['Category']) - 1]
             query_cg = r"""select * from tb_cguarantee where GID = {};""".format(item['ID'])
             item['CGuarantee'] = self._db.query(query_cg)
@@ -123,9 +136,10 @@ class UpdateGuarantee(GuaranteeBase):
     def views(self):
         args = self.args
         # 时间处理
+        args['Expiretime'] = self.time_format(args['Expiretime'])
         update_sql = r"""update tb_guarantee set CompanyID={CompanyID},Capital='{Capital}',Nature='{Nature}',Name='{Name}',
             Amount='{Amount}',Kind='{Kind}',ProjectID={ProjectID},
-            Status={Status},Category={Category}, Deadline='{Deadline}', Expiretime='{Expiretime}',Totalrate='{Totalrate}',
+            Category={Category}, Deadline='{Deadline}', Expiretime='{Expiretime}',Totalrate='{Totalrate}',
             Total='{Total}',Real='{Real}',Marginratio='{Marginratio}',Margin='{Margin}',Bene='{Bene}',PID={PID},CID={CID},
             DID={DID},Description='{Description}' where id={ID}""".format(**args)
         self._db.update(update_sql)

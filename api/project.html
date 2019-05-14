@@ -234,5 +234,24 @@
     <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
 </div>
 
+<div>
+    <h4>项目主查询：<span>已完成</span></h4>
+    <p>URL：/project/search;</p>
+    <p>请求方式：GET; </p>
+    <p>请求参数：{</p>
+    &nbsp;&nbsp;&nbsp;&nbsp;ProjectName: 项目名称 str 默认为空<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;CompanyName: 公司名称 str 默认为空<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;DID: 区县ID int 不选为0<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;CID: 城市ID int 不选为0<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;PID: 省ID int 不选为0<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Status: 项目状态 int 默认为0<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;WStatus: 工资发放状态 int 默认为0<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Page: 分页页数 int 默认为1<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;PageSize: 分页大小 int 默认为10<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'list':[{id:'', name:''}]<br>
+        }</p>
+    <p>失败返回值：{'code': 500xx, 'res': 0, 'msg': '错误消息！'}</p>
+</div>
+
 </body>
 </html>

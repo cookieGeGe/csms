@@ -5,7 +5,7 @@ from copy import deepcopy
 import os
 
 import random
-from flask import request, jsonify, sessions
+from flask import request, jsonify, session
 
 from APP.settings import upload_dir, BASE_DIR
 from Company.utils import create_random_str, update_pic_and_group
@@ -69,7 +69,7 @@ class DeletePicGroup(DelteBase):
         querysql = r"""select GUrl from {} where id={}""".format(self.table_name, ID)
         db_list = self._db.query(querysql)
         for item in db_list:
-            os.removedirs(os.path.join(BASE_DIR, item['GUrl']))
+            os.removedirs(BASE_DIR + item['GUrl'])
         delete_pics = r"""delete from tb_pics where GroupID={}""".format(ID)
         self._db.delete(delete_pics)
         delete_sql = r"""delete from {} where id={}""".format(self.table_name, ID)
@@ -96,7 +96,7 @@ class DeletePic(DelteBase):
         query_sql = r"""select purl from {} where id={};""".format(self.table_name, int(ID))
         pic_list = self._db.query(query_sql)
         for item in pic_list:
-            os.remove(os.path.join(BASE_DIR, item['purl']))
+            os.remove(BASE_DIR + item['purl'])
         delete_sql = r"""delete from {} where id={};""".format(self.table_name, int(ID))
         self._db.delete(delete_sql)
         return jsonify(status_code.SUCCESS)
@@ -105,7 +105,7 @@ class DeletePic(DelteBase):
 class GetGroupList(BaseView):
     """
     ptype:为012代表企业，项目，劳工
-    type：企业中用0表示公司执照，1表示公司图片
+    type：企业中用1表示公司执照，0表示公司图片
     """
 
     def __init__(self):
@@ -173,11 +173,17 @@ class GetCompanyList(BaseView):
 
     def __init__(self):
         super(GetCompanyList, self).__init__()
+        self.ids = []
 
     def administrator(self):
         return self.views()
 
     def admin(self):
+        query_sql = r"""select t2.ID from tb_project as t1
+                        INNER JOIN tb_company as t2 on t1.Build = t2.id
+                        INNER JOIN tb_company as t3 on t1.Cons = t3.id
+                        where t1.DID in ({})""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
         return self.views()
 
     def guest(self):
@@ -193,19 +199,24 @@ class GetCompanyList(BaseView):
             query_sql = r"""select * from tb_company where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'"""
         else:
             query_sql = r"""select * from tb_company where CONCAT(IFNULL(Legal,'')) LIKE '%{Name}%'"""
-        if args.get('PID', False):
+        if int(args.get('PID', 0)):
             query_sql += ' and ProvinceID={PID}'
-        if args.get('CID', False):
+        if int(args.get('CID', 0)):
             query_sql += ' and CityID={CID}'
-        if args.get('DID', False):
+        if int(args.get('DID', 0)):
             query_sql += ' and DistrictID={DID}'
-        if args.get('HasBadRecord', False):
+        if int(args.get('HasBadRecord', 2)) != 2:
             query_sql += ' and HasBadRecord=1'
+        if self.ids:
+            query_sql += r""" and ID in ({}) """.format(self.to_sql_where_id())
         query_sql += ' limit {0},{1};'
         start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
         query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
         result = self._db.query(query_sql)
         success = deepcopy(status_code.SUCCESS)
+        for item in result:
+            item['Phone'] = loads(item['Phone'])
+            item['License'] = loads(item['License'])
         success['company_list'] = result
         return jsonify(success)
 
@@ -279,8 +290,8 @@ class GetCompanyInfo(BaseView):
         if not result:
             return jsonify(status_code.GET_COMPANY_INFO_FAILD)
         result = result[0]
-        # result['Phone'] = loads(result['Phone'])
-        # result['License'] = loads(result['License'])
+        result['Phone'] = loads(result['Phone'])
+        result['License'] = loads(result['License'])
         success = deepcopy(status_code.SUCCESS)
         success['company_info'] = result
         return jsonify(success)

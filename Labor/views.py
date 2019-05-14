@@ -6,7 +6,6 @@ from flask import jsonify, request
 
 from Company.utils import update_pic_and_group
 from Company.views import CreatePicGroup
-from Guarantee.views import GetPicGroupList
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -37,6 +36,12 @@ class CreateLabor(LaborBase):
 
     def views(self):
         args = self.args
+        args['Birthday'] = self.time_format(args['Birthday'])
+        args['DepartureDate'] = self.time_format(args['DepartureDate'])
+        args['EntryDate'] = self.time_format(args['EntryDate'])
+        args['CreateTime'] = self.time_format(args[''])
+        args['SVP'] = self.time_format(args['SVP'])
+        args['EVP'] = self.time_format(args['EVP'])
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
                                    'IssueAuth', 'CompanyID', 'Birthday', 'Address')
         if isnull:
@@ -110,12 +115,19 @@ class CreateClass(LaborBase):
 
 
 class UpdateLabor(LaborBase):
+    """更新劳工信息"""
 
     def __init__(self):
         super(UpdateLabor, self).__init__()
 
     def views(self):
         args = self.args
+        args['Birthday'] = self.time_format(args['Birthday'])
+        args['DepartureDate'] = self.time_format(args['DepartureDate'])
+        args['EntryDate'] = self.time_format(args['EntryDate'])
+        args['CreateTime'] = self.time_format(args[''])
+        args['SVP'] = self.time_format(args['SVP'])
+        args['EVP'] = self.time_format(args['EVP'])
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
                                    'IssueAuth', 'CompanyID', 'Birthday', 'Address')
         if isnull:
@@ -183,6 +195,12 @@ class QueryLabor(LaborBase):
     def __init__(self):
         super(QueryLabor, self).__init__()
 
+    def admin(self):
+        """以项目ID为基准"""
+        query_sql = r"""select ID from tb_project where DID in ({})""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
+        return self.views()
+
     def views(self):
         args = self.args
         query_sql_base = r"""select t1.*, t2.ClassName as ClassName, t3.Name as ProjectName, t4.Name as CompanyName from 
@@ -191,6 +209,8 @@ class QueryLabor(LaborBase):
                                 left join tb_project as t3 on t1.projectid = t3.id
                                 left join tb_company as t4 on t1.CompanyID = t4.id"""
         where_sql_list = []
+        if self.ids:
+            where_sql_list.append(r""" t1.projectid in ({}) """.format(self.to_sql_where_id()))
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':
@@ -220,11 +240,13 @@ class QueryLabor(LaborBase):
                 temp += 'and'
         page = int(args.get('Page', 1))
         psize = int(args.get('PageSize', 10))
-        limit_sql = r""" limit {},{};""".format((page-1) * psize, psize)
+        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql = query_sql_base + " " + temp + limit_sql
         result = self._db.query(query_sql)
         labors = []
         for item in result:
+            for i in ('Birthday', 'DepartureDate', 'EntryDate', 'CreateTime', 'SVP', 'EVP'):
+                item[i] = self.time_to_str(item[i])
             item['BadRecord'] = loads(item['BadRecord'])
             labors.append(item)
         success = deepcopy(status_code.SUCCESS)
@@ -254,6 +276,9 @@ class LaborInfo(LaborBase):
         query_pic_group = r"""select * from tb_pic_group where cid={} and ptype=2;""".format(args.get('ID'))
         pic_group = self._db.query(query_pic_group)
         labor_info['BadRecord'] = loads(labor_info['BadRecord'])
+        # labor_info['Birthday'] = self.time_to_str(labor_info['Birthday'])
+        for i in ('Birthday', 'DepartureDate', 'EntryDate', 'CreateTime', 'SVP', 'EVP'):
+            labor_info[i] = self.time_to_str(labor_info[i])
         success = deepcopy(status_code.SUCCESS)
         success['labor'] = labor_info
         success['labor']['pic_group'] = pic_group
@@ -287,5 +312,3 @@ class UploadLaborImg(LaborBase):
         success['name'] = image_file.filename[:-4]
         success['url'] = iamge_url
         return jsonify(success)
-
-

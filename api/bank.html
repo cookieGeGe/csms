@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>银行管理API</title>
+    <style type="text/css" media="screen">
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h4>添加银行管理接口：<span>已完成</span></h4>
+    <p>URL：/bank/create;</p>
+    <p>请求方式：POST; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;ProjectID: 项目ID int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Status: 支付状态 int  （0-2：全额到，部分到，未发放）<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;WTime: 工资发放时间 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;RPay: 实际发放工资 str<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>添加银行管理接口：<span>已完成</span></h4>
+    <p>URL：/bank/query;</p>
+    <p>请求方式：GET; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Name: 项目名称 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Status: 支付状态 int  （0-3：全额到，部分到，未发放，所有状态）<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Page: 页数 int(默认为1)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Pagesize: 每页显示的大小 int（默认为10）<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}<img src="pic/login/bank_query.png"></p>
+</div>
+
+
+</body>
+</html>

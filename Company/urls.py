@@ -9,7 +9,7 @@ company.add_url_rule('/addgroup', methods=['post'], view_func=CreatePicGroup.as_
 # 删除图片分组 - 已测试
 company.add_url_rule('/deletepicgroup', methods=['delete'], view_func=DeletePicGroup.as_view('delete_pic_group'))
 # 删除图片 - 已测试
-company.add_url_rule('/picgroup', methods=['delete'], view_func=DeletePic.as_view('delete_pic'))
+company.add_url_rule('/deletepic', methods=['delete'], view_func=DeletePic.as_view('delete_pic'))
 # 获取分组列表 - 已测试
 company.add_url_rule('/getpicgroup', methods=['get'], view_func=GetGroupList.as_view('get_pic_group'))
 # 获取企业列表 - 已测试

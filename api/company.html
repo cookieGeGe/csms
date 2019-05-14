@@ -146,10 +146,10 @@
     <p>请求参数：{<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Type: 查找类型 int (0表示企业名称，1表示企业负责人)<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Name: 名称 str<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;PID: 省级ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;CID: 市级ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;DID: 区县级ID int<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 bool<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;PID: 省级ID int 默认为0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;CID: 市级ID int 不选为0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;DID: 区县级ID int 不选为0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord: 是否有不良记录 int 有为1，没有为0，不选为2<br>
         &nbsp;&nbsp;&nbsp;&nbsp;Page: 第几页 int<br>
         &nbsp;&nbsp;&nbsp;&nbsp;PageSize: 每页的大小 int<br>
         }<br></p>
@@ -189,9 +189,9 @@
 <div>
     <h4>查看单个图片（在劳工，保函，项目中共用）：<span>已完成</span></h4>
     <p>URL：/company/pic/getone;</p>
-    <p>请求方式：POST; </p>
+    <p>请求方式：get; </p>
     <p>请求参数：{<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;ID: 分组ID int<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID: 图片ID int<br>
         }<br></p>
     <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!', 'url':图片路径<br>
         }</p>

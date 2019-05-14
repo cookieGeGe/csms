@@ -32,6 +32,8 @@ class CreateProject(BaseView):
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
+        args['StartTime'] = self.time_format(args['StartTime'])
+        args['EndTime'] = self.time_format(args['EndTime'])
         args['Status'] = int(args['Status'])
         insert_sql = r"""insert into tb_project(name,type,guarantype,price,duration,gamount,prinpical,
             wagepercent,starttime,endtime,address,build,cons,consmanager,ownermanager,labormanager,supervisor,
@@ -68,6 +70,8 @@ class UpdateProject(BaseView):
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
+        args['StartTime'] = self.time_format(args['StartTime'])
+        args['EndTime'] = self.time_format(args['EndTime'])
         args['Status'] = int(args['Status'])
         if args.get('PrinPical', 'null') != 'null':
             args['PrinPical'] = dumps(args['PrinPical'])
@@ -132,6 +136,8 @@ class QueryProject(BaseView):
                             order by UploadTime""".format(self.args.get('ID'))
         progress_result = self._db.query(progress_sql)
         success = deepcopy(status_code.SUCCESS)
+        for i in ('StartTime', 'EndTime'):
+            result[i] = self.time_to_str(result[i])
         success['project'] = result
         success['progress'] = progress_result
         return jsonify(success)
@@ -169,6 +175,7 @@ class ProgressProject(BaseView):
             temp_key = group_list[int(item['type']) - 1] + '_list'
             result[temp_key].append(item)
         success = deepcopy(status_code.SUCCESS)
+        result['UploadTime'] = self.time_to_str(result['UploadTime'])
         success['progress_info'] = result
         return jsonify(success)
 
@@ -193,6 +200,7 @@ class ADDProgressProject(BaseView):
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
+        args['UploadTime'] = self.time_format(args['UploadTime'])
         query_sql = r"""select * from tb_project where id={};""".format(args.get('ProjectID'))
         result = self._db.query(query_sql)
         args['Person'] = dumps(args['Person'])
@@ -385,6 +393,9 @@ class UploadProjectIMG(BaseView):
 
 
 class ProjectMainQuery(BaseView):
+    """
+    项目查询，包括不良查询
+    """
 
     def __init__(self):
         super(ProjectMainQuery, self).__init__()
@@ -393,26 +404,33 @@ class ProjectMainQuery(BaseView):
         self.views()
 
     def admin(self):
+        query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
         self.views()
 
     def views(self):
         args = self.args
         query_sql_base = r"""select t1.*,t2.Name as CompanyName, count(t3.id) as Persons from tb_project as t1
                             left join tb_company as t2 on t2.id = t1.cons
-                            left join tb_laborinfo as t3 on t3.ProjectID = t1.id """
+                            left join tb_laborinfo as t3 on t3.ProjectID = t1.id 
+                            left join tb_wage as t4 on t4.ProjectID = t1.id """
         where_sql_list = []
+        if self.ids:
+            where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
-        if args.get('DID', 0):
-            where_sql_list.append(r""" t1.DID={} """.format(args.get('DID')))
-        if args.get('CID', 0):
-            where_sql_list.append(r""" t1.CID={} """.format(args.get('CID')))
-        if args.get('PID', 0):
-            where_sql_list.append(r""" t1.PID={} """.format(args.get('PID')))
-        if args.get('Status', 0):
-            where_sql_list.append(r""" t1.Status={} """.format(args.get('Status')))
+        if int(args.get('DID', 0)):
+            where_sql_list.append(r""" t1.DID={} """.format(int(args.get('DID'))))
+        if int(args.get('CID', 0)):
+            where_sql_list.append(r""" t1.CID={} """.format(int(args.get('CID'))))
+        if int(args.get('PID', 0)):
+            where_sql_list.append(r""" t1.PID={} """.format(int(args.get('PID'))))
+        if int(args.get('Status', 0)):
+            where_sql_list.append(r""" t1.Status={} """.format(int(args.get('Status'))))
+        if int(args.get('WStatus', 3)):
+            where_sql_list.append(r""" t4.Status={} """.format(int(args.get('WStatus'))))
         temp = ' where '
         for index, i in enumerate(where_sql_list):
             temp += i
@@ -435,6 +453,9 @@ class ProjectMainQuery(BaseView):
 
 
 class ALLProjectID(AllCompanyID):
+    """
+    获取所有项目的名称和ID
+    """
 
     def __init__(self):
         super(ALLProjectID, self).__init__()
