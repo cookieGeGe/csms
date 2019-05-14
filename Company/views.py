@@ -195,20 +195,35 @@ class GetCompanyList(BaseView):
             temp = args.get(i, None)
             if temp == None:
                 return jsonify(status_code.CONTENT_IS_NULL)
-        if int(args.get('Type')) == 0:
-            query_sql = r"""select * from tb_company where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'"""
+        if args.get('Name', '') != '':
+            if int(args.get('Type')) == 0:
+                query_sql = r"""select * from tb_company where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'"""
+            else:
+                query_sql = r"""select * from tb_company where CONCAT(IFNULL(Legal,'')) LIKE '%{Name}%'"""
         else:
-            query_sql = r"""select * from tb_company where CONCAT(IFNULL(Legal,'')) LIKE '%{Name}%'"""
+            query_sql = r"""select * from tb_company where """
+        where_sql_list = []
         if int(args.get('PID', 0)):
-            query_sql += ' and ProvinceID={PID}'
+            where_sql_list.append(' ProvinceID={PID} ')
         if int(args.get('CID', 0)):
-            query_sql += ' and CityID={CID}'
+            where_sql_list.append('  CityID={CID} ')
         if int(args.get('DID', 0)):
-            query_sql += ' and DistrictID={DID}'
+            where_sql_list.append('  DistrictID={DID} ')
         if int(args.get('HasBadRecord', 2)) != 2:
-            query_sql += ' and HasBadRecord=1'
+            where_sql_list.append(' HasBadRecord=1 ')
         if self.ids:
-            query_sql += r""" and ID in ({}) """.format(self.to_sql_where_id())
+            where_sql_list.append(r""" ID in ({}) """.format(self.to_sql_where_id()))
+        if args.get('Name', '') != '':
+            query_sql += ' and '
+            for index, item in enumerate(where_sql_list):
+                query_sql += item
+                if index < len(where_sql_list) - 1:
+                    query_sql += ' and '
+        else:
+            for index, item in enumerate(where_sql_list):
+                query_sql += item
+                if index < len(where_sql_list) - 1:
+                    query_sql += ' and '
         query_sql += ' limit {0},{1};'
         start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
         query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
@@ -312,22 +327,22 @@ class CreateCompany(BaseView):
         return self.admin()
 
     def views(self):
-        self.args['Phone'] = dumps(self.args['Phone'])
-        self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] else 0
-        file_list = request.files.get('License', [])
-        file_url_list = []
-        for image_file in file_list:
-            if os.name == 'nt':
-                file_url_list.append(save_image(image_file, r'static\\media\\company'))
-            else:
-                file_url_list.append(save_image(image_file, 'static/media/company'))
-        self.args['License'] = dumps(file_url_list)
+        # self.args['Phone'] = dumps(self.args['Phone'])
+        self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] == 'true' else 0
+        # file_list = request.files.get('License', [])
+        # file_url_list = []
+        # for image_file in file_list:
+        #     if os.name == 'nt':
+        #         file_url_list.append(save_image(image_file, r'static\\media\\company'))
+        #     else:
+        #         file_url_list.append(save_image(image_file, 'static/media/company'))
+        # self.args['License'] = dumps(file_url_list)
+        self.args['License'] = '[]'
         insert_sql = r"""insert into tb_company(Name, Legal,Address,Phone,License,Type,ProvinceID,CityID,DistrictID,
         BadRecord,HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','{License}',{Type},
         {ProvinceID},{CityID},{DistrictID}, '{BadRecord}', {HasBadRecord}, '{Description}')""".format(**self.args)
         cid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', cid, self.args.get('group_list', []), self._db)
-        update_pic_and_group('tb_pics', cid, self.args.get('pic_list', []), self._db)
         return jsonify(status_code.SUCCESS)
 
 
@@ -344,7 +359,7 @@ class UpdateCompany(BaseView):
     def views(self):
         query_sql = r"""select License from tb_company where id={}""".format(self.args.get('ID'))
         result = self._db.query(query_sql)[0]
-        self.args['Phone'] = dumps(self.args['Phone'])
+        # self.args['Phone'] = dumps(self.args['Phone'])
         self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] else 0
         file_list = request.files.get('License', [])
         file_url_list = []

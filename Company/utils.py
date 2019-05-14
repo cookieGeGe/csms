@@ -1,3 +1,5 @@
+from json import loads
+
 import random
 
 
@@ -9,9 +11,11 @@ def create_random_str(n):
     return random_str
 
 
-def update_pic_and_group(tbname, cid, id_list, db):
+def update_pic_and_group(tbname, cid, id_list, db, field='id'):
+    if isinstance(id_list, str):
+        id_list = loads(id_list)
     if id_list:
-        update_pic = r"""update {} set cid = {} where id in ({})""".format(tbname, cid, ','.join(
+        update_pic = r"""update {} set cid = {} where {} in ({})""".format(tbname, cid, field, ','.join(
             map(lambda item: str(item), id_list)))
         db.update(update_pic)
 
