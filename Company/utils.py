@@ -21,6 +21,7 @@ def update_pic_and_group(tbname, cid, id_list, db, field='id'):
 
 
 def update_progress_pic(progressid, id_list, db):
+    id_list = loads(id_list)
     if id_list:
         update_progress = r"""update tb_pics set progressid = {} where id in ({})""".format(progressid,
                                                                                             ','.join(map(

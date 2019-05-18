@@ -44,6 +44,7 @@ class CreatePicGroup(BaseView):
             random_url = create_random_str(random.randint(4, 10))
             dir_path = os.path.join(upload_dir, self.dir + random_url)
         os.makedirs(dir_path)
+        print(args)
         insert_group = r"""insert into tb_pic_group(Name,Type,Gurl, CID, Ptype) 
                                 value ('{Name}', {Gtype}, '{0}',{CID}, {1})""".format(
             self.db_dir + random_url, self.ptype, **args)
@@ -195,24 +196,32 @@ class GetCompanyList(BaseView):
             temp = args.get(i, None)
             if temp == None:
                 return jsonify(status_code.CONTENT_IS_NULL)
+        query_sql = r"""select t1.*, t4.Name as ProName, t5.Name as CityName, t6.Name as DisName from tb_company as t1
+                                INNER JOIN tb_area as t4 on t1.ProvinceID = t4.id
+                                INNER JOIN tb_area as t5 on t1.CityID = t5.id
+                                INNER JOIN tb_area as t6 on t1.DistrictID = t6.id"""
         if args.get('Name', '') != '':
             if int(args.get('Type')) == 0:
-                query_sql = r"""select * from tb_company where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'"""
+                query_sql += r""" where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'"""
             else:
-                query_sql = r"""select * from tb_company where CONCAT(IFNULL(Legal,'')) LIKE '%{Name}%'"""
-        else:
-            query_sql = r"""select * from tb_company where """
+                query_sql += r""" where CONCAT(IFNULL(Legal,'')) LIKE '%{Name}%'"""
         where_sql_list = []
         if int(args.get('PID', 0)):
-            where_sql_list.append(' ProvinceID={PID} ')
+            # args['PID'] = int(self.args['PID'])
+            where_sql_list.append(' ProvinceID={} '.format(int(self.args['PID'])))
         if int(args.get('CID', 0)):
-            where_sql_list.append('  CityID={CID} ')
+            # args['CID'] = int(self.args['CID'])
+            where_sql_list.append('  CityID={} '.format(int(self.args['CID'])))
         if int(args.get('DID', 0)):
-            where_sql_list.append('  DistrictID={DID} ')
+            # args['DID'] = int(self.args['DID'])
+            where_sql_list.append('  DistrictID={DID} '.format(int(self.args['DID'])))
         if int(args.get('HasBadRecord', 2)) != 2:
+            # args['HasBadRecord'] = int(args['HasBadRecord'])
             where_sql_list.append(' HasBadRecord=1 ')
         if self.ids:
             where_sql_list.append(r""" ID in ({}) """.format(self.to_sql_where_id()))
+        if where_sql_list:
+            query_sql += ' where '
         if args.get('Name', '') != '':
             query_sql += ' and '
             for index, item in enumerate(where_sql_list):
@@ -231,7 +240,8 @@ class GetCompanyList(BaseView):
         success = deepcopy(status_code.SUCCESS)
         for item in result:
             item['Phone'] = loads(item['Phone'])
-            item['License'] = loads(item['License'])
+
+            # item['License'] = loads(item['License'])
         success['company_list'] = result
         return jsonify(success)
 
@@ -296,7 +306,9 @@ class GetCompanyInfo(BaseView):
         ID = self.args.get('ID')
         if ID is None:
             return jsonify(status_code.ID_ERROR)
-        query_sql = r"""select t1.ID, t1.Address, t1.BadRecord,t1.Description, t1.Legal, t1.License, t1.HasBadRecord,t1.Name, t1.Phone, t1.Type,t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID from tb_company as t1
+        query_sql = r"""select t1.ID, t1.Address, t1.BadRecord,t1.Description, t1.Legal, t1.License, t1.HasBadRecord,
+                        t1.Name, t1.Phone, t1.Type,t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID, 
+                        t1.ProvinceID as province, t1.CityID as city, t1.DistrictID as district from tb_company as t1
                         LEFT JOIN tb_area as t2 on t1.ProvinceID = t2.ID
                         LEFT JOIN tb_area as t3 on t1.CityID = t3.ID
                         LEFT JOIN tb_area as t4 on t1.DistrictID = t4.ID
@@ -306,7 +318,7 @@ class GetCompanyInfo(BaseView):
             return jsonify(status_code.GET_COMPANY_INFO_FAILD)
         result = result[0]
         result['Phone'] = loads(result['Phone'])
-        result['License'] = loads(result['License'])
+        # result['License'] = loads(result['License'])
         success = deepcopy(status_code.SUCCESS)
         success['company_info'] = result
         return jsonify(success)
@@ -329,15 +341,15 @@ class CreateCompany(BaseView):
     def views(self):
         # self.args['Phone'] = dumps(self.args['Phone'])
         self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] == 'true' else 0
-        # file_list = request.files.get('License', [])
-        # file_url_list = []
-        # for image_file in file_list:
-        #     if os.name == 'nt':
-        #         file_url_list.append(save_image(image_file, r'static\\media\\company'))
-        #     else:
-        #         file_url_list.append(save_image(image_file, 'static/media/company'))
-        # self.args['License'] = dumps(file_url_list)
-        self.args['License'] = '[]'
+        file_list = request.files.get('License', '')
+        file_img_url = ''
+        if file_list != '':
+            if os.name == 'nt':
+                file_img_url = save_image(file_list, r'static\\media\\company')
+            else:
+                file_img_url = save_image(file_list, 'static/media/company')
+        self.args['License'] = file_img_url
+        # self.args['License'] = '[]'
         insert_sql = r"""insert into tb_company(Name, Legal,Address,Phone,License,Type,ProvinceID,CityID,DistrictID,
         BadRecord,HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','{License}',{Type},
         {ProvinceID},{CityID},{DistrictID}, '{BadRecord}', {HasBadRecord}, '{Description}')""".format(**self.args)
@@ -357,19 +369,18 @@ class UpdateCompany(BaseView):
         return self.views()
 
     def views(self):
-        query_sql = r"""select License from tb_company where id={}""".format(self.args.get('ID'))
+        query_sql = r"""select License from tb_company where id={}""".format(int(self.args.get('ID')))
         result = self._db.query(query_sql)[0]
         # self.args['Phone'] = dumps(self.args['Phone'])
-        self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] else 0
-        file_list = request.files.get('License', [])
-        file_url_list = []
-        for image_file in file_list:
+        self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] == 'true' else 0
+        file_list = request.files.get('License', '')
+        file_img_url = result['License']
+        if file_list != '':
             if os.name == 'nt':
-                file_url_list.append(save_image(image_file, r'static\\media\\company'))
+                file_img_url = save_image(file_list, r'static\\media\\company')
             else:
-                file_url_list.append(save_image(image_file, 'static/media/company'))
-        file_url_list += loads(result['License'])
-        self.args['License'] = dumps(file_url_list)
+                file_img_url = save_image(file_list, 'static/media/company')
+        self.args['License'] = file_img_url
         ID = self.args.get('ID')
         del self.args['ID']
         temp = ''
@@ -429,14 +440,66 @@ class AllCompanyID(BaseView):
         self.table = 'tb_company'
 
     def administrator(self):
-        self.views()
+        return self.views()
 
     def admin(self):
-        self.views()
+        query_sql = r"""select t2.ID from tb_project as t1
+                        INNER JOIN tb_company as t2 on t1.Build = t2.id
+                        INNER JOIN tb_company as t3 on t1.Cons = t3.id
+                        where t1.DID in ({})""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
+        return self.views()
+
+    def get_query_sql(self):
+        query_sql = r"""select ID,Name from {} """.format(self.table)
+        if self.ids:
+            query_sql += """ where ID in ({}) """.format(self.to_sql_where_id())
+        return query_sql
 
     def views(self):
-        query_sql = r"""select ID,Name from {};""".format(self.table)
+        query_sql = self.get_query_sql()
         result = self._db.query(query_sql)
         success = deepcopy(status_code.SUCCESS)
         success['list'] = result
-        return jsonify(result)
+        return jsonify(success)
+
+
+class QueryCompanyProject(BaseView):
+
+    def __init__(self):
+        super(QueryCompanyProject, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
+        return self.views()
+
+    def views(self):
+        args = self.args
+        query_sql = r"""select t1.ID,t1.Name,t1.Status from tb_project as t1
+                        LEFT JOIN tb_company as t2 on t1.Build = t2.ID or t1.Cons =t2.ID
+                        where t2.ID = {} """.format(int(args.get('ID')))
+        where_list = []
+        if self.ids:
+            where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
+        if args.get('CompanyName', '') != '':
+            where_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
+        if int(args.get('Status', 4)) != 4:
+            where_list.append(r""" t1.Status = {} """.format(int(args.get('Status'))))
+        if where_list:
+            query_sql += ' and '
+        for index, i in enumerate(where_list):
+            query_sql += i
+            if index < len(where_list) - 1:
+                query_sql += ' and '
+        page = int(args.get('Page', 1))
+        psize = int(args.get('PageSize', 10))
+        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
+        query_sql = query_sql + " " + limit_sql
+        result = self._db.query(query_sql.format(**args))
+        success = deepcopy(status_code.SUCCESS)
+        success['data'] = result
+        return jsonify(success)

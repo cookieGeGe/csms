@@ -5,7 +5,7 @@ from json import dumps, loads
 from flask import jsonify, request
 
 from Company.utils import update_pic_and_group
-from Company.views import CreatePicGroup
+from Company.views import CreatePicGroup, AllCompanyID
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -312,3 +312,22 @@ class UploadLaborImg(LaborBase):
         success['name'] = image_file.filename[:-4]
         success['url'] = iamge_url
         return jsonify(success)
+
+
+class AllLabor(AllCompanyID):
+
+    def __init__(self):
+        super(AllLabor, self).__init__()
+        self.table = 'tb_laborinfo'
+
+    def admin(self):
+        """以项目ID为基准"""
+        query_sql = r"""select ID from tb_project where DID in ({})""".format(self.get_session_ids())
+        self.ids = self.set_ids(query_sql)
+        return self.views()
+
+    def get_query_sql(self):
+        query_sql = r"""select ID,Name from {} """.format(self.table)
+        if self.ids:
+            query_sql += """ where ProjectID in ({}) """.format(self.to_sql_where_id())
+        return query_sql

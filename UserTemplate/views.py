@@ -1,3 +1,5 @@
+import datetime
+
 from copy import deepcopy
 
 import os
@@ -43,13 +45,14 @@ class CreateTemplate(TemplateBase):
                 os.makedirs(dir_path)
             # 因为上次的文件可能有重名，因此使用uuid保存文件
             file_name = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1]
-            template_file.save(dir_path, file_name)
-            file_url = '/static/template/' + filename
+            template_file.save(os.path.join(dir_path, file_name))
+            file_url = '/static/template/' + file_name
         return file_url
 
     def views(self):
         args = self.args
         success = deepcopy(status_code.SUCCESS)
+        args['Time'] = datetime.datetime.now()
         if 'ID' not in args.keys():
             """新建模板"""
             args['Number'] = 'MBBH-' + str(int(time.time() * 1000))
@@ -59,7 +62,7 @@ class CreateTemplate(TemplateBase):
                             ('{Name}', '{Time}', '{Description}', '{Number}', '{File}', {Type});""".format(**args)
             self._db.insert(insert_sql)
         else:
-            template_file = request.files.get('File')
+            template_file = request.files.get('File', '')
             args['File'] = self.save_file(template_file)
             if args['File'] == '':
                 update_sql = r"""update tb_template set Name='{Name}',
@@ -128,6 +131,7 @@ class QueryOneTemplate(TemplateBase):
         result = self._db.query(query_sql)
         success = deepcopy(status_code.SUCCESS)
         success['template'] = ''
-        if success['template']:
+        if result:
+            result[0]['Time'] = result[0]['Time'].strftime("%Y-%m-%d %H:%M:%S")
             success['template'] = result[0]
         return jsonify(success)

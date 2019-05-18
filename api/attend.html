@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>省市区API</title>
+    <style type="text/css" media="screen">
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h4>考勤导入：<span>已完成</span></h4>
+    <p>URL：/attend/import;</p>
+    <p>请求方式：post; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;file: 考勤模板文件（xlsx,xls,csv）<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>考勤查询：<span>已完成</span></h4>
+    <p>URL：/attend/import;</p>
+    <p>请求方式：GET; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;CompanyName: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;ProjectName: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;LaborName: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Month: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Page: 页数 int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;PageSize: 每页显示数量 int<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>具体月份考勤查询：<span>已完成</span></h4>
+    <p>URL：/attend/import;</p>
+    <p>请求方式：GET; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;laborid: 劳工ID int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;projectid: 项目ID int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;year: 年份 int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;month: 月份 int<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+
+<div>
+    <h4>获取历史薪资计算列表：<span>已完成</span></h4>
+    <p>URL：/attend/salary/query;</p>
+    <p>请求方式：GET; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;CompanyName: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;ProjectName: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;LaborName: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Month: 公司名称 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Page: 页数 int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;PageSize: 每页显示数量 int<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+<div>
+    <h4>获取薪资计算详情：<span>已完成</span></h4>
+    <p>URL：/attend/salary/info;</p>
+    <p>请求方式：GET; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;ID: 薪资计算表ID int<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+
+<div>
+    <h4>添加和编辑劳工薪资记录：<span>已完成</span></h4>
+    <p>URL：/attend/salary/create;</p>
+    <p>请求方式：post; </p>
+    <>请求参数：{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;laborid: 选择的劳工ID  int<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;status: 在场状态 直接文字，没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;swipe: 刷卡统计 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;manual: 手工合计 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;type: 计酬方式 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;unit: 单价 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;basicwage: 基本工资 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;overtime: 加班工资 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;subtotal: 小计 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;reward: 奖励 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;deduction: 扣款 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;total: 总计 没有就为空 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;time: 工资年月 str<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;is_create: 创建还是编辑，1表示是创建，0表示编辑 int<br>
+    <p>成功返回值：{'code': 0, 'res': 0, 'msg': '请求成功!'}</p>
+</div>
+
+</body>
+</html>
