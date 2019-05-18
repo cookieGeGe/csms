@@ -16,4 +16,4 @@ attend.add_url_rule('/salary/query', methods=['get'], view_func=QuerySalary.as_v
 # 获取薪资计算详情
 attend.add_url_rule('/salary/info', methods=['get'], view_func=GetOneSalary.as_view('info_salary'))
 # 创建和编辑薪资管理
-attend.add_url_rule('/salary/create', methods=['post'], view_func=ADDSalary.as_view('info_salary'))
+attend.add_url_rule('/salary/create', methods=['post'], view_func=ADDSalary.as_view('create_salary'))
