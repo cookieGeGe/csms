@@ -1,4 +1,5 @@
 import datetime
+from abc import ABCMeta, abstractmethod
 
 import xlrd
 from xlrd import xldate_as_datetime
@@ -6,9 +7,19 @@ from xlrd import xldate_as_datetime
 
 class TempColnames():
     ATTEND = ['name', 'idcard', 'atime', 'amin', 'amout', 'pmin', 'pmout']
+    COMPANY = ['Name', 'Leage', 'Address', 'Type', 'Province', 'City', 'District', 'Connection', 'Description',
+               'BadRecord']
+    PROJECT = ['Name', 'Type', 'GuaranType', '{Price}', 'Duration', 'GAmount', 'PrinPical', 'WagePercent', 'StartTime',
+               'EndTime', 'Address', 'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor',
+               'Description', 'Province', 'City', 'District']
+    LABOR = ['Name', 'Age', 'Sex', 'Birthday', 'Address', 'Nationality', 'IDCard', 'Phone', 'CompanyID', 'JobType',
+             'ClassID', 'DepartureDate', 'EntryDate', 'Hardhatnum', 'Education', 'CreateTime', 'ProjectID', 'IsPM',
+             'IssueAuth', 'Political', 'Train', 'EmerCon', 'Province', 'City', 'District', 'SVP', 'EVP', 'SuperiorsID',
+             'IsLeader', 'Remark', 'FeeStand', 'isFeeStand', 'Badrecord']
 
 
 class Data_Excel():
+
 
     def __init__(self, excel_file, col_names):
         self.file = excel_file
@@ -46,3 +57,46 @@ class Data_Excel():
                 yield app
         else:
             yield {}
+
+
+class ImportFileBase(metaclass=ABCMeta):
+
+    def __init__(self, files, colnames, db):
+        self.colnames = colnames
+        self.db = db
+        self.file = files
+        self.insert_sql = r""""""
+        self.file_data = Data_Excel(self.file, self.colnames)
+        self.item = {}
+        self.bad_info = []
+        self.total_bad = 0
+
+    @abstractmethod
+    def check_field(self):
+        pass
+
+    @abstractmethod
+    def check_mysql(self):
+        pass
+
+    @property
+    def bad_list(self):
+        return self.bad_info, self.total_bad
+
+    def save(self):
+        for item in self.file_data.excel_data():
+            self.item = item
+            try:
+                check_field = self.check_field()
+                check_mysql = self.check_mysql()
+                if check_mysql or check_field:
+                    if len(self.bad_info) < 20:
+                        self.bad_info.append(item.get('Name'))
+                    self.total_bad += 1
+                    continue
+                self.db.insert(self.insert_sql.format(**item))
+            except:
+                if len(self.bad_info) < 20:
+                    self.bad_info.append(item.get('Name'))
+                self.total_bad += 1
+                continue

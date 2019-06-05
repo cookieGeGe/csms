@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from User.permission_view import Permission
-from User.views import UserLogin, UserRegist, UserDelete, StopUser, UserLogout, UpdateUser, QueryUser
+from User.views import UserLogin, UserRegist, UserDelete, StopUser, UserLogout, UpdateUser, QueryUser, GetAllPermission
 
 user = Blueprint('user', __name__)
 
@@ -13,3 +13,4 @@ user.add_url_rule('/down', methods=['GET', ], view_func=StopUser().as_view('stop
 user.add_url_rule('/permission', methods=['POST', ], view_func=Permission().as_view('permission'))
 user.add_url_rule('/update', methods=['POST', ], view_func=UpdateUser.as_view('update_user'))
 user.add_url_rule('/query', methods=['GET', ], view_func=QueryUser.as_view('query_user'))
+user.add_url_rule('/permission/get', methods=['GET', ], view_func=GetAllPermission.as_view('user_get_primission'))

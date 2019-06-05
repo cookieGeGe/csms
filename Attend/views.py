@@ -1,3 +1,5 @@
+import datetime
+
 from copy import deepcopy
 
 from flask import jsonify, request
@@ -82,14 +84,17 @@ class QueryAttend(AttendBase):
 
     def views(self):
         args = self.args
-        query_sql = r"""select t1.ID,t1.Name,t1.JobType,t1.IDCard,t1.ProjectID,t2.Name as CompanyName,t3.Name as ProjectName,
-                t4.Count,t4.year,t4.month from tb_laborinfo as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.JobType,t1.IDCard,t1.Avatar,t1.ProjectID,t2.Name as CompanyName,t3.Name as ProjectName,
+                t4.Count,t4.year,t4.month,t5.ClassName,t1.CompanyID from tb_laborinfo as t1
                 left join tb_company as t2 on t2.ID = t1.CompanyID
                 left JOIN tb_project as t3 on t3.ID = t1.ProjectID
+				left join tb_class as t5 on t5.id = t1.classid
                 left JOIN (select laborid,year,month,count(id) as Count from tb_attendance GROUP BY laborid,year,month )
                  as t4 on t4.laborid = t1.id"""
         where_sql = []
-        if self.ids:
+        if self.ids != None:
+            if not self.ids:
+                self.ids = [0, ]
             where_sql.append(r""" t1.ProjectID in ({}) """.format(self.to_sql_where_id()))
         if args.get('CompanyName', '') != '':
             where_sql.append(r"""  CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
@@ -98,7 +103,7 @@ class QueryAttend(AttendBase):
         if args.get('LaborName', '') != '':
             where_sql.append(r"""  CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('LaborName')))
         if args.get('Month', '') != '':
-            query_time = str_to_datetime(args.get('Month'))
+            query_time = datetime.datetime.strptime(args.get('Month'), "%Y-%m")
             where_sql.append(r""" t4.year = {} and t4.month = {}""".format(query_time.year, query_time.month))
         temp = ''
         if where_sql:
@@ -112,8 +117,10 @@ class QueryAttend(AttendBase):
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql_main = query_sql + " " + temp + limit_sql
         result = self._db.query(query_sql_main)
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         success = deepcopy(status_code.SUCCESS)
         success['Attend'] = result
+        success['total'] = total[0]['total_row']
         return jsonify(success)
 
 
@@ -124,8 +131,10 @@ class QueryAttendInfo(AttendBase):
 
     def views(self):
         args = self.args
-        query_sql = r"""select * from tb_attendance where laborid={laborid} and projectid ={projectid}
-                        and year={year} and month ={month} order by day;""".format(**args)
+        query_sql = r"""select t1.*, t2.Name, t2.IDCard from tb_attendance as t1 left join tb_laborinfo as t2 on t1.laborid = t2.id where t1.laborid={}
+                        and t1.year={} and t1.month ={} order by t1.day;""".format(int(args.get('Id')),
+                                                                                   args.get('year'),
+                                                                                   args.get('month'))
         result = self._db.query(query_sql)
         temp_data = []
         for item in result:
@@ -140,7 +149,7 @@ class QueryAttendInfo(AttendBase):
             item['miss'] = '缺考' if is_miss else '无缺考'
             temp_data.append(item)
         success = deepcopy(status_code.SUCCESS)
-        success['Attend_info'] = temp_data
+        success['data'] = temp_data
         return jsonify(success)
 
 
@@ -154,22 +163,58 @@ class QuerySalary(AttendBase):
         self.ids = self.set_ids(query_sql)
         return self.views()
 
+    def get_info(self, laborid, year, month):
+        query_sql = r"""select t1.IDCard, t1.JobType,t1.Name,t1.Feestand, t1.isFeeStand, t4.swipe from tb_laborinfo as t1
+                        left JOIN (select laborid,year,month,count(id) as swipe from tb_attendance where year = {} and month = {} GROUP BY laborid,year,month )
+                          as t4 on t4.laborid = t1.id where t1.id={};""".format(
+            year, month, laborid)
+        result = self._db.query(query_sql)
+        data = {}
+        if result:
+            data = result[0]
+        newdata = {
+            "laborid": laborid,
+            "status": 0,
+            "manual": 0,
+            "type": "天",
+            "unit": 0,
+            "basicwage": 0,
+            "overtime": 0,
+            "subtotal": 0,
+            "reward": 0,
+            "deduction": 0,
+            "total": 0,
+            "id": 0,
+            "month": month,
+            "year": year,
+            "time": str(year) + "-" + str(month)
+        }
+        data.update(newdata)
+        return [data, ]
+
     def views(self):
         args = self.args
-        query_sql = r"""select t1.*,t2.IDCard,t2.JobType,t2.Name from tb_salary as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*,t2.IDCard,t2.JobType,t2.Name,t2.FeeStand,t2.isFeeStand from tb_salary as t1
                         left join tb_laborinfo as t2 on t1.laborid = t2.id"""
         where_sql = []
-        if self.ids:
+        if self.ids != None:
+            if not self.ids:
+                self.ids = [0, ]
             where_sql.append(r""" t2.ProjectID in ({}) """.format(self.to_sql_where_id()))
-        if args.get('CompanyName', '') != '':
-            where_sql.append(r"""  CONCAT(IFNULL(t1.companyname,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
-        if args.get('ProjectName', '') != '':
-            where_sql.append(r"""  CONCAT(IFNULL(t1.projectname,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
-        if args.get('LaborName', '') != '':
-            where_sql.append(r"""  CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('LaborName')))
+        if int(args.get('ID', 0)) == 0:
+            if args.get('CompanyName', '') != '':
+                where_sql.append(
+                    r"""  CONCAT(IFNULL(t1.companyname,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
+            if args.get('ProjectName', '') != '':
+                where_sql.append(
+                    r"""  CONCAT(IFNULL(t1.projectname,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
+            if args.get('LaborName', '') != '':
+                where_sql.append(r"""  CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('LaborName')))
+        else:
+            where_sql.append(r""" t1.laborid = {} """.format(int(args.get('ID'))))
         if args.get('Month', '') != '':
-            query_time = str_to_date(args.get('Month'))
-            where_sql.append(r""" t1.year = {} and t2.month = {}""".format(query_time.year, query_time.month))
+            query_time = datetime.datetime.strptime(args.get('Month'), "%Y-%m")
+            where_sql.append(r""" t1.year = {} and t1.month = {}""".format(query_time.year, query_time.month))
         temp = ''
         if where_sql:
             temp = ' where '
@@ -182,8 +227,12 @@ class QuerySalary(AttendBase):
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql_main = query_sql + " " + temp + limit_sql
         result = self._db.query(query_sql_main)
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
+        if int(args.get('ID', 0)) != 0 and not result:
+            result = self.get_info(int(args.get('ID')), query_time.year, query_time.month)
         success = deepcopy(status_code.SUCCESS)
-        success['Salary'] = result
+        success['data'] = result
+        success['total'] = total[0]['total_row']
         return jsonify(success)
 
 
@@ -201,22 +250,34 @@ class ADDSalary(AttendBase):
         result = self._db.query(query_sql)[0]
         args['companyname'] = result['companyname']
         args['projectname'] = result['projectname']
-        save_date = str_to_date(args.get('time'))
+        save_date = datetime.datetime.strptime(args.get('time'), "%Y-%m")
         args['year'] = save_date.year
         args['month'] = save_date.month
-        if int(args.get('is_create', 1)):
+        query_is_in = r"""select id from tb_salary where laborid={} and year={} and month={}""".format(
+            args.get('laborid'), args.get('year'), args.get('month'))
+
+        temp_result = self._db.query(query_is_in)
+        if temp_result:
+            args['id'] = temp_result[0]['id']
+            # print(1)
+            # return jsonify(status_code.BANK_INFO_EXISTS)
+        if int(args.get('id', 0)) == 0:
+            temp_res = '新建成功'
             insert_sql = r"""insert into tb_salary(laborid,status,swipe,manual,type,unit,basicwage,overtime,subtotal,reward,
-                deduction, total,projectname,companyname,year,month) value ({laborid},'{status}','{swipe}','{manual}',
-                '{type}','{unit}','{basicwage}','{overtime}','{subtotal}','{reward}','{deduction}','{total}',
+                deduction, total,projectname,companyname,year,month) value ({laborid},'在场','{swipe}','{manual}',
+                '天','{unit}','{basicwage}','{overtime}','{subtotal}','{reward}','{deduction}','{total}',
                 '{projectname}','{companyname}','{year}','{month}')""".format(**args)
             self._db.insert(insert_sql)
         else:
-            update_sql = r"""update tb_salary set laborid={laborid},status='{status}', swipe='{swipe}', manual='{manual}',
-                type='{type}', unit='{unit}',basicwage='{basicwage}', overtime='{overtime}', subtotal='{subtotal}',
+            temp_res = '编辑成功'
+            update_sql = r"""update tb_salary set laborid={laborid},status='在场', swipe='{swipe}', manual='{manual}',
+                type='天', unit='{unit}',basicwage='{basicwage}', overtime='{overtime}', subtotal='{subtotal}',
                 reward='{reward}', deduction='{deduction}', total='{total}', projectname='{projectname}', 
                 companyname='{companyname}', year='{year}', month='{month}' where id={id};""".format(**args)
             self._db.update(update_sql)
-        return jsonify(status_code.SUCCESS)
+        success = deepcopy(status_code.SUCCESS)
+        success['msg'] = temp_res
+        return jsonify(success)
 
 
 class GetOneSalary(AttendBase):

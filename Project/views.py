@@ -1,3 +1,4 @@
+import datetime
 from json import loads, dumps
 
 from copy import deepcopy
@@ -19,6 +20,7 @@ class CreateProject(BaseView):
 
     def __init__(self):
         super(CreateProject, self).__init__()
+        self.api_permission = 'project_edit'
 
     def administrator(self):
         return self.views()
@@ -47,8 +49,10 @@ class CreateProject(BaseView):
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = deepcopy(self.args)
-        args['StartTime'] = str_to_date(args['StartTime'])
-        args['EndTime'] = str_to_date(args['EndTime'])
+        if args['StartTime'] != '':
+            args['StartTime'] = str_to_date(args['StartTime'])
+        if args['EndTime'] != '':
+            args['EndTime'] = str_to_date(args['EndTime'])
         args['Status'] = int(args['Status'])
         # for i in ('ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor'):
         args['ConsManager'] = self.get_person_info(loads(args['ConsManager']))
@@ -58,15 +62,15 @@ class CreateProject(BaseView):
         insert_sql = r"""insert into tb_project(name,type,guarantype,price,duration,gamount,prinpical,
             wagepercent,starttime,endtime,address,build,cons,consmanager,ownermanager,labormanager,supervisor,
             description,status,pid,cid,did,total,totalpay,issue) value('{Name}', {Type}, {GuaranType}, '{Price}', 
-            {Daration}, '{GAmount}', {PrinPical}, '{WagePercent}', '{StartTime}', '{EndTime}', '{Address}', {Build},
-            {Build}, {ConsManager}, {OwnerManager}, {LaborManager}, {Supervisor},'{Description}', {Status},
+            {Duration}, '{GAmount}', '{PrinPical}', '{WagePercent}', '{StartTime}', '{EndTime}', '{Address}', {Build},
+            {Cons}, {ConsManager}, {OwnerManager}, {LaborManager}, {Supervisor},'{Description}', {Status},
             {PID},{CID},{DID},'{Total}', '{TotalPay}', '{Issue}')"""
-        if args.get('PrinPical', 'null') != 'null':
-            args['PrinPical'] = dumps(args['PrinPical'])
+        # if args.get('PrinPical', 'null') != 'null':
+        #     args['PrinPical'] = dumps(args['PrinPical'])
         for i in ('ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor'):
             args[i] = dumps(args[i])
         project_id = self._db.insert(insert_sql.format(**args))
-        update_pic_and_group('tb_pic_group', project_id, self.args.get('Group_list'), self._db)
+        update_pic_and_group('tb_pic_group', project_id, self.args.get('group_list'), self._db)
         # update_pic_and_group('tb_pics', project_id, self.args.get('Img_list'), self._db)
         return jsonify(status_code.SUCCESS)
 
@@ -76,6 +80,7 @@ class UpdateProject(BaseView):
 
     def __init__(self):
         super(UpdateProject, self).__init__()
+        self.api_permission = 'project_edit'
 
     def administrator(self):
         return self.views()
@@ -84,38 +89,40 @@ class UpdateProject(BaseView):
         return self.views()
 
     def get_person_info(self, person):
-        query_sql = r"""select id,name,phone where tb_company where id={}""".format(int(person.get('ID')))
+        query_sql = r"""select id,name,phone from tb_company where id={}""".format(int(person.get('id')))
         result = self._db.query(query_sql)
         temp = {}
         if result:
             temp['id'] = result[0]['id']
             temp['name'] = result[0]['name']
             for item in loads(result[0]['phone']):
-                if item['name'] == result[0]['name']:
+                if item['name'] == person['name']:
                     temp['pname'] = item['name']
                     temp['post'] = item['post']
                     temp['phone'] = item['phone']
         return dumps(temp)
 
     def views(self):
-        isnull = self.args_is_null('Name', 'Type', 'GuanranType', 'Price', 'PID', 'CID', 'DID',
+        isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager',
                                    'Supervisor')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
-        args['StartTime'] = self.time_format(args['StartTime'])
-        args['EndTime'] = self.time_format(args['EndTime'])
+        print(args)
+        args['StartTime'] = str_to_date(args['StartTime'])
+        args['EndTime'] = str_to_date(args['EndTime'])
         args['Status'] = int(args['Status'])
-        if args.get('PrinPical', 'null') != 'null':
-            args['PrinPical'] = dumps(args['PrinPical'])
+        # if args.get('PrinPical', 'null') != 'null':
+        #     args['PrinPical'] = loads(args['PrinPical'])
         for i in ('ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor'):
             args[i] = self.get_person_info(loads(args[i]))
+        print(args)
         update_sql = r"""update tb_project set Name='{Name}',Type={Type}, GuaranType={GuaranType},Price='{Price}',
-                Daration={Daration},GAmount='{GAmount}',PrinPical='{PrinPical}',WagePercent='{WagePercent}',Status={Status}
+                Duration={Duration},GAmount='{GAmount}',PrinPical='{PrinPical}',WagePercent='{WagePercent}',Status={Status},
                 StartTime='{StartTime}', EndTime='{EndTime}',Address='{Address}',Build={Build},Build={Build},
                 ConsManager='{ConsManager}',OwnerManager='{OwnerManager}',LaborManager='{LaborManager}',
-                Supervisor='{Supervisor}', Description='{Description}', Status={Status},PID={PID},CID={CID},DID={DID},
+                Supervisor='{Supervisor}', Description='{Description}', PID={PID},CID={CID},DID={DID},
                 Total='{Total}',TotalPay='{TotalPay}',Issue='{Issue}' WHERE ID={ID}""".format(**args)
         self._db.update(update_sql)
         return jsonify(status_code.SUCCESS)
@@ -157,24 +164,118 @@ class QueryProject(BaseView):
     def admin(self):
         return self.views()
 
+    def calc_month(self, nowtime, oldtime):
+        nowyear = nowtime.year
+        oldyear = oldtime.year
+        nowmonth = nowtime.month
+        oldmonth = oldtime.month
+        return (nowyear - oldyear) * 12 + (nowmonth - oldmonth)
+
     def views(self):
         if self.args_is_null('ID'):
             return jsonify(status_code.CONTENT_IS_NULL)
-        query_sql = r"""select * from tb_project where id={}""".format(self.args.get('ID'))
+        query_sql = r"""select t1.*,t2.Name as PID_Name,t3.Name as CID_Name,t4.Name as DID_Name from tb_project as t1
+                        LEFT JOIN tb_area as t2 on t1.PID = t2.ID
+                        LEFT JOIN tb_area as t3 on t1.CID = t3.ID
+                        LEFT JOIN tb_area as t4 on t1.DID = t4.ID
+                        where t1.id={}""".format(self.args.get('ID'))
         result = self._db.query(query_sql)[0]
         if result.get('PrinPical', 'null') != 'null':
-            result['PrinPical'] = dumps(result['PrinPical'])
+            result['PrinPical'] = loads(result['PrinPical'])
         for i in ('ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor'):
             result[i] = loads(result[i])
         progress_sql = r"""select ID,ProjectID,UploadTime from tb_progress where ProjectID={} 
                             order by UploadTime""".format(self.args.get('ID'))
+        query_sql = r"""select count(id) as persons from tb_laborinfo where ProjectID = {}""".format(self.args['ID'])
+        persons = self._db.query(query_sql)[0]
+        result['Persons'] = persons['persons']
+        result['NowTime'] = self.calc_month(datetime.datetime.now(), result['StartTime'])
         progress_result = self._db.query(progress_sql)
         success = deepcopy(status_code.SUCCESS)
+        for x in ('PID', 'CID', 'DID'):
+            if result[x] is None:
+                result[x] = ''
+            if result[x + '_Name'] is None:
+                result[x + '_Name'] = ''
+        All_year_month = self.create_all_month(result['StartTime'], result['EndTime'])
         for i in ('StartTime', 'EndTime'):
             result[i] = result[i].strftime("%Y-%m-%d")
+        now_time = datetime.datetime.now()
         success['project'] = result
-        success['progress'] = progress_result
+        success['all_year'] = list(All_year_month.keys())
+        success['progress'] = []
+        if progress_result:
+            total = len(progress_result)
+            for pindex, gress in enumerate(progress_result):
+                temp_year = gress['UploadTime'].year
+                temp_month = gress['UploadTime'].month
+                for index, item in enumerate(All_year_month[str(temp_year)]):
+                    if item['month'] == temp_month:
+                        All_year_month[str(temp_year)][index]['is_input'] = 1
+                        All_year_month[str(temp_year)][index]['id'] = gress['ID']
+                    if temp_year == now_time.year and item['month'] == now_time.month:
+                        All_year_month[str(temp_year)][index]['is_now_month'] = 1
+                    if pindex == total - 1 and item['month'] == temp_month:
+                        All_year_month[str(temp_year)][index]['is_current'] = 1
+                gress['Year'] = temp_year
+                gress['Month'] = temp_month
+                gress['UploadTime'] = gress['UploadTime'].strftime("%Y-%m-%d")
+            success['progress'] = self.get_default_progress(progress_result[-1]['ID'])
+        success['year_month_info'] = All_year_month
         return jsonify(success)
+
+    def get_temp(self, i):
+        return {
+            'month': i,
+            'id': 0,
+            'is_input': 0,
+            'is_now_month': 0,
+            'is_current': 0,
+        }
+
+    def create_all_month(self, start_time, end_time):
+        start_year, end_year = start_time.year, end_time.year
+        start_month, end_month = start_time.month, end_time.month
+        all_month = {}
+        if start_year == end_year:
+            all_month[str(start_year)] = []
+            for i in range(start_month, end_month + 1):
+                temp = self.get_temp(i)
+                all_month[str(start_year)].append(temp)
+        else:
+            for temp_year in range(start_year, end_year + 1):
+                all_month[str(temp_year)] = []
+                if temp_year == start_year:
+                    for i in range(start_month, 13):
+                        temp = self.get_temp(i)
+                        all_month[str(temp_year)].append(temp)
+                elif temp_year == end_year:
+                    for i in range(1, end_month + 1):
+                        temp = self.get_temp(i)
+                        all_month[str(temp_year)].append(temp)
+                else:
+                    for i in range(1, 13):
+                        temp = self.get_temp(i)
+                        all_month[str(temp_year)].append(temp)
+        return all_month
+
+    def get_default_progress(self, progressid):
+        query_sql = r"""select * from tb_progress where id = {}""".format(progressid)
+        result = self._db.query(query_sql)[0]
+        result['Person'] = loads(result['Person'])
+        query_all_pics = r"""select * from tb_pics where progressid={} and ptype=1 
+                        and type>0;""".format(progressid)
+        pics_result = self._db.query(query_all_pics)
+        group_list = ['Progress', 'Contract', 'RealName', 'Attend', 'Wage', 'Rights',
+                      'Lwages', 'LAB', 'PAB', 'Arrears', 'LPayCert']
+        for i in group_list:
+            temp = i + '_list'
+            result[temp] = []
+        for item in pics_result:
+            temp_key = group_list[int(item['Type']) - 1] + '_list'
+            result[temp_key].append(item)
+        result['UploadTime'] = result['UploadTime'].strftime("%Y-%m-%d")
+        return result
 
 
 class ProgressProject(BaseView):
@@ -195,21 +296,23 @@ class ProgressProject(BaseView):
         if self.args_is_null('ProgressID'):
             return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select * from tb_progress where id = {}""".format(self.args.get('ProgressID'))
-        result = self._db.query(query_sql)[0]
-        result['Person'] = loads(result['Person'])
-        query_all_pics = r"""select * from tb_pics where progressid={} and ptype=1 
-                and type>0;""".format(self.args.get('ProgressID'))
-        pics_result = self._db.query(query_all_pics)
-        group_list = ['Progress', 'Contract', 'RealName', 'Attend', 'Wage', 'Rights',
-                      'Lwages', 'LAB', 'PAB', 'Arrears', 'LPayCert']
-        for i in group_list:
-            temp = i + '_list'
-            result[temp] = []
-        for item in pics_result:
-            temp_key = group_list[int(item['type']) - 1] + '_list'
-            result[temp_key].append(item)
+        result = self._db.query(query_sql)
+        if result:
+            result = result[0]
+            result['Person'] = loads(result['Person'])
+            query_all_pics = r"""select * from tb_pics where progressid={} and ptype=1 
+                    and type>0;""".format(self.args.get('ProgressID'))
+            pics_result = self._db.query(query_all_pics)
+            group_list = ['Progress', 'Contract', 'RealName', 'Attend', 'Wage', 'Rights',
+                          'Lwages', 'LAB', 'PAB', 'Arrears', 'LPayCert']
+            for i in group_list:
+                temp = i + '_list'
+                result[temp] = []
+            for item in pics_result:
+                temp_key = group_list[int(item['Type']) - 1] + '_list'
+                result[temp_key].append(item)
+            result['UploadTime'] = result['UploadTime'].strftime("%Y-%m-%d")
         success = deepcopy(status_code.SUCCESS)
-        result['UploadTime'] = self.time_to_str(result['UploadTime'])
         success['progress_info'] = result
         return jsonify(success)
 
@@ -221,6 +324,7 @@ class ADDProgressProject(BaseView):
 
     def __init__(self):
         super(ADDProgressProject, self).__init__()
+        self.api_permission = 'project_edit'
 
     def administrator(self):
         return self.views()
@@ -235,8 +339,12 @@ class ADDProgressProject(BaseView):
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
         args['UploadTime'] = str_to_date(args['UploadTime'])
+        args['year'] = args['UploadTime'].year
+        args['month'] = args['UploadTime'].month
         query_sql = r"""select * from tb_project where id={};""".format(args.get('ProjectID'))
         result = self._db.query(query_sql)
+        if result[0]['StartTime'] > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
+            return jsonify(status_code.PROGRESS_TIME_ERROR)
         # args['Person'] = dumps(args['Person'])
         for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwages',
                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'Progress'):
@@ -245,9 +353,9 @@ class ADDProgressProject(BaseView):
             else:
                 args[i] = 0
         insert_sql = r"""insert into tb_progress(ProjectID, Status, UploadTime, Person, Remark,Rtype,Contract,Content,
-            RealName,Attend,Wage,Rights,Lwage, LAB, PAB, Arrears, LPayCert,PPay, LPay, Total, Percent) value ({ProjectID},
+            RealName,Attend,Wage,Rights,Lwage, LAB, PAB, Arrears, LPayCert,PPay, LPay, Total, Percent,year,month) value ({ProjectID},
             {Status}, '{UploadTime}', '{Person}','{Remark}',{Rtype},{Contract},'{Content}',{RealName},{Attend},{Wage},
-            {Rights},{Lwages},{LAB},{PAB},{Arrears},{LPayCert},'{PPay}', '{LPay}','{Total}', '{Percent}');"""
+            {Rights},{Lwages},{LAB},{PAB},{Arrears},{LPayCert},'{PPay}', '{LPay}','{Total}', '{Percent}', '{year}', '{month}');"""
         progress_id = self._db.insert(insert_sql.format(**args))
         if self.args.get('ImgGroupID', []):
             update_progress_pic(progress_id, self.args.get('ImgGroupID'), self._db)
@@ -257,10 +365,11 @@ class ADDProgressProject(BaseView):
         #     if args.get(i):
         #         if args.get(temp, []):
         #             update_progress_pic(progress_id, args.get(temp), self._db)
-        update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}' where id={};""".format(
+        update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}', status={} where id={};""".format(
             str(float(result[0]['Total']) + float(args['Total'])),
             str(float(result[0]['TotalPay']) + float(args['PPay'])),
             str(float(result[0]['Issue']) + float(args['LPay'])),
+            2,
             args['ProjectID']
         )
         self._db.update(update_sql)
@@ -440,11 +549,16 @@ class ProjectMainQuery(BaseView):
 
     def views(self):
         args = self.args
-        query_sql_base = r"""select t1.*,t2.Name as CompanyName, t4.Status as WStatus from tb_project as t1
-                            left join tb_company as t2 on t2.id = t1.cons
-                            left join (select id,projectID,Status,max(WTime) from tb_wage) as t4 on t4.ProjectID = t1.id"""
+        now_time = datetime.datetime.now()
+        query_sql_base = r"""select SQL_CALC_FOUND_ROWS t1.*,t2.Name as CompanyName, t4.Status as WStatus from tb_project as t1
+            left join tb_company as t2 on t2.id = t1.cons
+            left join (select id,projectID,Status from tb_wage where year={} and month = {} group by projectID) as t4 on t4.ProjectID = t1.id  
+            left join (select id,ProjectID from tb_progress where year={} and month ={}  group by projectID) as t3 on t3.ProjectID = t1.id""".format(
+            now_time.year, now_time.month, now_time.year, now_time.month)
         where_sql_list = []
-        if self.ids:
+        if self.ids != None:
+            if self.ids == []:
+                self.ids = [0,]
             where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
@@ -457,7 +571,10 @@ class ProjectMainQuery(BaseView):
         if int(args.get('PID', 0)) != 0:
             where_sql_list.append(r""" t1.PID={} """.format(int(args.get('PID'))))
         if int(args.get('Status', 4)) != 4:
-            where_sql_list.append(r""" t1.Status={} """.format(int(args.get('Status'))))
+            if int(args.get('Status')) == 5:
+                where_sql_list.append(r""" (t1.Status > 1 or t4.Status is null or t3.ProjectID is null) """)
+            else:
+                where_sql_list.append(r""" t1.Status={} """.format(int(args.get('Status'))))
         if int(args.get('WStatus', 3)) != 3:
             where_sql_list.append(r""" t4.Status={} """.format(int(args.get('WStatus'))))
         temp = ''
@@ -472,6 +589,7 @@ class ProjectMainQuery(BaseView):
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql = query_sql_base + " " + temp + limit_sql
         result = self._db.query(query_sql.format(**args))
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         # print(query_sql.format(**args))
         projects = []
         if result:
@@ -486,10 +604,15 @@ class ProjectMainQuery(BaseView):
                 query_sql = r"""select count(id) as persons from tb_laborinfo where ProjectID = {}""".format(item['ID'])
                 persons = self._db.query(query_sql)[0]
                 item['Persons'] = persons['persons']
+                if eval(item['TotalPay']) != 0:
+                    item['Lpercent'] = eval(item['Issue']) / eval(item['TotalPay']) * 100
+                else:
+                    item['Lpercent'] = 0
                 projects.append(item)
         success = deepcopy(status_code.SUCCESS)
         # print(projects)
         success['project'] = projects
+        success['total'] = total[0]['total_row']
         return jsonify(success)
 
 
@@ -507,11 +630,40 @@ class ALLProjectID(AllCompanyID):
         self.ids = self.set_ids(query_sql)
         return self.views()
 
+    def get_labor_group_info(self, projectid):
+        query_sql = r"""select t1.ClassName,t1.ID as ClassID, t2.Name as SuperiorsName, t2.ID as SuperiorsID from tb_class as t1
+                    LEFT JOIN tb_laborinfo as t2 on t1.ProjectID = t2.ProjectID and t2.IsLeader = 1 
+                    where t1.ProjectID={}""".format(projectid)
+        result = self._db.query(query_sql)
+        return result
 
-class GetOneProject(BaseView):
+    def get_project_company(self, projectid):
+        build_query_sql = r"""select t2.id as ID, t2.Name as Name from tb_project as t1
+                                right JOIN tb_company as t2 on t1.Build = t2.ID
+                                where t1.id = {}""".format(projectid)
+        cons_query_sql = r"""select t2.id as ID, t2.Name as Name from tb_project as t1
+                                        right JOIN tb_company as t2 on t1.cons = t2.ID
+                                        where t1.id = {}""".format(projectid)
+        build_result = self._db.query(build_query_sql)
+        cons_result = self._db.query(cons_query_sql)
+        build_result.extend(cons_result)
+        return build_result
+
+    def views(self):
+        query_sql = self.get_query_sql()
+        result = self._db.query(query_sql)
+        for item in result:
+            item['companyinfo'] = self.get_project_company(item['ID'])
+            item['labor_group_info'] = self.get_labor_group_info(item['ID'])
+        success = deepcopy(status_code.SUCCESS)
+        success['list'] = result
+        return jsonify(success)
+
+
+class GetProjectCompany(BaseView):
 
     def __init__(self):
-        super(GetOneProject, self).__init__()
+        super(GetProjectCompany, self).__init__()
 
     def admin(self):
         return self.views()
@@ -519,5 +671,25 @@ class GetOneProject(BaseView):
     def administrator(self):
         return self.views()
 
+    def get_labor_group_info(self, projectid):
+        query_sql = r"""select t1.ClassName,t1.ID as ClassID, t2.Name as SuperiorsName, t2.ID as SuperiorsID from tb_class as t1
+                    LEFT JOIN tb_laborinfo as t2 on t1.ProjectID = t2.ProjectID and t2.IsLeader = 1 
+                    where t1.ProjectID={}""".format(projectid)
+        result = self._db.query(query_sql)
+        return result
+
     def views(self):
-        pass
+        args = self.args
+        build_query_sql = r"""select t2.id as ID, t2.Name as Name from tb_project as t1
+                        right JOIN tb_company as t2 on t1.Build = t2.ID
+                        where t1.id = {}""".format(int(args.get('ProjectID')))
+        cons_query_sql = r"""select t2.id as ID, t2.Name as Name from tb_project as t1
+                                right JOIN tb_company as t2 on t1.cons = t2.ID
+                                where t1.id = {}""".format(int(args.get('ProjectID')))
+        build_result = self._db.query(build_query_sql)
+        cons_result = self._db.query(cons_query_sql)
+        build_result.extend(cons_result)
+        success = deepcopy(status_code.SUCCESS)
+        success['companyinfo'] = build_result
+        success['labor_group_info'] = self.get_labor_group_info(int(args.get('ProjectID')))
+        return jsonify(success)

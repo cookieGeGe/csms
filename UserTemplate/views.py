@@ -10,8 +10,12 @@ from flask import jsonify, request
 from werkzeug.utils import secure_filename
 
 from APP.settings import BASE_DIR
+from Company.ImportCompany import FileImportCompany
+from Labor.ImportLabor import FileImportLabor
+from Project.ImportProject import FileImportProject
 from utils import status_code
 from utils.BaseView import BaseView
+from utils.ImportTemp import TempColnames
 from utils.pulic_utils import str_to_datetime
 
 
@@ -34,6 +38,7 @@ class CreateTemplate(TemplateBase):
 
     def __init__(self):
         super(CreateTemplate, self).__init__()
+        self.api_permission = 'template_edit'
 
     def save_file(self, template_file):
         file_url = ''
@@ -53,7 +58,7 @@ class CreateTemplate(TemplateBase):
         args = self.args
         success = deepcopy(status_code.SUCCESS)
         args['Time'] = datetime.datetime.now()
-        if 'ID' not in args.keys():
+        if int(args.get('ID', 0)) == 0:
             """新建模板"""
             args['Number'] = 'MBBH-' + str(int(time.time() * 1000))
             template_file = request.files.get('File', '')
@@ -66,10 +71,10 @@ class CreateTemplate(TemplateBase):
             args['File'] = self.save_file(template_file)
             if args['File'] == '':
                 update_sql = r"""update tb_template set Name='{Name}',
-                                Description='{Description}', Type='{Type}'""".format(**args)
+                                Description='{Description}', Type='{Type}' where id={ID};""".format(**args)
             else:
                 update_sql = r"""update tb_template set Name={Name},Description={Description}, 
-                                    Type={Type}, File='{File}'""".format(**args)
+                                    Type={Type}, File='{File}' where id={ID};""".format(**args)
             self._db.update(update_sql)
         return jsonify(success)
 
@@ -93,7 +98,7 @@ class QueryTemplate(TemplateBase):
 
     def views(self):
         args = self.args
-        query_sql = r"""select * from tb_template"""
+        query_sql = r"""select SQL_CALC_FOUND_ROWS * from tb_template"""
         where_sql_list = []
         if args.get('Name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(Name,'')) LIKE '%{}%' """.format(args.get('Name')))
@@ -113,10 +118,12 @@ class QueryTemplate(TemplateBase):
         psize = int(args.get('PageSize', 10))
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         result = self._db.query(query_sql + where_sql + limit_sql)
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         for item in result:
             item['Time'] = item['Time'].strftime("%Y-%m-%d %H:%M:%S")
         success = deepcopy(status_code.SUCCESS)
-        success['template_list'] = result
+        success['result'] = result
+        success['total'] = total[0]['total_row']
         return jsonify(success)
 
 
@@ -134,4 +141,32 @@ class QueryOneTemplate(TemplateBase):
         if result:
             result[0]['Time'] = result[0]['Time'].strftime("%Y-%m-%d %H:%M:%S")
             success['template'] = result[0]
+        return jsonify(success)
+
+
+class ImportComProLaTemp(TemplateBase):
+
+    def __init__(self):
+        super(ImportComProLaTemp, self).__init__()
+        self.api_permission = 'template_edit'
+
+    def views(self):
+        args = self.args
+        files = request.files.get('file', '')
+        if files == '':
+            return jsonify(status_code.TEMPLATE_ERROR)
+        if args.get('Name') == 'Company':
+            import_temp = FileImportCompany(files, TempColnames.COMPANY, self.db)
+        elif args.get('Name') == 'Project':
+            import_temp = FileImportProject(files, TempColnames.PROJECT, self.db)
+        else:
+            import_temp = FileImportLabor(files, TempColnames.PROJECT, self.db)
+        import_temp.save()
+        result = import_temp.bad_info
+        success = deepcopy(status_code.SUCCESS)
+        success['data'] = []
+        success['msg'] = '导入成功！'
+        if result:
+            success['msg'] = '导入失败！'
+            success['data'] = result
         return jsonify(success)

@@ -1,6 +1,7 @@
 from flask import Blueprint
 
-from Labor.views import CreateLabor, CreateLaborPicGroup, UpdateLabor, LaborInfo, QueryLabor, UploadLaborImg, AllLabor
+from Labor.views import CreateLabor, CreateLaborPicGroup, UpdateLabor, LaborInfo, QueryLabor, UploadLaborImg, AllLabor, \
+    GetAllLaborLeader, GetOnePAllL
 
 labor = Blueprint('labor', __name__)
 # 创建劳工
@@ -17,3 +18,7 @@ labor.add_url_rule('/query', methods=['get'], view_func=QueryLabor.as_view('quer
 labor.add_url_rule('/uploadpic', methods=['POST'], view_func=UploadLaborImg.as_view('update_pic_labor'))
 # 获取项目下的劳工接口
 labor.add_url_rule('/all', methods=['get'], view_func=AllLabor.as_view('all_labor'))
+# 获取劳工班组信息
+labor.add_url_rule('/class/group', methods=['get'], view_func=GetAllLaborLeader.as_view('group_info_labor'))
+# 获取项目下劳工
+labor.add_url_rule('/one/project', methods=['get'], view_func=GetOnePAllL.as_view('get_on_project'))

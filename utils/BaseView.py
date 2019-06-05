@@ -18,7 +18,7 @@ class BaseView(View, metaclass=ABCMeta):
         self._uid = None  # 用户uid
         self._db = None  # 数据库连接对象
         self.args = None  # 前端传过来的参数字典
-        self.ids = []  # 用户可以查看的权限范围ID列表
+        self.ids = None  # 用户可以查看的权限范围ID列表
         self.success = deepcopy(status_code.SUCCESS)
         # self.get_args()
 
@@ -59,7 +59,7 @@ class BaseView(View, metaclass=ABCMeta):
         temp = ''
         for index, i in enumerate(self.ids):
             temp += str(i)
-            if index < len(self.ids):
+            if index < len(self.ids)-1:
                 temp += ','
         return temp
 
@@ -97,6 +97,10 @@ class BaseView(View, metaclass=ABCMeta):
         self.get_args()
         self._db = db
         # return self.administrator()
+        try:
+            tempint = session['AdminType']
+        except:
+            return jsonify(status_code.USER_NOT_LOGIN)
         if int(session['AdminType']) == 0:
             return self.administrator()
         elif int(session['AdminType']) == 1:

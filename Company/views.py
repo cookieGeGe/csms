@@ -174,7 +174,6 @@ class GetCompanyList(BaseView):
 
     def __init__(self):
         super(GetCompanyList, self).__init__()
-        self.ids = []
 
     def administrator(self):
         return self.views()
@@ -192,20 +191,26 @@ class GetCompanyList(BaseView):
 
     def views(self):
         args = self.args
+        # print(args.get('Name'))
         for i in ('Name', 'PID', 'CID', 'DID', 'Page', 'PageSize'):
             temp = args.get(i, None)
             if temp == None:
                 return jsonify(status_code.CONTENT_IS_NULL)
-        query_sql = r"""select t1.*, t4.Name as ProName, t5.Name as CityName, t6.Name as DisName from tb_company as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t4.Name as ProName, t5.Name as CityName, t6.Name as DisName from tb_company as t1
                                 INNER JOIN tb_area as t4 on t1.ProvinceID = t4.id
                                 INNER JOIN tb_area as t5 on t1.CityID = t5.id
                                 INNER JOIN tb_area as t6 on t1.DistrictID = t6.id"""
+        where_sql_list = []
+        if self.ids != None:
+            if self.ids == []:
+                self.ids = [0, ]
+            where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if args.get('Name', '') != '':
             if int(args.get('Type')) == 0:
-                query_sql += r""" where CONCAT(IFNULL(Name,'')) LIKE '%{Name}%'"""
+                where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%'""".format(args.get('Name')))
             else:
-                query_sql += r""" where CONCAT(IFNULL(Legal,'')) LIKE '%{Name}%'"""
-        where_sql_list = []
+                where_sql_list.append(r""" CONCAT(IFNULL(t1.Phone,'')) LIKE '%{}%'""".format(args.get('Name')))
+        # print(query_sql)
         if int(args.get('PID', 0)):
             # args['PID'] = int(self.args['PID'])
             where_sql_list.append(' ProvinceID={} '.format(int(self.args['PID'])))
@@ -214,7 +219,7 @@ class GetCompanyList(BaseView):
             where_sql_list.append('  CityID={} '.format(int(self.args['CID'])))
         if int(args.get('DID', 0)):
             # args['DID'] = int(self.args['DID'])
-            where_sql_list.append('  DistrictID={DID} '.format(int(self.args['DID'])))
+            where_sql_list.append('  DistrictID={} '.format(int(self.args['DID'])))
         if int(args.get('HasBadRecord', 2)) != 2:
             # args['HasBadRecord'] = int(args['HasBadRecord'])
             where_sql_list.append(' HasBadRecord=1 ')
@@ -222,27 +227,23 @@ class GetCompanyList(BaseView):
             where_sql_list.append(r""" ID in ({}) """.format(self.to_sql_where_id()))
         if where_sql_list:
             query_sql += ' where '
-        if args.get('Name', '') != '':
-            query_sql += ' and '
-            for index, item in enumerate(where_sql_list):
-                query_sql += item
-                if index < len(where_sql_list) - 1:
-                    query_sql += ' and '
-        else:
-            for index, item in enumerate(where_sql_list):
-                query_sql += item
-                if index < len(where_sql_list) - 1:
-                    query_sql += ' and '
+        for index, item in enumerate(where_sql_list):
+            query_sql += item
+            if index < len(where_sql_list) - 1:
+                query_sql += ' and '
         query_sql += ' limit {0},{1};'
         start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
         query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
+        print(query_sql)
         result = self._db.query(query_sql)
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         success = deepcopy(status_code.SUCCESS)
         for item in result:
             item['Phone'] = loads(item['Phone'])
 
             # item['License'] = loads(item['License'])
         success['company_list'] = result
+        success['total'] = total[0]['total_row']
         return jsonify(success)
 
 
@@ -328,6 +329,7 @@ class CreateCompany(BaseView):
 
     def __init__(self):
         super(CreateCompany, self).__init__()
+        self.api_permission = 'company_edit'
 
     def administrator(self):
         return self.views()
@@ -340,6 +342,8 @@ class CreateCompany(BaseView):
 
     def views(self):
         # self.args['Phone'] = dumps(self.args['Phone'])
+        if self.args_is_null('Name'):
+            return jsonify(status_code.CONTENT_IS_NULL)
         self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] == 'true' else 0
         file_list = request.files.get('License', '')
         file_img_url = ''
@@ -361,6 +365,7 @@ class CreateCompany(BaseView):
 class UpdateCompany(BaseView):
     def __init__(self):
         super(UpdateCompany, self).__init__()
+        self.api_permission = 'company_edit'
 
     def administrator(self):
         return self.views()
@@ -415,6 +420,10 @@ class EditGroup(BaseView):
 
 
 class GetOnePic(BaseView):
+    """
+    获取单张图片
+    """
+
     def __init__(self):
         super(GetOnePic, self).__init__()
 
@@ -434,6 +443,7 @@ class GetOnePic(BaseView):
 
 
 class AllCompanyID(BaseView):
+    """返回所有的公司ID和名字"""
 
     def __init__(self):
         super(AllCompanyID, self).__init__()
@@ -452,7 +462,9 @@ class AllCompanyID(BaseView):
 
     def get_query_sql(self):
         query_sql = r"""select ID,Name from {} """.format(self.table)
-        if self.ids:
+        if self.ids != None:
+            if not self.ids:
+                self.ids = [0, ]
             query_sql += """ where ID in ({}) """.format(self.to_sql_where_id())
         return query_sql
 
@@ -465,6 +477,9 @@ class AllCompanyID(BaseView):
 
 
 class QueryCompanyProject(BaseView):
+    """
+    企业中查找项目表格
+    """
 
     def __init__(self):
         super(QueryCompanyProject, self).__init__()
@@ -479,27 +494,31 @@ class QueryCompanyProject(BaseView):
 
     def views(self):
         args = self.args
-        query_sql = r"""select t1.ID,t1.Name,t1.Status from tb_project as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.Status from tb_project as t1
                         LEFT JOIN tb_company as t2 on t1.Build = t2.ID or t1.Cons =t2.ID
-                        where t2.ID = {} """.format(int(args.get('ID')))
+                        where t2.ID = {} """.format(int(args.get('id')))
         where_list = []
-        if self.ids:
+        if self.ids != None:
+            if self.ids == []:
+                self.ids = [0]
             where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
-        if args.get('CompanyName', '') != '':
-            where_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
-        if int(args.get('Status', 4)) != 4:
-            where_list.append(r""" t1.Status = {} """.format(int(args.get('Status'))))
+        if args.get('projectname', '') != '':
+            where_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('projectname')))
+        if int(args.get('status', 4)) != 4:
+            where_list.append(r""" t1.Status = {} """.format(int(args.get('status'))))
         if where_list:
             query_sql += ' and '
         for index, i in enumerate(where_list):
             query_sql += i
             if index < len(where_list) - 1:
                 query_sql += ' and '
-        page = int(args.get('Page', 1))
-        psize = int(args.get('PageSize', 10))
+        page = int(args.get('page', 1))
+        psize = int(args.get('pagesize', 10))
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql = query_sql + " " + limit_sql
         result = self._db.query(query_sql.format(**args))
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         success = deepcopy(status_code.SUCCESS)
         success['data'] = result
+        success['total'] = total[0]['total_row']
         return jsonify(success)

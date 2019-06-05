@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
     ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery, \
-    ALLProjectID
+    ALLProjectID, GetProjectCompany
 
 project = Blueprint('project', __name__)
 
@@ -30,4 +30,5 @@ project.add_url_rule('/img/upload', methods=['post'], view_func=UploadProjectIMG
 project.add_url_rule('/search', methods=['get'], view_func=ProjectMainQuery.as_view('main_query'))
 # 获取所有项目列表
 project.add_url_rule('/allproject', methods=['get'], view_func=ALLProjectID.as_view('all_project'))
-# 获取单个项目
+# 获取项目下的施工方和建设方
+project.add_url_rule('/company', methods=['get'], view_func=GetProjectCompany.as_view('get_project_company_list'))

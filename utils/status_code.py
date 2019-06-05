@@ -22,3 +22,6 @@ GET_COMPANY_INFO_FAILD = {'code': 50015, 'msg': '没有找到当前用户！'}
 LABOR_IS_EXISTS = {'code': 50016, 'msg': '身份证号码重复，请勿重复添加！'}
 LABOR_IS_NOT_EXISTS = {'code': 50017, 'msg': '劳工不存在'}
 TEMPLATE_ERROR = {'code': 50018, 'msg': '模板错误'}
+BANK_INFO_EXISTS = {'code': 50019, 'msg': '该月信息已存在'}
+CREATE_FEATURE_BANK_INFO = {'code': 50020, 'msg': '不能创建将来的月份信息'}
+PROGRESS_TIME_ERROR = {'code': 50021, 'msg': '请上传项目期间的进度'}

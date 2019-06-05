@@ -1,6 +1,8 @@
+from json import dumps
+
 from copy import deepcopy
 
-from flask import request, jsonify, session, make_response
+from flask import request, jsonify, session, make_response, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from User.util import save_image, get_all_area_id
@@ -12,6 +14,7 @@ class UserRegist(BaseView):
 
     def __init__(self):
         super(UserRegist, self).__init__()
+        self.api_permission = 'permission_user_edit'
         self._form = None
         self._insert_sql = None
 
@@ -23,10 +26,9 @@ class UserRegist(BaseView):
     def filter(self):
         form = request.form
         self._form = form
-        name = form.get('LoginName', '')
         username = form.get('UserName', '')
-        password = form.get('PassWord', '')
-        if name == '' or username == '' or password == '':
+        password = form.get('Password', '')
+        if username == '' or password == '':
             return False
         return True
 
@@ -46,19 +48,19 @@ class UserRegist(BaseView):
         img_url = '/static/media/ava/home.png'
         if ava_file != '':
             img_url = save_image(ava_file)
-        loginname_sql = r"""select id from tb_user where LoginName = {LoginName}""".format(**self._form)
+        loginname_sql = r"""select id from tb_user where LoginName = '{}';""".format(self._form.get('UserName'))
         if len(self._db.query(loginname_sql)):
             return jsonify(status_code.USER_EXISTS)
         self._insert_sql = r"""insert into tb_user(LoginName,UserName,Password,Email,Phone,Description,AdminType,CompanyID,Avatar,Status) 
                                 value('{}', '{}','{}','{}','{}', '{}',{},{},'{}',1)"""
         self._insert_sql = self._insert_sql.format(
-            self._form.get('LoginName', ''),
+            self._form.get('UserName', ''),
             self._form.get('UserName', ''),
             str(generate_password_hash(self._form.get('Password', ''))),
             self._form.get('Email', ''),
             self._form.get('Phone', ''),
             self._form.get('Description', ''),
-            int(self._form.get('AdminType', 0)),
+            int(self._form.get('AdminType', 1)),
             int(self._form.get('CompanyID', 0)),
             img_url,
         )
@@ -124,11 +126,10 @@ class UserLogin(BaseView):
             session['area_ids'] = self.get_area_ids()
         success = deepcopy(status_code.SUCCESS)
         success['Permission'], success['AllPermission'] = self.get_permissions(self.uid)
-        session['Permission'], session['AllPermission'] = success['Permission'], success['AllPermission']
+        session['Permission'], session['C'] = success['Permission'], success['AllPermission']
         session['login'] = True
         # a = jsonify(success)
         # a.set_cookie('session', session)
-        # response = make_response({"success":success, "session": session})
         return jsonify(success)
 
     def get_permissions(self, uid):
@@ -232,6 +233,7 @@ class UpdateUser(BaseView):
 
     def __init__(self):
         super(UpdateUser, self).__init__()
+        self.api_permission = 'permission_user_edit'
 
     def administrator(self):
         return self.views()
@@ -250,28 +252,20 @@ class UpdateUser(BaseView):
             args['Avatar'] = save_image(ava_file)
         else:
             args['Avatar'] = result['Avatar']
-        if result['Password'] == args.get('Password', ''):
-            update_sql = r"""update tb_user set LoginName = '{LoginName}',
+        if args.get('Password', '') == '':
+            update_sql = r"""update tb_user set LoginName = '{UserName}',
                                             UserName = '{UserName}',
-                                            Email= '{Email}',
-                                            Phone='{Phone}',
                                             Description='{Description}',
-                                            AdminType={AdminType},
                                             CompanyID={CompanyID},
-                                            Avatar='{Avatar}',
-                                            Status={Status}""".format(**args)
+                                            Avatar='{Avatar}' where id={ID};""".format(**args)
         else:
             args['Password'] = generate_password_hash(args.get('Password', ''))
-            update_sql = r"""update tb_user set LoginName = '{LoginName}',
+            update_sql = r"""update tb_user set LoginName = '{UserName}',
                                                 UserName = '{UserName}',
-                                                Email= '{Email}',
-                                                Phone='{Phone}',
                                                 Password='{Password}'
                                                 Description='{Description}',
-                                                AdminType={AdminType},
                                                 CompanyID={CompanyID},
-                                                Avatar='{Avatar}',
-                                                Status={Status}""".format(**args)
+                                                Avatar='{Avatar}' where id ={ID} ;""".format(**args)
         self._db.update(update_sql)
         if int(result['AreaID']) != int(args['AreaID']):
             update_area_sql = r"""update tb_user_area set AreaID = {} where UserID = {}""".format(int(args['AreaID']),
@@ -295,13 +289,22 @@ class QueryUser(BaseView):
         self.ids = self._db.query(query_sql)
         return self.views()
 
-    def views(self):
-        args = self.args
-        query_sql = r"""select t1.*, t2.Name, t3.AreaID from tb_user as t1
-                        left join tb_company as t2 on t1.companyID = t2.id
-                        left join tb_user_area as t3 on t3.userid = t1.id"""
+    def find_father(self, child_id):
+        temp_father_name = []
+        select = r"""select id, name, fatherid from tb_area where id = {};""".format(child_id)
+        result = self._db.query(select)
+        temp_father_name.extend([result[0]['name'], result[0]['id']])
+        if result[0]['fatherid'] != 0:
+            temp_father_name.extend(self.find_father(result[0]['fatherid']))
+        # print(temp_father_name)
+        return temp_father_name
+
+    def main_query(self, args):
         where_list = []
-        if self.ids:
+        where_list.append(r""" t1.admintype !=0 """)
+        if self.ids != None:
+            if not self.ids:
+                self.ids = [0, ]
             where_list.append(r""" t1.id in ({}) """.format(self.to_sql_where_id()))
         if args.get('CompanyName', '') != '':
             where_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName', '')))
@@ -328,7 +331,88 @@ class QueryUser(BaseView):
         page = int(args.get('Page', 1))
         pagesize = int(args.get('Pagesize', 10))
         limit_sql = ' limit {},{} '.format((page - 1) * pagesize, pagesize)
-        result = self._db.query(query_sql + where_sql + limit_sql)
-        success = status_code.SUCCESS
+        return where_sql + limit_sql
+
+    def views(self):
+        args = self.args
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t2.Name, t3.AreaID, t4.name as Areaname from tb_user as t1
+                        left join tb_company as t2 on t1.companyID = t2.id
+                        left join tb_user_area as t3 on t3.userid = t1.id
+                        INNER JOIN tb_area as t4 on t3.AreaID = t4.id"""
+        if int(args.get('ID', 0)) == 0:
+            query_sql += self.main_query(args)
+        else:
+            query_sql += r""" where t1.id ={} """.format(args.get('ID'))
+        result = self._db.query(query_sql)
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
+        for item in result:
+            area_list = self.find_father(item['AreaID'])
+            item['AreaName'] = '-'.join(area_list[::2][::-1])
+            item['PID'], item['CID'], item['DID'] = 0, 0, 0
+            item['PName'], item['CName'], item['DName'] = '', '', ''
+            if len(area_list[::-1][::2]) == 1:
+                item['PName'] = area_list[::2][::-1][0]
+                item['PID'] = area_list[::-1][::2][0]
+            elif len(area_list[::-1][::2]) == 2:
+                item['PName'], item['DName'] = area_list[::2][::-1]
+                item['PID'], item['CID'] = area_list[::-1][::2]
+            elif len(area_list[::-1][::2]) == 3:
+                item['PID'], item['CID'], item['DID'] = area_list[::-1][::2]
+                item['PName'], item['CName'], item['DName'] = area_list[::2][::-1]
+        success = deepcopy(status_code.SUCCESS)
         success['user_list'] = result
+        success['total'] = total[0]['total_row']
+        return jsonify(success)
+
+
+class GetAllPermission(BaseView):
+
+    """
+    获取权限接口：
+    :param ID 0表示获取当前用户的权限， 用户id 表示获取指定用户的权限
+    """
+
+    def __init__(self):
+        super(GetAllPermission, self).__init__()
+
+    def admin(self):
+        return self.views()
+
+    def administrator(self):
+        return self.views()
+
+    def get_permissions(self, uid):
+        query_sql = r"""select t2.* from tb_user_per as t1
+                        left join tb_permission as t2 on t1.PID = t2.ID
+                        where t1.uid = {};""".format(uid)
+        total = self._db.query(query_sql)
+        permission_list = [item['Permission'] for item in total]
+        return permission_list, total
+
+    def views(self):
+        success = deepcopy(status_code.SUCCESS)
+        args = self.args
+        query_sql = r"""select * from tb_permission;"""
+        total = self._db.query(query_sql)
+        if int(args.get('ID', 0)) == 0:
+            # success['AllPermission'] = session.get('AllPermission')
+            user_permission = session.get('Permission')
+        else:
+            user_permission, user_all_permission = self.get_permissions(args.get('ID'))
+        menu_show = {}
+        button_show = {}
+        for item in total:
+            if 'show' in item['Permission']:
+                if item['Permission'] in user_permission:
+                    menu_show[item['Permission']] = 1
+                else:
+                    menu_show[item['Permission']] = 0
+            else:
+                if item['Permission'] in user_permission:
+                    button_show[item['Permission']] = 1
+                else:
+                    button_show[item['Permission']] = 0
+        success['menu_show'] = menu_show
+        success['button_show'] = button_show
+
         return jsonify(success)

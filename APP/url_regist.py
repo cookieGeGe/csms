@@ -3,6 +3,7 @@ from Attend.urls import attend
 from Bank.urls import bank
 from Company.urls import company
 from Guarantee.urls import guarantee
+from Index.urls import index
 from Labor.urls import labor
 from Project.urls import project
 from User.urls import user
@@ -19,3 +20,4 @@ def blue_regist(app):
     app.register_blueprint(bank, url_prefix='/bank/')
     app.register_blueprint(user_template, url_prefix='/template/')
     app.register_blueprint(attend, url_prefix='/attend/')
+    app.register_blueprint(index, url_prefix='/index/')
