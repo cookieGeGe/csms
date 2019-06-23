@@ -51,8 +51,8 @@ class ImportAttend(AttendBase):
             excel = Data_Excel(f, TempColnames.ATTEND)
             excel_data = excel.excel_data()
             for item in excel_data:
-                # laborinfo = self.get_labor_id(item['idcard'])
-                laborinfo = {'id': 1, 'projectid': 2}
+                laborinfo = self.get_labor_id(item['idcard'])
+                # laborinfo = {'id': 1, 'projectid': 2}
                 if laborinfo is not None:
                     insert_sql = r"""insert into tb_attendance(laborid, projectid, amin,amout,pmin,pmout, year,month,day) value 
                                     ({},{},'{}','{}','{}','{}','{}','{}','{}');""".format(laborinfo['id'],
@@ -89,7 +89,7 @@ class QueryAttend(AttendBase):
                 left join tb_company as t2 on t2.ID = t1.CompanyID
                 left JOIN tb_project as t3 on t3.ID = t1.ProjectID
 				left join tb_class as t5 on t5.id = t1.classid
-                left JOIN (select laborid,year,month,count(id) as Count from tb_attendance GROUP BY laborid,year,month )
+                left JOIN (select laborid,year,month,count(id) as Count from tb_attendance where amin != '' or amout!= '' or pmin != '' or pmout != '' GROUP BY laborid,year,month)
                  as t4 on t4.laborid = t1.id"""
         where_sql = []
         if self.ids != None:
@@ -102,6 +102,8 @@ class QueryAttend(AttendBase):
             where_sql.append(r"""  CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('LaborName', '') != '':
             where_sql.append(r"""  CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('LaborName')))
+        if int(args.get('Days', 0)) != 0:
+            where_sql.append(r""" t4.Count > {} """.format(int(args.get('Days'))))
         if args.get('Month', '') != '':
             query_time = datetime.datetime.strptime(args.get('Month'), "%Y-%m")
             where_sql.append(r""" t4.year = {} and t4.month = {}""".format(query_time.year, query_time.month))
@@ -121,6 +123,7 @@ class QueryAttend(AttendBase):
         success = deepcopy(status_code.SUCCESS)
         success['Attend'] = result
         success['total'] = total[0]['total_row']
+        print(success['Attend'])
         return jsonify(success)
 
 
@@ -141,11 +144,11 @@ class QueryAttendInfo(AttendBase):
             item['date'] = '{}-{}-{}'.format(item['year'], item['month'], item['day'])
             is_miss = False
             for i in ('amin', 'amout', 'pmin', 'pmout'):
-                if isinstance(item[i], str):
+                if item[i] is None or item[i] == '':
                     item[i] = ''
                     is_miss = True
-                else:
-                    item[i] = item[i].strftime("%H:%M:%S")
+                # else:
+                #     item[i] = item[i].strftime("%H:%M:%S")
             item['miss'] = '缺考' if is_miss else '无缺考'
             temp_data.append(item)
         success = deepcopy(status_code.SUCCESS)
@@ -165,9 +168,10 @@ class QuerySalary(AttendBase):
 
     def get_info(self, laborid, year, month):
         query_sql = r"""select t1.IDCard, t1.JobType,t1.Name,t1.Feestand, t1.isFeeStand, t4.swipe from tb_laborinfo as t1
-                        left JOIN (select laborid,year,month,count(id) as swipe from tb_attendance where year = {} and month = {} GROUP BY laborid,year,month )
+                        left JOIN (select laborid,year,month,count(id) as swipe from tb_attendance where year = {} and month = {} and (amin != '' or amout!= '' or pmin != '' or pmout != '') GROUP BY laborid,year,month )
                           as t4 on t4.laborid = t1.id where t1.id={};""".format(
             year, month, laborid)
+        print(query_sql)
         result = self._db.query(query_sql)
         data = {}
         if result:

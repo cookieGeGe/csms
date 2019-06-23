@@ -7,7 +7,6 @@ from copy import deepcopy
 from flask import request, jsonify
 
 from Company.views import CreatePicGroup
-from Guarantee.utils import GKind
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -52,6 +51,18 @@ class CreateGuarantee(GuaranteeBase):
         cguarantee_id = self._db.insert(insert_sql)
         return cguarantee_id
 
+    def update_img(self, cid, ids):
+        ids = loads(ids)
+        if ids:
+            temp_ids = ''
+            for index, id in enumerate(ids):
+                temp_ids += str(id)
+                if index < len(ids) - 1:
+                    temp_ids += ','
+
+            update_sql = r"""update tb_pic_group set cid={} where id in ({});""".format(cid, temp_ids)
+            self._db.update(update_sql)
+
     def views(self):
         is_null = self.args_is_null('Expiretime', 'Duration')
         if is_null:
@@ -64,11 +75,12 @@ class CreateGuarantee(GuaranteeBase):
         args['SignTime'] = datetime.datetime.now() + datetime.timedelta(hours=8)
         args['Number'] = 'BSHS-' + str(int(time.time() * 1000))
         insert_sql = r"""insert into tb_guarantee(CompanyID,Capital, Nature,Name,Number,Amount,Kind,ProjectID,SignTime,
-            Category, Deadline, Expiretime,Totalrate,Total,RealAC,Marginratio,Margin,Bene,PID,CID,DID,Description,Duration)
-            value ({CompanyID},'{Capital}','{Nature}','{Name}','{Number}','{Amount}','{Kind}',{ProjectID},'{SignTime}',
+            Category, Deadline, Expiretime,Totalrate,Total,RealAC,Marginratio,Margin,Bene,PID,CID,DID,Description,Duration,GuaCompany)
+            value ('{CompanyID}','{Capital}','{Nature}','{Name}','{Number}','{Amount}','{Kind}','{ProjectID}','{SignTime}',
             {Category},'{Deadline}','{Expiretime}','{Totalrate}','{Total}','{RealAC}','{Marginratio}','{Margin}',
-            '{Bene}',{PID},{CID},{DID},'{Description}','{Duration}');""".format(**args)
+            '{Bene}',{PID},{CID},{DID},'{Description}','{Duration}', '{GuaCompany}');""".format(**args)
         guarantee_id = self._db.insert(insert_sql)
+        self.update_img(guarantee_id, args.get('group_list', '[]'))
         c_list = []
         if args.get('CGuarantee_list', '') != '':
             cguarantee_list = loads(args.get('CGuarantee_list', ''))
@@ -97,7 +109,7 @@ class QueryGuarantee(GuaranteeBase):
         self.ids = self.set_ids(query_sql)
         return self.views()
 
-    def main_query(self, query_sql, args):
+    def main_query(self, query_sql, args, has_limit):
 
         where_list = []
         if self.ids != None:
@@ -108,9 +120,9 @@ class QueryGuarantee(GuaranteeBase):
             if args.get(name, '') != '':
                 where_list.append(r""" CONCAT(IFNULL(t1.'{}','')) LIKE '%{}%' """.format(name, args.get(name)))
         if args.get('CompanyName', '') != '':
-            where_list.append(r""" CONCAT(IFNULL(t2.name, '')) like '%{}%' """.format(args.get('CompanyName')))
+            where_list.append(r""" CONCAT(IFNULL(t1.CompanyID, '')) like '%{}%' """.format(args.get('CompanyName')))
         if args.get('ProjectName', '') != '':
-            where_list.append(r""" CONCAT(IFNULL(t3.name, '')) like '%{}%' """.format(args.get('ProjectName')))
+            where_list.append(r""" CONCAT(IFNULL(t1.ProjectID, '')) like '%{}%' """.format(args.get('ProjectName')))
         if int(args.get('DID', 0)):
             where_list.append(r""" t1.DID={} """.format(args.get('DID')))
         if int(args.get('CID', 0)):
@@ -123,7 +135,7 @@ class QueryGuarantee(GuaranteeBase):
         if args.get('EndTime', '') != '':
             args['EndTime'] = str_to_date(args['EndTime'])
             where_list.append(r""" t1.Expiretime < '{}' """.format(args.get('EndTime')))
-        if int(args.get('Category', 0)) != 0:
+        if int(args.get('Category', 9)) != 9:
             where_list.append(r""" t1.Category = {} """.format(args.get('Category')))
         temp = ''
         if where_list:
@@ -134,22 +146,34 @@ class QueryGuarantee(GuaranteeBase):
                     temp += 'and'
         page = int(args.get('Page', 1))
         psize = int(args.get('PageSize', 10))
-        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
-        query_sql = query_sql + " " + temp + limit_sql
+        if has_limit:
+            limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
+            query_sql = query_sql + " " + temp + limit_sql
+        else:
+            query_sql = query_sql + ' ' + temp
         return query_sql
+
+    def get_group_info(self, id):
+        select_sql = r"""select * from tb_pic_group where cid={} and ptype=3;""".format(id)
+        data = self._db.query(select_sql)
+        return data
 
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t2.name as CompanyName, t3.name as ProjectName, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
-                        left join tb_company as t2 on t1.CompanyID=t2.id
-                        LEFT JOIN tb_project as t3 on t1.ProjectID=t3.id
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
+                        INNER JOIN tb_area as t4 on t1.PID = t4.id
+                        INNER JOIN tb_area as t5 on t1.CID = t5.id
+                        INNER JOIN tb_area as t6 on t1.DID = t6.id"""
+        total_query_sql = r"""select SQL_CALC_FOUND_ROWS sum(t1.amount) as amount_total, sum(RealAC) as realac_total from tb_guarantee as t1
                         INNER JOIN tb_area as t4 on t1.PID = t4.id
                         INNER JOIN tb_area as t5 on t1.CID = t5.id
                         INNER JOIN tb_area as t6 on t1.DID = t6.id"""
         if int(args.get('ID', 0)) == 0:
-            query_sql = self.main_query(query_sql, args)
+            query_sql = self.main_query(query_sql, args, 1)
+            total_query_sql = self.main_query(total_query_sql, args, 0)
         else:
             query_sql += r""" where t1.ID = {} """.format(args.get('ID'))
+        # print(query_sql)
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         nowdate = datetime.datetime.now()
@@ -157,14 +181,22 @@ class QueryGuarantee(GuaranteeBase):
         for item in result:
             item['SignTime'] = item['SignTime'].strftime("%Y-%m-%d")
             item['Expiretime'] = item['Expiretime'].strftime("%Y-%m-%d")
-            item['Duration'] = item['Duration'].strftime("%Y-%m-%d")
+            if item['Duration'] != '':
+                item['Duration'] = item['Duration'].strftime("%Y-%m-%d")
             item['IsExpire'] = '已过期' if datetime.datetime.strptime(item['Expiretime'],
                                                                    "%Y-%m-%d") > nowdate else '未过期'
-            item['Category'] = GKind[int(item['Category']) - 1]
+            # item['Category'] = GKind[int(item['Category']) - 1]
             query_cg = r"""select * from tb_cguarantee where GID = {};""".format(item['ID'])
             item['CGuarantee'] = self._db.query(query_cg)
             temp_result.append(item)
         success = deepcopy(status_code.SUCCESS)
+        if int(args.get('ID', 0)) != 0:
+            temp_result[0]['group_list'] = self.get_group_info(args.get('ID'))
+        else:
+            total_result = self._db.query(total_query_sql)
+            # print(total_result)
+            success['amount_total'] = total_result[0]['amount_total']
+            success['realac_total'] = total_result[0]['realac_total']
         success['result'] = temp_result
         success['total'] = total[0]['total_row']
         return jsonify(success)
@@ -209,11 +241,11 @@ class UpdateGuarantee(GuaranteeBase):
         args = self.args
         # 时间处理
         args['Expiretime'] = str_to_date(args['Expiretime'])
-        update_sql = r"""update tb_guarantee set CompanyID={CompanyID},Capital='{Capital}',Nature='{Nature}',Name='{Name}',
-            Amount='{Amount}',Kind='{Kind}',ProjectID={ProjectID},
+        update_sql = r"""update tb_guarantee set CompanyID='{CompanyID}',Capital='{Capital}',Nature='{Nature}',Name='{Name}',
+            Amount='{Amount}',Kind='{Kind}',ProjectID='{ProjectID}',
             Category={Category}, Deadline='{Deadline}', Expiretime='{Expiretime}',Totalrate='{Totalrate}',
             Total='{Total}',RealAC='{RealAC}',Marginratio='{Marginratio}',Margin='{Margin}',Bene='{Bene}',PID={PID},CID={CID},
-            DID={DID},Description='{Description}' where id={ID}""".format(**args)
+            DID={DID},Description='{Description}',GuaCompany='{GuaCompany}' where id={ID}""".format(**args)
         self._db.update(update_sql)
         if args.get('CGuarantee_list', '') != '':
             query_sql = r"""select id from tb_cguarantee where GID={}""".format(args.get('ID'))
@@ -246,8 +278,8 @@ class CreateCGuarantee(GuaranteeBase):
         args['IDimg'] = dumps(self.get_img_list('IDimg'))
         args['Pimg'] = dumps(self.get_img_list('Pimg'))
         insert_sql = r"""insert into tb_cguarantee(Name,IDCard,Address, Phone,Area,Pvalue,Proportion,Paddress,IDimg,
-                    Pimg,GID) value ('{Name}','{IDCard}','{Address}','{Phone}','{Area}','{Pvalue}','{Proportion}',
-                    '{Paddress}','{IDimg}','{Pimg}',{GID});""".format(**args)
+                    Pimg,GID,Description) value ('{Name}','{IDCard}','{Address}','{Phone}','{Area}','{Pvalue}','{Proportion}',
+                    '{Paddress}','{IDimg}','{Pimg}',{GID},'{Description}');""".format(**args)
         cguarantee_id = self._db.insert(insert_sql)
         success = deepcopy(status_code.SUCCESS)
         success['cguarantee'] = cguarantee_id
@@ -264,7 +296,7 @@ class UpdateCGuarantee(CreateCGuarantee):
         args = self.args
         update_sql = r"""update tb_cguarantee set Name='{Name}',IDCard='{IDCard}',Address='{Address}',
                           Phone='{Phone}',Area='{Area}',Pvalue='{Pvalue}',Proportion='{Proportion}',
-                          Paddress='{Paddress}' """
+                          Paddress='{Paddress}', Description='{Description}' """
 
         if request.files.get('IDimg', []):
             args['IDimg'] = dumps(self.get_img_list('IDimg'))

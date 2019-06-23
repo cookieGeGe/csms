@@ -256,7 +256,6 @@ class UpdateUser(BaseView):
             update_sql = r"""update tb_user set LoginName = '{UserName}',
                                             UserName = '{UserName}',
                                             Description='{Description}',
-                                            CompanyID={CompanyID},
                                             Avatar='{Avatar}' where id={ID};""".format(**args)
         else:
             args['Password'] = generate_password_hash(args.get('Password', ''))
@@ -264,7 +263,6 @@ class UpdateUser(BaseView):
                                                 UserName = '{UserName}',
                                                 Password='{Password}'
                                                 Description='{Description}',
-                                                CompanyID={CompanyID},
                                                 Avatar='{Avatar}' where id ={ID} ;""".format(**args)
         self._db.update(update_sql)
         if int(result['AreaID']) != int(args['AreaID']):
@@ -306,8 +304,8 @@ class QueryUser(BaseView):
             if not self.ids:
                 self.ids = [0, ]
             where_list.append(r""" t1.id in ({}) """.format(self.to_sql_where_id()))
-        if args.get('CompanyName', '') != '':
-            where_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName', '')))
+        # if args.get('CompanyName', '') != '':
+        #     where_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName', '')))
         if args.get('UserName', '') != '':
             where_list.append(r""" CONCAT(IFNULL(t1.UserName,'')) LIKE '%{}%' """.format(args.get('UserName', '')))
         if int(args.get('AreaID', 0)) != 0:
@@ -335,8 +333,7 @@ class QueryUser(BaseView):
 
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t2.Name, t3.AreaID, t4.name as Areaname from tb_user as t1
-                        left join tb_company as t2 on t1.companyID = t2.id
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t3.AreaID, t4.name as Areaname from tb_user as t1
                         left join tb_user_area as t3 on t3.userid = t1.id
                         INNER JOIN tb_area as t4 on t3.AreaID = t4.id"""
         if int(args.get('ID', 0)) == 0:

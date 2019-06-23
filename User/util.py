@@ -26,6 +26,21 @@ def save_image(image_file, base='static/media/ava'):
     return img_url
 
 
+def save_other_file(image_file, base='static/media/otherfile'):
+    img_name = image_file.filename
+    ticket = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890'
+    temp = ''
+    for i in range(10):
+        temp += random.choice(ticket)
+    new_base = os.path.join(*base.split(r'/'))
+    new_name = str(int(time.time())) + '_' + temp + '.' + img_name.split('.')[-1]
+    save_name = os.path.join(new_base, new_name)
+    url = os.path.join(BASE_DIR, save_name)
+    image_file.save(url)
+    img_url = '/' + base + '/' + new_name
+    return img_name, img_url
+
+
 def get_all_area_id(db, area_list):
     temp_id = []
     for item in area_list:

@@ -1,5 +1,6 @@
 from json import loads, dumps
 
+import shutil
 from copy import deepcopy
 
 import os
@@ -9,7 +10,7 @@ from flask import request, jsonify, session
 
 from APP.settings import upload_dir, BASE_DIR
 from Company.utils import create_random_str, update_pic_and_group
-from User.util import save_image
+from User.util import save_image, save_other_file
 from utils import status_code
 from utils.BaseView import BaseView, DelteBase
 
@@ -44,7 +45,7 @@ class CreatePicGroup(BaseView):
             random_url = create_random_str(random.randint(4, 10))
             dir_path = os.path.join(upload_dir, self.dir + random_url)
         os.makedirs(dir_path)
-        print(args)
+        # print(args)
         insert_group = r"""insert into tb_pic_group(Name,Type,Gurl, CID, Ptype) 
                                 value ('{Name}', {Gtype}, '{0}',{CID}, {1})""".format(
             self.db_dir + random_url, self.ptype, **args)
@@ -70,7 +71,7 @@ class DeletePicGroup(DelteBase):
         querysql = r"""select GUrl from {} where id={}""".format(self.table_name, ID)
         db_list = self._db.query(querysql)
         for item in db_list:
-            os.removedirs(BASE_DIR + item['GUrl'])
+            shutil.rmtree(BASE_DIR + item['GUrl'])
         delete_pics = r"""delete from tb_pics where GroupID={}""".format(ID)
         self._db.delete(delete_pics)
         delete_sql = r"""delete from {} where id={}""".format(self.table_name, ID)
@@ -180,8 +181,8 @@ class GetCompanyList(BaseView):
 
     def admin(self):
         query_sql = r"""select t2.ID from tb_project as t1
-                        INNER JOIN tb_company as t2 on t1.Build = t2.id
-                        INNER JOIN tb_company as t3 on t1.Cons = t3.id
+                        LEFT JOIN tb_company as t2 on t1.Build = t2.id
+                        LEFT JOIN tb_company as t3 on t1.Cons = t3.id
                         where t1.DID in ({})""".format(self.get_session_ids())
         self.ids = self.set_ids(query_sql)
         return self.views()
@@ -197,9 +198,9 @@ class GetCompanyList(BaseView):
             if temp == None:
                 return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t4.Name as ProName, t5.Name as CityName, t6.Name as DisName from tb_company as t1
-                                INNER JOIN tb_area as t4 on t1.ProvinceID = t4.id
-                                INNER JOIN tb_area as t5 on t1.CityID = t5.id
-                                INNER JOIN tb_area as t6 on t1.DistrictID = t6.id"""
+                                LEFT JOIN tb_area as t4 on t1.ProvinceID = t4.id
+                                LEFT JOIN tb_area as t5 on t1.CityID = t5.id
+                                LEFT JOIN tb_area as t6 on t1.DistrictID = t6.id"""
         where_sql_list = []
         if self.ids != None:
             if self.ids == []:
@@ -220,11 +221,14 @@ class GetCompanyList(BaseView):
         if int(args.get('DID', 0)):
             # args['DID'] = int(self.args['DID'])
             where_sql_list.append('  DistrictID={} '.format(int(self.args['DID'])))
-        if int(args.get('HasBadRecord', 2)) != 2:
+        if int(args.get('HasBadRecord', 0)) != 0:
             # args['HasBadRecord'] = int(args['HasBadRecord'])
-            where_sql_list.append(' HasBadRecord=1 ')
+            if int(args.get('HasBadRecord', 0)) == 2:
+                where_sql_list.append(' HasBadRecord>={} '.format(args.get('HasBadRecord')))
+            else:
+                where_sql_list.append(' HasBadRecord={} '.format(args.get('HasBadRecord')))
         if self.ids:
-            where_sql_list.append(r""" ID in ({}) """.format(self.to_sql_where_id()))
+            where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if where_sql_list:
             query_sql += ' where '
         for index, item in enumerate(where_sql_list):
@@ -234,7 +238,7 @@ class GetCompanyList(BaseView):
         query_sql += ' limit {0},{1};'
         start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
         query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
-        print(query_sql)
+        # print(query_sql)
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         success = deepcopy(status_code.SUCCESS)
@@ -267,6 +271,22 @@ class UploadPic(BaseView):
     def guest(self):
         return self.admin()
 
+    def save_more_img(self, r_type, img_dir, file_list):
+        result_file_list = []
+        for one_file in file_list:
+            try:
+                iamge_url = save_image(one_file, img_dir)
+                insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type) 
+                                        value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url,
+                                                                               one_file.filename[:-4],
+                                                                               self.ptype, r_type)
+                pid = self._db.insert(insert_sql)
+                temp = {'id': pid, 'name': one_file.filename[:-4], 'url': iamge_url}
+                result_file_list.append(deepcopy(temp))
+            except:
+                continue
+        return result_file_list
+
     def views(self):
         query_sql = r"""select gurl,type from tb_pic_group 
                         where id={GID} and cid={CID} and Ptype = {0}""".format(self.ptype, **self.args)
@@ -274,18 +294,17 @@ class UploadPic(BaseView):
         if not result:
             return jsonify(status_code.DIR_NOT_EXISTS)
         temp_img_dir = result[0]['gurl'][1:]
-        image_file = request.files.get('file', None)
-        if image_file is None:
+        image_file = request.files.getlist('file')
+        if image_file == [] or image_file == '':
             return jsonify(status_code.FILE_NOT_EXISTS)
-        iamge_url = save_image(image_file, temp_img_dir)
-        insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type) 
-                        value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url, image_file.filename[:-4],
-                                                               self.ptype, result[0]['type'])
-        id = self._db.insert(insert_sql)
+        # iamge_url = save_image(image_file, temp_img_dir)
+        # insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type)
+        #                 value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url, image_file.filename[:-4],
+        #                                                        self.ptype, result[0]['type'])
+        # id = self._db.insert(insert_sql)
+        result = self.save_more_img(result[0]['type'], temp_img_dir, image_file)
         success = deepcopy(status_code.SUCCESS)
-        success['id'] = id
-        success['name'] = image_file.filename[:-4]
-        success['url'] = iamge_url
+        success['data'] = result
         return jsonify(success)
 
 
@@ -303,12 +322,17 @@ class GetCompanyInfo(BaseView):
     def guest(self):
         return self.admin()
 
+    def get_all_file(self, companyid):
+        query_sql = r"""select * from tb_otherfile where companyid={}""".format(companyid)
+        file_list = self._db.query(query_sql)
+        return file_list
+
     def views(self):
         ID = self.args.get('ID')
         if ID is None:
             return jsonify(status_code.ID_ERROR)
         query_sql = r"""select t1.ID, t1.Address, t1.BadRecord,t1.Description, t1.Legal, t1.License, t1.HasBadRecord,
-                        t1.Name, t1.Phone, t1.Type,t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID, 
+                        t1.Name, t1.Phone, t1.Type,t1.url,t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID, 
                         t1.ProvinceID as province, t1.CityID as city, t1.DistrictID as district from tb_company as t1
                         LEFT JOIN tb_area as t2 on t1.ProvinceID = t2.ID
                         LEFT JOIN tb_area as t3 on t1.CityID = t3.ID
@@ -319,6 +343,7 @@ class GetCompanyInfo(BaseView):
             return jsonify(status_code.GET_COMPANY_INFO_FAILD)
         result = result[0]
         result['Phone'] = loads(result['Phone'])
+        result['other_file_list'] = self.get_all_file(result['ID'])
         # result['License'] = loads(result['License'])
         success = deepcopy(status_code.SUCCESS)
         success['company_info'] = result
@@ -340,11 +365,27 @@ class CreateCompany(BaseView):
     def guest(self):
         return self.admin()
 
+    def insert_otherfile(self, companyid, file_list):
+        dir_path = os.path.join(upload_dir, 'otherfile')
+        while not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath) values {}'
+        temp = ''
+        for index, one_file in enumerate(file_list):
+            filename, filepath = save_other_file(one_file)
+            temp += r"""({}, '{}', '{}')""".format(companyid, filename, filepath)
+            if index < len(file_list) - 1:
+                temp += ','
+        if temp != '':
+            self._db.insert(insert_sql.format(temp))
+
     def views(self):
         # self.args['Phone'] = dumps(self.args['Phone'])
-        if self.args_is_null('Name'):
+        if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'License', 'Legal'):
             return jsonify(status_code.CONTENT_IS_NULL)
-        self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] == 'true' else 0
+        if self.has_data('tb_company', 'name', self.args.get('Name')):
+            return jsonify(status_code.DATA_HAS_EXISTS)
+        # self.args['HasBadRecord'] = 2 if self.args['HasBadRecord'] == 'true' else 1
         file_list = request.files.get('License', '')
         file_img_url = ''
         if file_list != '':
@@ -355,10 +396,12 @@ class CreateCompany(BaseView):
         self.args['License'] = file_img_url
         # self.args['License'] = '[]'
         insert_sql = r"""insert into tb_company(Name, Legal,Address,Phone,License,Type,ProvinceID,CityID,DistrictID,
-        BadRecord,HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','{License}',{Type},
-        {ProvinceID},{CityID},{DistrictID}, '{BadRecord}', {HasBadRecord}, '{Description}')""".format(**self.args)
+        HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','{License}',{Type},
+        {ProvinceID},{CityID},{DistrictID}, {HasBadRecord}, '{Description}')""".format(**self.args)
         cid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', cid, self.args.get('group_list', []), self._db)
+        if isinstance(request.files.getlist('otherfile'), list):
+            self.insert_otherfile(cid, request.files.getlist('otherfile'))
         return jsonify(status_code.SUCCESS)
 
 
@@ -373,11 +416,29 @@ class UpdateCompany(BaseView):
     def admin(self):
         return self.views()
 
+    def insert_otherfile(self, companyid, file_list):
+        dir_path = os.path.join(upload_dir, 'otherfile')
+        while not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath) values {}'
+        temp = ''
+        for index, one_file in enumerate(file_list):
+            filename, filepath = save_other_file(one_file)
+            temp += r"""({}, '{}', '{}')""".format(companyid, filename, filepath)
+            if index < len(file_list) - 1:
+                temp += ','
+        if temp != '':
+            self._db.insert(insert_sql.format(temp))
+
     def views(self):
+        if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'License', 'Legal'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        if self.has_data('tb_company', 'name', self.args.get('Name')):
+            return jsonify(status_code.DATA_HAS_EXISTS)
         query_sql = r"""select License from tb_company where id={}""".format(int(self.args.get('ID')))
         result = self._db.query(query_sql)[0]
         # self.args['Phone'] = dumps(self.args['Phone'])
-        self.args['HasBadRecord'] = 1 if self.args['HasBadRecord'] == 'true' else 0
+        # self.args['HasBadRecord'] = 2 if self.args['HasBadRecord'] == 'true' else 1
         file_list = request.files.get('License', '')
         file_img_url = result['License']
         if file_list != '':
@@ -389,6 +450,8 @@ class UpdateCompany(BaseView):
         ID = self.args.get('ID')
         del self.args['ID']
         temp = ''
+        if 'BadRecord' in self.args.keys():
+            del self.args['BadRecord']
         for index, item in enumerate(self.args.keys()):
             if isinstance(self.args[item], int):
                 temp = temp + str(item) + '=' + str(self.args[item])
@@ -398,6 +461,8 @@ class UpdateCompany(BaseView):
                 temp += ','
         update_sql = r"""update tb_company set """ + temp + r""" where id={};""".format(ID)
         self._db.update(update_sql)
+        if isinstance(request.files.getlist('otherfile'), list):
+            self.insert_otherfile(ID, request.files.getlist('otherfile'))
         return jsonify(status_code.SUCCESS)
 
 
@@ -454,8 +519,8 @@ class AllCompanyID(BaseView):
 
     def admin(self):
         query_sql = r"""select t2.ID from tb_project as t1
-                        INNER JOIN tb_company as t2 on t1.Build = t2.id
-                        INNER JOIN tb_company as t3 on t1.Cons = t3.id
+                        LEFT JOIN tb_company as t2 on t1.Build = t2.id
+                        LEFT JOIN tb_company as t3 on t1.Cons = t3.id
                         where t1.DID in ({})""".format(self.get_session_ids())
         self.ids = self.set_ids(query_sql)
         return self.views()
@@ -522,3 +587,23 @@ class QueryCompanyProject(BaseView):
         success['data'] = result
         success['total'] = total[0]['total_row']
         return jsonify(success)
+
+
+class DeleteOtherfile(BaseView):
+
+    def __init__(self):
+        super(DeleteOtherfile, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        args = self.args
+        if self.args_is_null('id'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        rm_sql = r"""delete from tb_otherfile where id={};""".format(args.get('id'))
+        self._db.delete(rm_sql)
+        return jsonify(self.success)

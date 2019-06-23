@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from Company.views import CreatePicGroup, DeletePicGroup, DeletePic, GetGroupList, GetCompanyList, \
     UploadPic, GetCompanyInfo, UpdateCompany, CreateCompany, EditGroup, GetOnePic, GetGroupPicList, AllCompanyID, \
-    QueryCompanyProject
+    QueryCompanyProject, DeleteOtherfile
 
 company = Blueprint('company', __name__)
 # 创建图片分组 - 已测试
@@ -33,3 +33,5 @@ company.add_url_rule('/pic/list', methods=['get'], view_func=GetGroupPicList.as_
 company.add_url_rule('/allcompany', methods=['get'], view_func=AllCompanyID.as_view('all_company_list'))
 # 企业中查询项目
 company.add_url_rule('/query/project', methods=['get'], view_func=QueryCompanyProject.as_view('company_query_project'))
+# 删除其他文件
+company.add_url_rule('/remove/otherfile', methods=['delete'], view_func=DeleteOtherfile.as_view('rm_otherfile'))

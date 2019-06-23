@@ -121,6 +121,8 @@ class BaseView(View, metaclass=ABCMeta):
         for i in args:
             if self.args.get(i, None) is None:
                 return True
+            if self.args.get(i, '') == '':
+                return True
         return False
 
     @abstractmethod
@@ -135,6 +137,13 @@ class BaseView(View, metaclass=ABCMeta):
     def guest(self):
         return self.admin()
 
+    def has_data(self, table_name, field, data):
+        query_sql = r"""select id from {} where {}='{}';""".format(table_name, field, data)
+        result = self._db.query(query_sql)
+        if result:
+            return True
+        return False
+
     def get_session_ids(self):
         """
         将session中的区域ID转换为sql语句中where中的条件格式
@@ -145,6 +154,16 @@ class BaseView(View, metaclass=ABCMeta):
             temp += str(area_id)
             if index < len(session['area_ids']) - 1:
                 temp += ','
+        return temp
+
+    def get_where_sql(self, where_sql_list):
+        temp = ''
+        if where_sql_list:
+            temp = ' where '
+            for index, i in enumerate(where_sql_list):
+                temp += i
+                if index < len(where_sql_list) - 1:
+                    temp += ' and '
         return temp
 
 

@@ -41,7 +41,8 @@ class CreateBank(BankBase):
         if args['WTime'] > datetime.datetime.now():
             return jsonify(status_code.CREATE_FEATURE_BANK_INFO)
         if int(args.get('ID', 0)) == 0:
-            query_sql = r"""select id from tb_wage where projectid = {ProjectID} and year={Year} and month = {Month};""".format(**args)
+            query_sql = r"""select id from tb_wage where projectid = {ProjectID} and year={Year} and month = {Month};""".format(
+                **args)
             result = self._db.query(query_sql)
             if result:
                 return jsonify(status_code.BANK_INFO_EXISTS)
@@ -122,7 +123,7 @@ class QueryBank(BankBase):
             year, month, args['ID']
         )
         temp_result = self._db.query(query_sql)
-        args['MonthPay'] = eval(args['Price']) * eval(args['WagePercent']) / 100 / args['Duration']
+        args['MonthPay'] = eval(args['Price']) * eval(args['WagePercent']) / 100 / args['TotalMonth']
         args['ID'] = 0
         args['Date'] = str(year) + '-' + str(month)
         args['Status'] = 2
@@ -141,13 +142,21 @@ class QueryBank(BankBase):
             now_time = datetime.datetime.now()
             start_time = item['StartTime']
             end_time = item['EndTime']
+            # duration = datetime.datetime.strptime(item['Duration'], "%Y-%m-%d")
             item['ProjectID'] = item['ID']
             if start_time > now_time:
                 all_month = {}
             elif start_time < now_time and now_time < end_time:
                 all_month = self.create_all_month(start_time, now_time)
             else:
-                all_month = self.create_all_month(start_time, end_time)
+                if item['Duration'] == '':
+                    all_month = self.create_all_month(start_time, end_time)
+                else:
+                    duration = datetime.datetime.strptime(item['Duration'], "%Y-%m-%d")
+                    if now_time < duration:
+                        all_month = self.create_all_month(start_time, now_time)
+                    else:
+                        all_month = self.create_all_month(start_time, duration)
             for year in all_month.keys():
                 for month in all_month[year]:
                     real_result_dict.append(self.get_one_month_data(deepcopy(item), year, month))
@@ -155,7 +164,7 @@ class QueryBank(BankBase):
 
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS distinct(t1.ID), t1.Name,t1.Price,t1.WagePercent,t1.Duration, t1.StartTime, t1.EndTime, t3.TotalPay from tb_project as t1 
+        query_sql = r"""select SQL_CALC_FOUND_ROWS distinct(t1.ID), t1.Name,t1.Price,t1.WagePercent,t1.TotalMonth, t1.StartTime, t1.EndTime, t3.TotalPay,t1.Duration from tb_project as t1 
                         left join (select projectid,sum(rpay) as totalpay from tb_wage GROUP BY ProjectID) as t3 on t3.projectid = t1.id
                         left JOIN tb_wage as t2 on t2.ProjectID = t1.id"""
         where_sql_list = []

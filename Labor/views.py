@@ -39,12 +39,17 @@ class CreateLabor(LaborBase):
     def views(self):
         args = self.args
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address')
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
+        if len(args.get('IDCard')) != 18:
+            return jsonify(status_code.LABOR_IDCARD_ERROR)
         args['Birthday'] = str_to_date(args['Birthday'])
-        args['DepartureDate'] = str_to_date(args['DepartureDate'])
         args['EntryDate'] = str_to_date(args['EntryDate'])
+        if args['DepartureDate'] != '':
+            args['DepartureDate'] = str_to_date(args['DepartureDate'])
+            if args['DepartureDate'] < args['EntryDate']:
+                return jsonify(status_code.LABOR_TIME_ERROR)
         # args['CreateTime'] = self.time_format(args[''])
         args['SVP'] = str_to_date(args['SVP'])
         args['EVP'] = str_to_date(args['EVP'])
@@ -74,7 +79,7 @@ class CreateLabor(LaborBase):
         #     class_result = self._db.query(query_class)
         #     args['ClassID'] =
         args['Identity'] = 0
-        print(args)
+        # print(args)
         insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
                           JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
                         ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
@@ -121,9 +126,18 @@ class UpdateLabor(LaborBase):
 
     def views(self):
         args = self.args
+        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate')
+        if isnull:
+            return jsonify(status_code.CONTENT_IS_NULL)
+        if len(args.get('IDCard')) != 18:
+            return jsonify(status_code.LABOR_IDCARD_ERROR)
         args['Birthday'] = str_to_date(args['Birthday'])
-        args['DepartureDate'] = str_to_date(args['DepartureDate'])
         args['EntryDate'] = str_to_date(args['EntryDate'])
+        if args['DepartureDate'] != '':
+            args['DepartureDate'] = str_to_date(args['DepartureDate'])
+            if args['DepartureDate'] < args['EntryDate']:
+                return jsonify(status_code.LABOR_TIME_ERROR)
         # args['CreateTime'] = str_to_date(args[''])
         args['SVP'] = str_to_date(args['SVP'])
         args['EVP'] = str_to_date(args['EVP'])
@@ -275,8 +289,10 @@ class QueryLabor(LaborBase):
         labors = []
         for item in result:
             for i in ('Birthday', 'DepartureDate', 'EntryDate', 'CreateTime', 'SVP', 'EVP'):
-                item[i] = item[i].strftime("%Y-%m-%d")
-            item['BadRecord'] = loads(item['BadRecord'])
+                if item[i] != None:
+                    item[i] = item[i].strftime("%Y-%m-%d")
+            # item['BadRecord'] = loads(item['BadRecord'])
+            # print(item['BadRecord'])
             labors.append(item)
         success = deepcopy(status_code.SUCCESS)
         success['labor_list'] = labors
@@ -317,10 +333,11 @@ class LaborInfo(LaborBase):
                 pic_group_dict['bad_list'].append(item)
             else:
                 pic_group_dict['info'].append(item)
-        labor_info['BadRecord'] = loads(labor_info['BadRecord'])
+        # labor_info['BadRecord'] = loads(labor_info['BadRecord'])
         # labor_info['Birthday'] = self.time_to_str(labor_info['Birthday'])
         for i in ('Birthday', 'DepartureDate', 'EntryDate', 'CreateTime', 'SVP', 'EVP'):
-            labor_info[i] = labor_info[i].strftime("%Y-%m-%d")
+            if labor_info[i] != None:
+                labor_info[i] = labor_info[i].strftime("%Y-%m-%d")
         success = deepcopy(status_code.SUCCESS)
         success['labor'] = labor_info
         success['labor']['pic_group'] = pic_group_dict
@@ -332,6 +349,22 @@ class UploadLaborImg(LaborBase):
     def __init__(self):
         super(UploadLaborImg, self).__init__()
 
+    def save_more_img(self, ptype, r_type, img_dir, file_list):
+        result_file_list = []
+        for one_file in file_list:
+            try:
+                iamge_url = save_image(one_file, img_dir)
+                insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type) 
+                                        value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url,
+                                                                               one_file.filename[:-4],
+                                                                               ptype, r_type)
+                pid = self._db.insert(insert_sql)
+                temp = {'id': pid, 'name': one_file.filename[:-4], 'url': iamge_url}
+                result_file_list.append(deepcopy(temp))
+            except:
+                continue
+        return result_file_list
+
     def views(self):
         args = self.args
         query_sql = r"""select gurl,type,ptype from tb_pic_group 
@@ -340,19 +373,21 @@ class UploadLaborImg(LaborBase):
         if not result:
             return jsonify(status_code.DIR_NOT_EXISTS)
         temp_img_dir = result[0]['gurl'][1:]
-        image_file = request.files.get('file', None)
-        if image_file is None:
+        image_file = request.files.getlist('file')
+        if image_file == [] or image_file == '':
             return jsonify(status_code.FILE_NOT_EXISTS)
-        iamge_url = save_image(image_file, temp_img_dir)
-        insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type) 
-                                value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url,
-                                                                       image_file.filename[:-4],
-                                                                       result[0]['ptype'], result[0]['type'])
-        pid = self._db.insert(insert_sql)
+        # iamge_url = save_image(image_file, temp_img_dir)
+        # insert_sql = r"""insert into tb_pics(GroupID, purl, name, Ptype, type)
+        #                         value ({},'{}', '{}', {},{})""".format(self.args['GID'], iamge_url,
+        #                                                                image_file.filename[:-4],
+        #                                                                result[0]['ptype'], result[0]['type'])
+        # pid = self._db.insert(insert_sql)
+        result = self.save_more_img(result[0]['ptype'], result[0]['type'], temp_img_dir, image_file)
         success = deepcopy(status_code.SUCCESS)
-        success['id'] = pid
-        success['name'] = image_file.filename[:-4]
-        success['url'] = iamge_url
+        success['data'] = result
+        # success['id'] = pid
+        # success['name'] = image_file.filename[:-4]
+        # success['url'] = iamge_url
         return jsonify(success)
 
 

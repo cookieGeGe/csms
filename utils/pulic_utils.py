@@ -14,3 +14,6 @@ def str_to_datetime(time_str):
 def str_to_date(newstr):
     # newstr = str1[:10] + ' ' + str1[11:19]
     return datetime.datetime.strptime(newstr, "%Y-%m-%d") + datetime.timedelta(hours=8)
+
+def month_year_to_date(newstr):
+    return datetime.datetime.strptime(newstr, "%Y-%m")
