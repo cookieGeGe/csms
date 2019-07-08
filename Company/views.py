@@ -39,6 +39,11 @@ class CreatePicGroup(BaseView):
 
     def views(self):
         args = self.args
+        select_sql = r"""select id from tb_pic_group where name='{Name}' and type={Gtype} and Cid ={CID} and ptype={0}""".format(
+            self.ptype, **args)
+        exists_result = self._db.query(select_sql)
+        if exists_result:
+            return jsonify(status_code.DATA_HAS_EXISTS)
         random_url = create_random_str(random.randint(4, 10))
         dir_path = os.path.join(upload_dir, self.dir + random_url)
         while os.path.exists(dir_path):
@@ -180,11 +185,11 @@ class GetCompanyList(BaseView):
         return self.views()
 
     def admin(self):
-        query_sql = r"""select t2.ID from tb_project as t1
-                        LEFT JOIN tb_company as t2 on t1.Build = t2.id
-                        LEFT JOIN tb_company as t3 on t1.Cons = t3.id
-                        where t1.DID in ({})""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select t2.ID from tb_project as t1
+        #                 LEFT JOIN tb_company as t2 on t1.Build = t2.id
+        #                 LEFT JOIN tb_company as t3 on t1.Cons = t3.id
+        #                 where t1.DID in ({})""".format(self.get_session_ids())
+        # self.ids = self.set_ids(query_sql)
         return self.views()
 
     def guest(self):
@@ -210,7 +215,7 @@ class GetCompanyList(BaseView):
             if int(args.get('Type')) == 0:
                 where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%'""".format(args.get('Name')))
             else:
-                where_sql_list.append(r""" CONCAT(IFNULL(t1.Phone,'')) LIKE '%{}%'""".format(args.get('Name')))
+                where_sql_list.append(r""" CONCAT(IFNULL(t1.Legal,'')) LIKE '%{}%'""".format(args.get('Name')))
         # print(query_sql)
         if int(args.get('PID', 0)):
             # args['PID'] = int(self.args['PID'])
@@ -381,18 +386,22 @@ class CreateCompany(BaseView):
 
     def views(self):
         # self.args['Phone'] = dumps(self.args['Phone'])
-        if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'License', 'Legal'):
+        if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'Legal', 'Address'):
             return jsonify(status_code.CONTENT_IS_NULL)
-        if self.has_data('tb_company', 'name', self.args.get('Name')):
+        if self.has_data('tb_company', 'name', self.args.get('Name'), None):
             return jsonify(status_code.DATA_HAS_EXISTS)
         # self.args['HasBadRecord'] = 2 if self.args['HasBadRecord'] == 'true' else 1
         file_list = request.files.get('License', '')
         file_img_url = ''
         if file_list != '':
+            if file_list == 'undefined':
+                return jsonify(status_code.CONTENT_IS_NULL)
             if os.name == 'nt':
                 file_img_url = save_image(file_list, r'static\\media\\company')
             else:
                 file_img_url = save_image(file_list, 'static/media/company')
+        else:
+            return jsonify(status_code.CONTENT_IS_NULL)
         self.args['License'] = file_img_url
         # self.args['License'] = '[]'
         insert_sql = r"""insert into tb_company(Name, Legal,Address,Phone,License,Type,ProvinceID,CityID,DistrictID,
@@ -431,9 +440,9 @@ class UpdateCompany(BaseView):
             self._db.insert(insert_sql.format(temp))
 
     def views(self):
-        if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'License', 'Legal'):
+        if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'Legal', 'Address'):
             return jsonify(status_code.CONTENT_IS_NULL)
-        if self.has_data('tb_company', 'name', self.args.get('Name')):
+        if self.has_data('tb_company', 'name', self.args.get('Name'), self.args.get('ID')):
             return jsonify(status_code.DATA_HAS_EXISTS)
         query_sql = r"""select License from tb_company where id={}""".format(int(self.args.get('ID')))
         result = self._db.query(query_sql)[0]
@@ -518,11 +527,11 @@ class AllCompanyID(BaseView):
         return self.views()
 
     def admin(self):
-        query_sql = r"""select t2.ID from tb_project as t1
-                        LEFT JOIN tb_company as t2 on t1.Build = t2.id
-                        LEFT JOIN tb_company as t3 on t1.Cons = t3.id
-                        where t1.DID in ({})""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select t2.ID from tb_project as t1
+        #                 LEFT JOIN tb_company as t2 on t1.Build = t2.id
+        #                 LEFT JOIN tb_company as t3 on t1.Cons = t3.id
+        #                 where t1.DID in ({})""".format(self.get_session_ids())
+        # self.ids = self.set_ids(query_sql)
         return self.views()
 
     def get_query_sql(self):

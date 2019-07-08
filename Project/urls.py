@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
     ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery, \
-    ALLProjectID, GetProjectCompany
+    ALLProjectID, GetProjectCompany, UpdateProgressProject
 
 project = Blueprint('project', __name__)
 
@@ -18,6 +18,8 @@ project.add_url_rule('/query', methods=['GET'], view_func=QueryProject.as_view('
 project.add_url_rule('/progress/query', methods=['GET'], view_func=ProgressProject.as_view('progress_pro'))
 # 添加项目进度 -
 project.add_url_rule('/progress/create', methods=['post'], view_func=ADDProgressProject.as_view('add_progress_pro'))
+# 更新项目进度
+project.add_url_rule('/progress/update', methods=['post'], view_func=UpdateProgressProject.as_view('upload_progress_pro'))
 # 新建项目图片目录 - 已测试
 project.add_url_rule('/group/create', methods=['Post'], view_func=CreateProPicGroup.as_view('create_pro_pic_group'))
 # 获取企业和其负责人 - 已测试

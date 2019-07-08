@@ -360,6 +360,7 @@ class ProgressProject(BaseView):
         result = self._db.query(query_project)
         if result:
             args = result[0]
+            # print(args)
             should_pay = eval(args['Price']) * eval(args['WagePercent']) / 100 / args['TotalMonth']
         else:
             should_pay = 0
@@ -382,8 +383,8 @@ class ProgressProject(BaseView):
         if result:
             result = result[0]
             result['Person'] = loads(result['Person'])
-            query_all_pics = r"""select * from tb_pics where progressid={} and ptype=1 
-                    and type>0;""".format(self.args.get('ProgressID'))
+            query_all_pics = r"""select t1.* from tb_pics as t1 where t1.progressid={} and t1.ptype=1 
+                    and t1.type>0;""".format(self.args.get('ProgressID'))
             pics_result = self._db.query(query_all_pics)
             group_list = ['Progress', 'Contract', 'RealName', 'Attend', 'Wage', 'Rights',
                           'Lwages', 'LAB', 'PAB', 'Arrears', 'LPayCert']
@@ -420,8 +421,12 @@ class ADDProgressProject(BaseView):
         return self.views()
 
     def views(self):
-        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwages',
-                                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID')
+        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
+                                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'Total', 'PPay',
+                                   'LPay')
+        for i in ('Total', 'PPay', 'LPay'):
+            if not self.args.get(i).isdigit():
+                return jsonify(status_code.INPUT_NUMBER_ERROR)
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
@@ -433,10 +438,10 @@ class ADDProgressProject(BaseView):
             return jsonify(status_code.PROGRESS_TIME_TO_ERROR)
         query_sql = r"""select * from tb_project where id={};""".format(args.get('ProjectID'))
         result = self._db.query(query_sql)
-        if result[0]['StartTime'] > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
+        reload_start = datetime.datetime.strptime(result[0]['StartTime'].strftime("%Y-%m"), "%Y-%m")
+        if reload_start > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
             return jsonify(status_code.PROGRESS_TIME_ERROR)
-        # args['Person'] = dumps(args['Person'])
-        for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwages',
+        for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'Progress'):
             if args[i] == 'true':
                 args[i] = 1
@@ -445,7 +450,7 @@ class ADDProgressProject(BaseView):
         insert_sql = r"""insert into tb_progress(ProjectID, Status, UploadTime, Person, Remark,Rtype,Contract,Content,
             RealName,Attend,Wage,Rights,Lwage, LAB, PAB, Arrears, LPayCert,PPay, LPay, Total, Percent,year,month) value ({ProjectID},
             {Status}, '{UploadTime}', '{Person}','{Remark}',{Rtype},{Contract},'{Content}',{RealName},{Attend},{Wage},
-            {Rights},{Lwages},{LAB},{PAB},{Arrears},{LPayCert},'{PPay}', '{LPay}','{Total}', '{Percent}', '{year}', '{month}');"""
+            {Rights},{Lwage},{LAB},{PAB},{Arrears},{LPayCert},'{PPay}', '{LPay}','{Total}', '{Percent}', '{year}', '{month}');"""
         args['UploadTime'] = datetime.datetime.now()
         progress_id = self._db.insert(insert_sql.format(**args))
         if self.args.get('ImgGroupID', []):
@@ -464,6 +469,73 @@ class ADDProgressProject(BaseView):
             args['ProjectID']
         )
         self._db.update(update_sql)
+        success = deepcopy(status_code.SUCCESS)
+        success['msg'] = '上传成功'
+        return jsonify(success)
+
+
+class UpdateProgressProject(BaseView):
+    """
+    编辑项目进度
+    """
+
+    def __init__(self):
+        super(UpdateProgressProject, self).__init__()
+        self.api_permission = 'project_edit'
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
+                                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'ID', 'Total', 'PPay',
+                                   'LPay')
+        for i in ('Total', 'PPay', 'LPay'):
+            if not self.args.get(i).isdigit():
+                return jsonify(status_code.INPUT_NUMBER_ERROR)
+        if isnull:
+            return jsonify(status_code.CONTENT_IS_NULL)
+        args = self.args
+        args['UploadTime'] = month_year_to_date(args['UploadTime'])
+        args['year'] = args['UploadTime'].year
+        args['month'] = args['UploadTime'].month
+        now_time = datetime.datetime.now()
+        if args['UploadTime'] > now_time:
+            return jsonify(status_code.PROGRESS_TIME_TO_ERROR)
+        query_sql = r"""select * from tb_project where id={};""".format(args.get('ProjectID'))
+        result = self._db.query(query_sql)
+        if result[0]['StartTime'] > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
+            return jsonify(status_code.PROGRESS_TIME_ERROR)
+        for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
+                  'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'Progress'):
+            if args[i] == 'true':
+                args[i] = 1
+            else:
+                args[i] = 0
+
+        old_data_sql = r"""select PPay,LPay,Total from tb_progress where id={}""".format(self.args.get('ID'))
+        old_data = self._db.query(old_data_sql)
+
+        update_progress_sql = r"""update tb_progress set ProjectID={ProjectID}, Status={Status},
+                    Person='{Person}',Remark='{Remark}',Rtype={Rtype},Contract={Contract},Content='{Content}',RealName={RealName},
+                    Attend={Attend},Wage={Wage}, Rights={Rights},Lwage={Lwage},LAB={LAB},PAB={PAB},Arrears={Arrears}, 
+                    LPayCert={LPayCert},PPay='{PPay}', LPay='{LPay}', Total='{Total}',Percent='{Percent}',year='{year}',
+                    month='{month}' where id ={ID}"""
+        args['UploadTime'] = datetime.datetime.now()
+        self._db.update(update_progress_sql.format(**args))
+        if self.args.get('ImgGroupID', []):
+            update_progress_pic(self.args.get('ID'), self.args.get('ImgGroupID'), self._db)
+        if old_data:
+            update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}' where id={};""".format(
+                str(eval(result[0]['Total']) - eval(old_data[0]['Total']) + eval(args['Total'])),
+                str(eval(result[0]['TotalPay']) - eval(old_data[0]['PPay']) + eval(args['PPay'])),
+                str(eval(result[0]['Issue']) - eval(old_data[0]['LPay']) + eval(args['LPay'])),
+                args['ProjectID']
+            )
+            self._db.update(update_sql)
         success = deepcopy(status_code.SUCCESS)
         success['msg'] = '上传成功'
         return jsonify(success)

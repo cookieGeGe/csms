@@ -147,8 +147,11 @@ class QueryAttendInfo(AttendBase):
                 if item[i] is None or item[i] == '':
                     item[i] = ''
                     is_miss = True
-                # else:
-                #     item[i] = item[i].strftime("%H:%M:%S")
+                else:
+                    if isinstance(item[i], str):
+                        item[i] = item[i][-8:]
+                    else:
+                        item[i] = item[i].strftime("%H:%M:%S")
             item['miss'] = '缺考' if is_miss else '无缺考'
             temp_data.append(item)
         success = deepcopy(status_code.SUCCESS)

@@ -31,4 +31,6 @@ LABOR_TIME_ERROR = {'code': 50023, 'msg': '劳工离场日期错误，请检查�
 LABOR_IDCARD_ERROR = {'code': 50014, 'msg': '身份证号码错误！'}
 PROGRESS_TIME_TO_ERROR = {'code': 50024, 'msg': '请上传当前月以及之前没上传月份的数据'}
 Duration_TIME_TO_ERROR = {'code': 50025, 'msg': '延期时间错误'}
+INPUT_NUMBER_ERROR = {'code': 50026, 'msg': '请检查支付情况是否是数字'}
+PASSWORD_IS_NULL = {'code': 50027, 'msg': '密码不能为空'}
 

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="root@47.106.140.239:22">
+  <component name="PublishConfigData" autoUpload="Always" serverName="47.106.140.239">
     <serverData>
       <paths name="112.74.77.158">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/app/csms" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="120.78.163.106">
         <serverdata>
           <mappings>
             <mapping deploy="/home/app/csms" local="$PROJECT_DIR$" web="/" />
@@ -16,6 +23,20 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@112.74.77.158:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/app/csms" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@120.78.163.106:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/app/csms" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@47.106.140.239:22">
         <serverdata>
           <mappings>
@@ -24,5 +45,6 @@
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

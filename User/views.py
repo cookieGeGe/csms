@@ -56,7 +56,7 @@ class UserRegist(BaseView):
         self._insert_sql = self._insert_sql.format(
             self._form.get('UserName', ''),
             self._form.get('UserName', ''),
-            str(generate_password_hash(self._form.get('Password', ''))),
+            self._form.get('Password', ''),
             self._form.get('Email', ''),
             self._form.get('Phone', ''),
             self._form.get('Description', ''),
@@ -65,11 +65,14 @@ class UserRegist(BaseView):
             img_url,
         )
         try:
-            id = self._db.insert(self._insert_sql)
-            area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(id,
+            uid = self._db.insert(self._insert_sql)
+            area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(uid,
                                                                                              self._form.get('AreaID'))
             self._db.insert(area_sql)
         except:
+            if uid:
+                delete_sql = r"""delete from tb_user where id = {};""".format(uid)
+                self._db.delete(delete_sql)
             return jsonify(status_code.DB_ERROR)
         return jsonify(deepcopy(status_code.SUCCESS))
 
@@ -117,13 +120,15 @@ class UserLogin(BaseView):
         if result[0]['Status'] != 1:
             return jsonify(status_code.USER_IS_DISABLED)
         pwd = result[0]['Password']
-        if not check_password_hash(pwd, args['Password']):
+        if pwd != args['Password']:
             return jsonify(status_code.PASSWORD_ERROR)
         session['id'] = self.uid
         session['AdminType'] = result[0]['AdminType']
         session['url'] = self.get_all_url()
+        # print(result[0]['AdminType'])
         if result[0]['AdminType']:
             session['area_ids'] = self.get_area_ids()
+            # print(session['area_ids'])
         success = deepcopy(status_code.SUCCESS)
         success['Permission'], success['AllPermission'] = self.get_permissions(self.uid)
         session['Permission'], session['C'] = success['Permission'], success['AllPermission']
@@ -191,8 +196,10 @@ class UserDelete(BaseView):
 
     def administrator(self):
         args = self.args
+        delete_area = r"""delete from tb_user_area where userid ={};""".format(args.get('ID'))
         sql = r"""delete from tb_user where id = {};""".format(args.get('ID'))
         try:
+            self._db.delete(delete_area)
             self._db.delete(sql)
             return jsonify(status_code.SUCCESS)
         except Exception as e:
@@ -253,12 +260,13 @@ class UpdateUser(BaseView):
         else:
             args['Avatar'] = result['Avatar']
         if args.get('Password', '') == '':
+            return jsonify(status_code.PASSWORD_IS_NULL)
             update_sql = r"""update tb_user set LoginName = '{UserName}',
                                             UserName = '{UserName}',
                                             Description='{Description}',
                                             Avatar='{Avatar}' where id={ID};""".format(**args)
         else:
-            args['Password'] = generate_password_hash(args.get('Password', ''))
+            # args['Password'] = generate_password_hash(args.get('Password', ''))
             update_sql = r"""update tb_user set LoginName = '{UserName}',
                                                 UserName = '{UserName}',
                                                 Password='{Password}'
@@ -281,10 +289,10 @@ class QueryUser(BaseView):
         return self.views()
 
     def admin(self):
-        query_sql = r"""select t1.*, t3.AreaID from tb_user as t1
-                        left join tb_user_area as t3 on t3.userid = t1.id
-                        where t3.areaid in ({})""".format(self.get_session_ids())
-        self.ids = self._db.query(query_sql)
+        # query_sql = r"""select t1.*, t3.AreaID from tb_user as t1
+        #                 left join tb_user_area as t3 on t3.userid = t1.id
+        #                 where t3.areaid in ({})""".format(self.get_session_ids())
+        # self.ids = self._db.query(query_sql)
         return self.views()
 
     def find_father(self, child_id):
@@ -308,11 +316,11 @@ class QueryUser(BaseView):
         #     where_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName', '')))
         if args.get('UserName', '') != '':
             where_list.append(r""" CONCAT(IFNULL(t1.UserName,'')) LIKE '%{}%' """.format(args.get('UserName', '')))
-        if int(args.get('AreaID', 0)) != 0:
-            query_area_sql = r"""select * from tb_area where id={}""".format(args['AreaID'])
+        if int(args.get('AreaId', 0)) != 0:
+            query_area_sql = r"""select * from tb_area where id={}""".format(args['AreaId'])
             result = self._db.query(query_area_sql)
             areaids = get_all_area_id(self._db, result)
-            areaids += [int(args['AreaID']), ]
+            areaids += [int(args['AreaId']), ]
             temp = ''
             for index, aid in enumerate(areaids):
                 temp += str(aid)
@@ -333,9 +341,7 @@ class QueryUser(BaseView):
 
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t3.AreaID, t4.name as Areaname from tb_user as t1
-                        left join tb_user_area as t3 on t3.userid = t1.id
-                        INNER JOIN tb_area as t4 on t3.AreaID = t4.id"""
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.* from tb_user as t1"""
         if int(args.get('ID', 0)) == 0:
             query_sql += self.main_query(args)
         else:
@@ -343,19 +349,26 @@ class QueryUser(BaseView):
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         for item in result:
-            area_list = self.find_father(item['AreaID'])
-            item['AreaName'] = '-'.join(area_list[::2][::-1])
-            item['PID'], item['CID'], item['DID'] = 0, 0, 0
-            item['PName'], item['CName'], item['DName'] = '', '', ''
-            if len(area_list[::-1][::2]) == 1:
-                item['PName'] = area_list[::2][::-1][0]
-                item['PID'] = area_list[::-1][::2][0]
-            elif len(area_list[::-1][::2]) == 2:
-                item['PName'], item['DName'] = area_list[::2][::-1]
-                item['PID'], item['CID'] = area_list[::-1][::2]
-            elif len(area_list[::-1][::2]) == 3:
-                item['PID'], item['CID'], item['DID'] = area_list[::-1][::2]
-                item['PName'], item['CName'], item['DName'] = area_list[::2][::-1]
+            query_area_id = r"""select * from tb_user_area where userid = {};""".format(item['ID'])
+            area_id_list = self._db.query(query_area_id)
+            if not area_id_list:
+                item['AreaName'] = ''
+                item['PID'], item['CID'], item['DID'] = 0, 0, 0
+                item['PName'], item['CName'], item['DName'] = '', '', ''
+            else:
+                area_list = self.find_father(area_id_list[0]['AreaID'])
+                item['AreaName'] = '-'.join(area_list[::2][::-1])
+                item['PID'], item['CID'], item['DID'] = 0, 0, 0
+                item['PName'], item['CName'], item['DName'] = '', '', ''
+                if len(area_list[::-1][::2]) == 1:
+                    item['PName'] = area_list[::2][::-1][0]
+                    item['PID'] = area_list[::-1][::2][0]
+                elif len(area_list[::-1][::2]) == 2:
+                    item['PName'], item['DName'] = area_list[::2][::-1]
+                    item['PID'], item['CID'] = area_list[::-1][::2]
+                elif len(area_list[::-1][::2]) == 3:
+                    item['PID'], item['CID'], item['DID'] = area_list[::-1][::2]
+                    item['PName'], item['CName'], item['DName'] = area_list[::2][::-1]
         success = deepcopy(status_code.SUCCESS)
         success['user_list'] = result
         success['total'] = total[0]['total_row']

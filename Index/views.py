@@ -79,8 +79,8 @@ class GetBadRecordInfo(IndexBase):
     def company_where(self):
         where_sql_list = []
         where_sql_list.append(r""" HasBadRecord = {} """)
-        if self.company_ids:
-            where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
+        # if self.company_ids:
+        #     where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
         if self.args.get('companyname', '') != '':
             where_sql_list.append(r"""  CONCAT(IFNULL(Name,'')) LIKE '%{}%' """.format(self.args.get('companyname')))
         return where_sql_list
@@ -107,8 +107,8 @@ class GetBadRecordInfo(IndexBase):
 
     def labor_where(self, temp_id):
         where_sql_list = []
-        if self.project_ids:
-            where_sql_list.append(r""" t1.projectID in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
+        # if self.project_ids:
+        #     where_sql_list.append(r""" t1.projectID in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
         if self.args.get('laborname', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(self.args.get('laborname')))
         if self.args.get('idcrad', '') != '':
@@ -194,8 +194,8 @@ class MessageTotal(IndexBase):
 
     def company_where(self):
         where_sql_list = []
-        if self.project_ids:
-            where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
+        # if self.project_ids:
+        #     where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
         where_sql_list.append(r""" HasBadRecord = 2 """)
         return where_sql_list
 
@@ -217,8 +217,8 @@ class MessageTotal(IndexBase):
 
     def labor_where(self):
         where_sql_list = []
-        if self.project_ids:
-            where_sql_list.append(r""" t1.projectID in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
+        # if self.project_ids:
+        #     where_sql_list.append(r""" t1.projectID in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
         where_sql_list.append(r""" t1.badrecord = 1 """)
         return where_sql_list
 
@@ -298,8 +298,8 @@ class IndexNumberPic(IndexBase):
 
     def company_where(self, isbad):
         where_sql_list = []
-        if self.project_ids:
-            where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
+        # if self.project_ids:
+        #     where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
         if isbad == 1:
             where_sql_list.append(r""" HasBadRecord = 2 """)
         if isbad == 0:
@@ -319,8 +319,8 @@ class IndexNumberPic(IndexBase):
 
     def labor_where(self, isbad):
         where_sql_list = []
-        if self.project_ids:
-            where_sql_list.append(r""" projectid in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
+        # if self.project_ids:
+        #     where_sql_list.append(r""" projectid in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
         if isbad == 1:
             where_sql_list.append(r""" Isbadrecord=1 """)
         if isbad == 0:

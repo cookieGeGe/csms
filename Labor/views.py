@@ -38,8 +38,15 @@ class CreateLabor(LaborBase):
 
     def views(self):
         args = self.args
-        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate')
+        for key in args.keys():
+            if args.get(key) == 'undefined':
+                args[key] = ''
+        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex','ClassID'
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand')
+        if args.get('isPM') == 'false':
+            args['isPM'] = 0
+        else:
+            args['isPM'] = 1
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if len(args.get('IDCard')) != 18:
@@ -69,7 +76,7 @@ class CreateLabor(LaborBase):
         #     args['BadRecord'] = dumps(bad_list)
         # else:
         #     args['BadRecord'] = '0'
-        if args.get('IsLeader', False):
+        if args.get('IsLeader', '') == 'true':
             create_class = r"""insert into tb_class(companyid, classname, projectid) 
                 value ({},'{}', {})""".format(args.get('CompanyID'), args.get('classname'), args.get('ProjectID'))
             class_id = self._db.insert(create_class)
@@ -80,7 +87,19 @@ class CreateLabor(LaborBase):
         #     args['ClassID'] =
         args['Identity'] = 0
         # print(args)
-        insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
+        if args.get('DepartureDate', '') == '':
+            insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
+                                      JobType, ClassID, Identity,EntryDate,Hardhatnum,Education,CreateTime,
+                                    ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
+                                     CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord)
+                                     value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
+                                     {CompanyID},{JobType},{ClassID},{Identity},'{EntryDate}','{Hardhatnum}',
+                                     '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
+                                     '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
+                                     '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', {isFeeStand},'{BadRecord}')""".format(
+                **args)
+        else:
+            insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
                           JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
                         ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
                          CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord)
@@ -89,7 +108,7 @@ class CreateLabor(LaborBase):
                          '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
                          '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
                          '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', {isFeeStand},'{BadRecord}')""".format(
-            **args)
+                **args)
         lid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', lid, args.get('group_list'), self._db)
         # update_pic_and_group('tb_pics', lid, args.get('Img_list'), self._db)
@@ -126,8 +145,15 @@ class UpdateLabor(LaborBase):
 
     def views(self):
         args = self.args
-        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate')
+        for key in args.keys():
+            if args.get(key) == 'undefined':
+                args[key] = ''
+        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex',
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand')
+        if args.get('isPM') == 'false':
+            args['isPM'] = 0
+        else:
+            args['isPM'] = 1
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if len(args.get('IDCard')) != 18:
@@ -180,6 +206,8 @@ class UpdateLabor(LaborBase):
         del args['group_list']
         # del args['Img_list']
         del args['ID']
+        if args.get('DepartureDate', '') == '':
+            del args['DepartureDate']
         update_sql = r"""update tb_laborinfo set """
         for key in ('Avatar', 'IDP', 'IDB', 'CloseupPhoto', 'Train'):
             if args[key] == '' or args[key] == 'undefined':
@@ -220,8 +248,8 @@ class QueryLabor(LaborBase):
 
     def admin(self):
         """以项目ID为基准"""
-        query_sql = r"""select ID from tb_project where DID in ({})""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select ID from tb_project where DID in ({})""".format(self.get_session_ids())
+        # self.ids = self.set_ids(query_sql)
         return self.views()
 
     def views(self):
@@ -234,10 +262,10 @@ class QueryLabor(LaborBase):
                             left JOIN tb_area as t6 on t6.ID = t1.CID
                             left JOIN tb_area as t7 on t7.ID = t1.DID"""
         where_sql_list = []
-        if self.ids != None:
-            if not self.ids:
-                self.ids = [0, ]
-            where_sql_list.append(r""" t1.projectid in ({}) """.format(self.to_sql_where_id()))
+        # if self.ids != None:
+        #     if not self.ids:
+        #         self.ids = [0, ]
+        #     where_sql_list.append(r""" t1.projectid in ({}) """.format(self.to_sql_where_id()))
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':

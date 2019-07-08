@@ -46,6 +46,7 @@ def get_all_area_id(db, area_list):
     for item in area_list:
         if item['HasChild']:
             temp_sql = r"""select * from tb_area where FatherID={}""".format(item['ID'])
+            temp_id.append(item['ID'])
             child_list = db.query(temp_sql)
             temp_id += get_all_area_id(db, child_list)
         else:

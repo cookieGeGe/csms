@@ -123,6 +123,10 @@ class BaseView(View, metaclass=ABCMeta):
                 return True
             if self.args.get(i, '') == '':
                 return True
+            if self.args.get(i, '') == 'null':
+                return True
+            if self.args.get(i) == 'undefined' or self.args.get(i) == '请选择':
+                return True
         return False
 
     @abstractmethod
@@ -137,8 +141,11 @@ class BaseView(View, metaclass=ABCMeta):
     def guest(self):
         return self.admin()
 
-    def has_data(self, table_name, field, data):
-        query_sql = r"""select id from {} where {}='{}';""".format(table_name, field, data)
+    def has_data(self, table_name, field, data, db_id):
+        if db_id is None:
+            query_sql = r"""select id from {} where {}='{}';""".format(table_name, field, data)
+        else:
+            query_sql = r"""select id from {} where {}='{}' and id!={};""".format(table_name, field, data, db_id)
         result = self._db.query(query_sql)
         if result:
             return True

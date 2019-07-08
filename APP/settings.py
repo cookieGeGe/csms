@@ -35,7 +35,7 @@ SQLALCHEMY_MAX_OVERFLOW = 5
 
 redisInfo = {
     'host': '127.0.0.1',
-    'password': 'admin123',
+    'password': 'licheng@123.@',
     'port': 6379,
     'db': 0
 }
