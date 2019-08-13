@@ -33,4 +33,6 @@ PROGRESS_TIME_TO_ERROR = {'code': 50024, 'msg': '请上传当前月以及之前�
 Duration_TIME_TO_ERROR = {'code': 50025, 'msg': '延期时间错误'}
 INPUT_NUMBER_ERROR = {'code': 50026, 'msg': '请检查支付情况是否是数字'}
 PASSWORD_IS_NULL = {'code': 50027, 'msg': '密码不能为空'}
+WagePercent_IS_NULL = {'code': 50027, 'msg': '工资占比不能为0'}
+CLASS_ID_NULL = {'code': 50028, 'msg': '请先创建班组长,或者选择班组长'}
 

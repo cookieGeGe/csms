@@ -156,11 +156,11 @@ class ImportComProLaTemp(TemplateBase):
         if files == '':
             return jsonify(status_code.TEMPLATE_ERROR)
         if args.get('Name') == 'Company':
-            import_temp = FileImportCompany(files, TempColnames.COMPANY, self.db)
+            import_temp = FileImportCompany(files, TempColnames.COMPANY, self._db)
         elif args.get('Name') == 'Project':
-            import_temp = FileImportProject(files, TempColnames.PROJECT, self.db)
+            import_temp = FileImportProject(files, TempColnames.PROJECT, self._db)
         else:
-            import_temp = FileImportLabor(files, TempColnames.PROJECT, self.db)
+            import_temp = FileImportLabor(files, TempColnames.PROJECT, self._db)
         import_temp.save()
         result = import_temp.bad_info
         success = deepcopy(status_code.SUCCESS)

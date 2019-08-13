@@ -53,9 +53,12 @@ class CreateProject(BaseView):
 
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID',
-                                   'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime')
+                                   'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
+                                   'WagePercent')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
+        if eval(self.args.get('WagePercent')) == 0:
+            return jsonify(status_code.WagePercent_IS_NULL)
         args = deepcopy(self.args)
         if args['StartTime'] != '':
             args['StartTime'] = str_to_date(args['StartTime'])
@@ -134,12 +137,14 @@ class UpdateProject(BaseView):
         return (end_year - start_year) * 12 + (end_month - start_month)
 
     def views(self):
-        isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID',
+        isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID', 'WagePercent',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
+        if eval(self.args.get('WagePercent')) == 0:
+            return jsonify(status_code.WagePercent_IS_NULL)
         args = self.args
-        print(args)
+        # print(args)
         args['StartTime'] = str_to_date(args['StartTime'])
         args['EndTime'] = str_to_date(args['EndTime'])
         if args['StartTime'] > args['EndTime']:
@@ -420,12 +425,28 @@ class ADDProgressProject(BaseView):
     def admin(self):
         return self.views()
 
+    def is_number(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            pass
+
+        try:
+            import unicodedata
+            unicodedata.numeric(s)
+            return True
+        except (TypeError, ValueError):
+            pass
+
+        return False
+
     def views(self):
         isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
                                    'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'Total', 'PPay',
-                                   'LPay')
+                                   'LPay', 'Percent')
         for i in ('Total', 'PPay', 'LPay'):
-            if not self.args.get(i).isdigit():
+            if not self.is_number(self.args.get(i)):
                 return jsonify(status_code.INPUT_NUMBER_ERROR)
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
@@ -489,12 +510,28 @@ class UpdateProgressProject(BaseView):
     def admin(self):
         return self.views()
 
+    def is_number(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            pass
+
+        try:
+            import unicodedata
+            unicodedata.numeric(s)
+            return True
+        except (TypeError, ValueError):
+            pass
+
+        return False
+
     def views(self):
         isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
                                    'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'ID', 'Total', 'PPay',
-                                   'LPay')
+                                   'LPay', 'Percent')
         for i in ('Total', 'PPay', 'LPay'):
-            if not self.args.get(i).isdigit():
+            if not self.is_number(self.args.get(i)):
                 return jsonify(status_code.INPUT_NUMBER_ERROR)
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
@@ -507,7 +544,8 @@ class UpdateProgressProject(BaseView):
             return jsonify(status_code.PROGRESS_TIME_TO_ERROR)
         query_sql = r"""select * from tb_project where id={};""".format(args.get('ProjectID'))
         result = self._db.query(query_sql)
-        if result[0]['StartTime'] > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
+        reload_start = datetime.datetime.strptime(result[0]['StartTime'].strftime("%Y-%m"), "%Y-%m")
+        if reload_start > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
             return jsonify(status_code.PROGRESS_TIME_ERROR)
         for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'Progress'):
@@ -736,8 +774,11 @@ class ProjectMainQuery(BaseView):
         return self.views()
 
     def admin(self):
-        query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        if self.get_session_ids() != '':
+            query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+            self.ids = self.set_ids(query_sql)
+        else:
+            self.ids = []
         return self.views()
 
     def views(self):
@@ -837,10 +878,19 @@ class ALLProjectID(AllCompanyID):
 
     def get_labor_group_info(self, projectid):
         query_sql = r"""select t1.ClassName,t1.ID as ClassID, t2.Name as SuperiorsName, t2.ID as SuperiorsID from tb_class as t1
-                    LEFT JOIN tb_laborinfo as t2 on t1.ProjectID = t2.ProjectID and t2.IsLeader = 1 
+                    RIGHT JOIN tb_laborinfo as t2 on t1.ID = t2.ClassID and t2.IsLeader = 1 
                     where t1.ProjectID={}""".format(projectid)
         result = self._db.query(query_sql)
         return result
+
+    def distinct(self, result):
+        data = []
+        id_s = []
+        for item in result:
+            if item['ClassID'] not in id_s:
+                id_s.append(item['ClassID'])
+                data.append(item)
+        return data
 
     def get_project_company(self, projectid):
         build_query_sql = r"""select t2.id as ID, t2.Name as Name from tb_project as t1
@@ -859,7 +909,7 @@ class ALLProjectID(AllCompanyID):
         result = self._db.query(query_sql)
         for item in result:
             item['companyinfo'] = self.get_project_company(item['ID'])
-            item['labor_group_info'] = self.get_labor_group_info(item['ID'])
+            item['labor_group_info'] = self.distinct(self.get_labor_group_info(item['ID']))
         success = deepcopy(status_code.SUCCESS)
         success['list'] = result
         return jsonify(success)

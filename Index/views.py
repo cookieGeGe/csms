@@ -19,16 +19,16 @@ class IndexBase(BaseView):
         return self.views()
 
     def admin(self):
-        company_sql = r"""select t2.ID from tb_project as t1
-                                INNER JOIN tb_company as t2 on t1.Build = t2.id
-                                INNER JOIN tb_company as t3 on t1.Cons = t3.id
-                                where t1.DID in ({})""".format(self.get_session_ids())
-        self.company_ids = self.set_ids(company_sql)
-        if self.company_ids == []:
-            self.company_ids = [0, ]
-
-        project_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-        self.project_ids = self.set_ids(project_sql)
+        # company_sql = r"""select t2.ID from tb_project as t1
+        #                         INNER JOIN tb_company as t2 on t1.Build = t2.id
+        #                         INNER JOIN tb_company as t3 on t1.Cons = t3.id
+        #                         where t1.DID in ({})""".format(self.get_session_ids())
+        # self.company_ids = self.set_ids(company_sql)
+        # if self.company_ids == []:
+        #     self.company_ids = [0, ]
+        if self.get_session_ids() != '':
+            project_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+            self.project_ids = self.set_ids(project_sql)
         if self.project_ids == []:
             self.project_ids = [0, ]
         return self.views()

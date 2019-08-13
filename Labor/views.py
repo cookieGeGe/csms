@@ -41,14 +41,16 @@ class CreateLabor(LaborBase):
         for key in args.keys():
             if args.get(key) == 'undefined':
                 args[key] = ''
-        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex','ClassID'
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand')
+        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'ClassID',
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand', 'SVP', 'EVP')
         if args.get('isPM') == 'false':
             args['isPM'] = 0
         else:
             args['isPM'] = 1
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
+        if self.args.get('IsLeader') == 'false' and self.args.get('ClassID') == '0':
+            return jsonify(status_code.CLASS_ID_NULL)
         if len(args.get('IDCard')) != 18:
             return jsonify(status_code.LABOR_IDCARD_ERROR)
         args['Birthday'] = str_to_date(args['Birthday'])
@@ -82,9 +84,9 @@ class CreateLabor(LaborBase):
             class_id = self._db.insert(create_class)
             args['ClassID'] = class_id
         # else:
-        #     query_class = r"""select ClassID from tb_laborinfo where id={};""".format(args.get('Superiors'))
+        #     query_class = r"""select ClassID from tb_laborinfo where id={};""".format(args.get('SuperiorsID'))
         #     class_result = self._db.query(query_class)
-        #     args['ClassID'] =
+        #     args['ClassID'] = class_result[0]['ClassID']
         args['Identity'] = 0
         # print(args)
         if args.get('DepartureDate', '') == '':

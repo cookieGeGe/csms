@@ -123,7 +123,7 @@ class QueryAttend(AttendBase):
         success = deepcopy(status_code.SUCCESS)
         success['Attend'] = result
         success['total'] = total[0]['total_row']
-        print(success['Attend'])
+        # print(success['Attend'])
         return jsonify(success)
 
 
@@ -174,7 +174,7 @@ class QuerySalary(AttendBase):
                         left JOIN (select laborid,year,month,count(id) as swipe from tb_attendance where year = {} and month = {} and (amin != '' or amout!= '' or pmin != '' or pmout != '') GROUP BY laborid,year,month )
                           as t4 on t4.laborid = t1.id where t1.id={};""".format(
             year, month, laborid)
-        print(query_sql)
+        # print(query_sql)
         result = self._db.query(query_sql)
         data = {}
         if result:

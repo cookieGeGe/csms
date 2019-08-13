@@ -16,6 +16,6 @@ while i <= 4:
         index = username_list.index(name)
         # print('索引为：', index)
         if passwd == password_list[index]:
-            print('登录成功！')
+            # print('登录成功！')
             break
     i += 1

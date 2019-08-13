@@ -9,14 +9,14 @@ class FileImportCompany(ImportFileBase):
 
     def __init__(self, files, colnames, db):
         super(FileImportCompany, self).__init__(files, colnames, db)
-        self.insert_sql = r""" insert into tb_company(Name, Leage, Address, Type, Province, City, District, Phone, 
-        Description,BadRecord) value ('{Name}', '{Leage}', '{Address}', {Type}, {Province}, {City}, {District}, 
+        self.insert_sql = r""" insert into tb_company(Name, Legal, Address, Type, ProvinceID, CityID, Districtid, Phone, 
+        Description,BadRecord, HasBadRecord) value ('{Name}', '{Leage}', '{Address}', {Type}, {Province}, {City}, {District}, 
         '{Phone}', '{Description}','{BadRecord}',{HasBadRecord})"""
 
     def formatter_area(self):
         for key in ('Province', 'City', 'District'):
             if self.item.get(key, '') != '':
-                query_sql = r"""select id in tb_area where Name='{}';""".format(self.item.get(key))
+                query_sql = r"""select id from tb_area where Name='{}';""".format(self.item.get(key))
                 result = self.db.query(query_sql)
                 if result:
                     self.item[key] = result[0]['id']
@@ -26,7 +26,7 @@ class FileImportCompany(ImportFileBase):
                 self.item[key] = 0
 
     def formatter_type(self):
-        type_list = ['分包公司', '劳务公司', '监理公司']
+        type_list = ['施工企业', '监理单位', '勘察设计', '劳务公司', '房地产开发', '政府及事业单位', '其他业主单位', '其他']
         if self.item.get('Type', '') in type_list:
             self.item['Type'] = type_list.index(self.item.get('Type'))
             return False

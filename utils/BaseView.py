@@ -59,7 +59,7 @@ class BaseView(View, metaclass=ABCMeta):
         temp = ''
         for index, i in enumerate(self.ids):
             temp += str(i)
-            if index < len(self.ids)-1:
+            if index < len(self.ids) - 1:
                 temp += ','
         return temp
 
@@ -125,6 +125,11 @@ class BaseView(View, metaclass=ABCMeta):
                 return True
             if self.args.get(i, '') == 'null':
                 return True
+            if self.args.get(i, '') == 'NaN':
+                return True
+            if i in ('ProvinceID', 'CityID', 'DistrictID', 'PID', 'CID', 'DID', 'province', 'city', 'district'):
+                if self.args.get(i, '') == '0':
+                    return True
             if self.args.get(i) == 'undefined' or self.args.get(i) == '请选择':
                 return True
         return False

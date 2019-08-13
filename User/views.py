@@ -269,14 +269,19 @@ class UpdateUser(BaseView):
             # args['Password'] = generate_password_hash(args.get('Password', ''))
             update_sql = r"""update tb_user set LoginName = '{UserName}',
                                                 UserName = '{UserName}',
-                                                Password='{Password}'
+                                                Password='{Password}',
                                                 Description='{Description}',
                                                 Avatar='{Avatar}' where id ={ID} ;""".format(**args)
         self._db.update(update_sql)
-        if int(result['AreaID']) != int(args['AreaID']):
+        if result['AreaID'] is None:
+            insert_sql = r"""insert tb_user_area(areaid,userid) value ({}, {});""".format(args['AreaID'], result['ID'])
+            self._db.insert(insert_sql)
+        elif int(result['AreaID']) != int(args['AreaID']):
             update_area_sql = r"""update tb_user_area set AreaID = {} where UserID = {}""".format(int(args['AreaID']),
                                                                                                   int(result['ID']))
             self._db.update(update_area_sql)
+        else:
+            pass
         return jsonify(status_code.SUCCESS)
 
 
@@ -364,7 +369,7 @@ class QueryUser(BaseView):
                     item['PName'] = area_list[::2][::-1][0]
                     item['PID'] = area_list[::-1][::2][0]
                 elif len(area_list[::-1][::2]) == 2:
-                    item['PName'], item['DName'] = area_list[::2][::-1]
+                    item['PName'], item['CName'] = area_list[::2][::-1]
                     item['PID'], item['CID'] = area_list[::-1][::2]
                 elif len(area_list[::-1][::2]) == 3:
                     item['PID'], item['CID'], item['DID'] = area_list[::-1][::2]
@@ -376,7 +381,6 @@ class QueryUser(BaseView):
 
 
 class GetAllPermission(BaseView):
-
     """
     获取权限接口：
     :param ID 0表示获取当前用户的权限， 用户id 表示获取指定用户的权限

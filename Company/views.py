@@ -327,8 +327,8 @@ class GetCompanyInfo(BaseView):
     def guest(self):
         return self.admin()
 
-    def get_all_file(self, companyid):
-        query_sql = r"""select * from tb_otherfile where companyid={}""".format(companyid)
+    def get_all_file(self, companyid, ptype):
+        query_sql = r"""select * from tb_otherfile where companyid={} and type={}""".format(companyid, ptype)
         file_list = self._db.query(query_sql)
         return file_list
 
@@ -348,7 +348,8 @@ class GetCompanyInfo(BaseView):
             return jsonify(status_code.GET_COMPANY_INFO_FAILD)
         result = result[0]
         result['Phone'] = loads(result['Phone'])
-        result['other_file_list'] = self.get_all_file(result['ID'])
+        result['other_file_list'] = self.get_all_file(result['ID'], 0)
+        result['license_list'] = self.get_all_file(result['ID'], 1)
         # result['License'] = loads(result['License'])
         success = deepcopy(status_code.SUCCESS)
         success['company_info'] = result
@@ -370,15 +371,29 @@ class CreateCompany(BaseView):
     def guest(self):
         return self.admin()
 
-    def insert_otherfile(self, companyid, file_list):
+    def insert_otherfile(self, companyid, file_list, ptype):
         dir_path = os.path.join(upload_dir, 'otherfile')
         while not os.path.exists(dir_path):
             os.makedirs(dir_path)
-        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath) values {}'
+        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath,type) values {}'
         temp = ''
         for index, one_file in enumerate(file_list):
             filename, filepath = save_other_file(one_file)
-            temp += r"""({}, '{}', '{}')""".format(companyid, filename, filepath)
+            temp += r"""({}, '{}', '{}', {})""".format(companyid, filename, filepath, ptype)
+            if index < len(file_list) - 1:
+                temp += ','
+        if temp != '':
+            self._db.insert(insert_sql.format(temp))
+
+    def insert_license(self, companyid, file_list, ptype):
+        dir_path = os.path.join(upload_dir, 'otherfile')
+        while not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath,type) values {}'
+        temp = ''
+        for index, one_file in enumerate(file_list):
+            filepath = save_image(one_file, 'static/media/otherfile')
+            temp += r"""({}, '{}', '{}', {})""".format(companyid, one_file.filename, filepath, ptype)
             if index < len(file_list) - 1:
                 temp += ','
         if temp != '':
@@ -391,26 +406,28 @@ class CreateCompany(BaseView):
         if self.has_data('tb_company', 'name', self.args.get('Name'), None):
             return jsonify(status_code.DATA_HAS_EXISTS)
         # self.args['HasBadRecord'] = 2 if self.args['HasBadRecord'] == 'true' else 1
-        file_list = request.files.get('License', '')
-        file_img_url = ''
-        if file_list != '':
-            if file_list == 'undefined':
-                return jsonify(status_code.CONTENT_IS_NULL)
-            if os.name == 'nt':
-                file_img_url = save_image(file_list, r'static\\media\\company')
-            else:
-                file_img_url = save_image(file_list, 'static/media/company')
-        else:
-            return jsonify(status_code.CONTENT_IS_NULL)
-        self.args['License'] = file_img_url
+        # file_list = request.files.get('License', '')
+        # file_img_url = ''
+        # if file_list != '':
+        #     if file_list == 'undefined':
+        #         return jsonify(status_code.CONTENT_IS_NULL)
+        #     if os.name == 'nt':
+        #         file_img_url = save_image(file_list, r'static\\media\\company')
+        #     else:
+        #         file_img_url = save_image(file_list, 'static/media/company')
+        # else:
+        #     return jsonify(status_code.CONTENT_IS_NULL)
+        # self.args['License'] = file_img_url
         # self.args['License'] = '[]'
         insert_sql = r"""insert into tb_company(Name, Legal,Address,Phone,License,Type,ProvinceID,CityID,DistrictID,
-        HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','{License}',{Type},
+        HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','0',{Type},
         {ProvinceID},{CityID},{DistrictID}, {HasBadRecord}, '{Description}')""".format(**self.args)
         cid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', cid, self.args.get('group_list', []), self._db)
-        if isinstance(request.files.getlist('otherfile'), list):
-            self.insert_otherfile(cid, request.files.getlist('otherfile'))
+        if isinstance(request.files.getlist('otherfile[]'), list):
+            self.insert_otherfile(cid, request.files.getlist('otherfile[]'), 0)
+        if isinstance(request.files.getlist('License[]'), list):
+            self.insert_otherfile(cid, request.files.getlist('License[]'), 1)
         return jsonify(status_code.SUCCESS)
 
 
@@ -425,15 +442,29 @@ class UpdateCompany(BaseView):
     def admin(self):
         return self.views()
 
-    def insert_otherfile(self, companyid, file_list):
+    def insert_otherfile(self, companyid, file_list, ptype):
         dir_path = os.path.join(upload_dir, 'otherfile')
         while not os.path.exists(dir_path):
             os.makedirs(dir_path)
-        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath) values {}'
+        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath,type) values {}'
         temp = ''
         for index, one_file in enumerate(file_list):
             filename, filepath = save_other_file(one_file)
-            temp += r"""({}, '{}', '{}')""".format(companyid, filename, filepath)
+            temp += r"""({}, '{}', '{}', {})""".format(companyid, filename, filepath, ptype)
+            if index < len(file_list) - 1:
+                temp += ','
+        if temp != '':
+            self._db.insert(insert_sql.format(temp))
+
+    def insert_license(self, companyid, file_list, ptype):
+        dir_path = os.path.join(upload_dir, 'otherfile')
+        while not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        insert_sql = 'insert into tb_otherfile(companyid, filename, filepath,type) values {}'
+        temp = ''
+        for index, one_file in enumerate(file_list):
+            filepath = save_image(one_file, 'static/media/otherfile')
+            temp += r"""({}, '{}', '{}', {})""".format(companyid, one_file.filename, filepath, ptype)
             if index < len(file_list) - 1:
                 temp += ','
         if temp != '':
@@ -470,8 +501,10 @@ class UpdateCompany(BaseView):
                 temp += ','
         update_sql = r"""update tb_company set """ + temp + r""" where id={};""".format(ID)
         self._db.update(update_sql)
-        if isinstance(request.files.getlist('otherfile'), list):
-            self.insert_otherfile(ID, request.files.getlist('otherfile'))
+        if isinstance(request.files.getlist('otherfile[]'), list):
+            self.insert_otherfile(ID, request.files.getlist('otherfile[]'), 0)
+        if isinstance(request.files.getlist('License[]'), list):
+            self.insert_otherfile(ID, request.files.getlist('License[]'), 1)
         return jsonify(status_code.SUCCESS)
 
 
@@ -562,8 +595,10 @@ class QueryCompanyProject(BaseView):
         return self.views()
 
     def admin(self):
-        query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        self.ids = []
+        if self.get_session_ids() != '':
+            query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+            self.ids = self.set_ids(query_sql)
         return self.views()
 
     def views(self):

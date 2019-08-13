@@ -37,6 +37,7 @@ def main():
     for item in company_name_list:
         try:
             company_url = get_company_url(item['name'])
+            print(item['name'], ':', company_url)
             if company_url != '':
                 update_company_url(company_url, item['id'])
         except:

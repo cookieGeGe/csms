@@ -64,7 +64,9 @@ class CreateGuarantee(GuaranteeBase):
             self._db.update(update_sql)
 
     def views(self):
-        is_null = self.args_is_null('Expiretime', 'Duration')
+        is_null = self.args_is_null('Expiretime', 'Duration', 'ProjectID', 'CompanyID', 'GuaCompany', 'Capital',
+                                    'Nature', 'Name', 'Amount', 'Kind', 'Deadline', 'SignTime', 'Category', 'Totalrate',
+                                    'Total', 'RealAC', 'Marginratio', 'Margin', 'Bene', 'PID', 'CID', 'DID')
         if is_null:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
@@ -72,8 +74,10 @@ class CreateGuarantee(GuaranteeBase):
         # print(args)
         args['Expiretime'] = str_to_date(args['Expiretime'])
         args['Duration'] = str_to_date(args['Duration'])
-        args['SignTime'] = datetime.datetime.now() + datetime.timedelta(hours=8)
-        args['Number'] = 'BSHS-' + str(int(time.time() * 1000))
+        args['SignTime'] = str_to_date(args['SignTime'])
+        # args['SignTime'] = datetime.datetime.now() + datetime.timedelta(hours=8)
+        # args['Number'] = 'BSHS-' + str(int(time.time() * 1000))
+        args['Number'] = args['Name']
         insert_sql = r"""insert into tb_guarantee(CompanyID,Capital, Nature,Name,Number,Amount,Kind,ProjectID,SignTime,
             Category, Deadline, Expiretime,Totalrate,Total,RealAC,Marginratio,Margin,Bene,PID,CID,DID,Description,Duration,GuaCompany)
             value ('{CompanyID}','{Capital}','{Nature}','{Name}','{Number}','{Amount}','{Kind}','{ProjectID}','{SignTime}',
@@ -103,10 +107,10 @@ class QueryGuarantee(GuaranteeBase):
         super(QueryGuarantee, self).__init__()
 
     def admin(self):
-        query_sql = r"""select t2.* from tb_project as t1
-                        RIGHT JOIN tb_guarantee as t2 on t1.id = t2.ProjectID
-                        where t1.DID in ({})""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select t2.* from tb_project as t1
+        #                 RIGHT JOIN tb_guarantee as t2 on t1.id = t2.ProjectID
+        #                 where t1.DID in ({})""".format(self.get_session_ids())
+        # self.ids = self.set_ids(query_sql)
         return self.views()
 
     def main_query(self, query_sql, args, has_limit):
@@ -118,9 +122,9 @@ class QueryGuarantee(GuaranteeBase):
             where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         for name in ('Number', 'Kind', 'Bene', 'Total'):
             if args.get(name, '') != '':
-                where_list.append(r""" CONCAT(IFNULL(t1.'{}','')) LIKE '%{}%' """.format(name, args.get(name)))
+                where_list.append(r""" CONCAT(IFNULL(t1.{},'')) LIKE '%{}%' """.format(name, args.get(name)))
         if args.get('CompanyName', '') != '':
-            where_list.append(r""" CONCAT(IFNULL(t1.CompanyID, '')) like '%{}%' """.format(args.get('CompanyName')))
+            where_list.append(r""" CONCAT(IFNULL(t1.GuaCompany, '')) like '%{}%' """.format(args.get('CompanyName')))
         if args.get('ProjectName', '') != '':
             where_list.append(r""" CONCAT(IFNULL(t1.ProjectID, '')) like '%{}%' """.format(args.get('ProjectName')))
         if int(args.get('DID', 0)):
@@ -130,11 +134,11 @@ class QueryGuarantee(GuaranteeBase):
         if int(args.get('PID', 0)):
             where_list.append(r""" t1.PID={} """.format(args.get('PID')))
         if args.get('StartTime', '') != '':
-            args['StartTime'] = str_to_date(args['StartTime'])
-            where_list.append(r""" t1.SignTime > '{}' """.format(args.get('StartTime')))
+            starttime = str_to_date(args['StartTime'])
+            where_list.append(r""" t1.SignTime > '{}' """.format(starttime))
         if args.get('EndTime', '') != '':
-            args['EndTime'] = str_to_date(args['EndTime'])
-            where_list.append(r""" t1.Expiretime < '{}' """.format(args.get('EndTime')))
+            endtime = str_to_date(args['EndTime'])
+            where_list.append(r""" t1.Expiretime < '{}' """.format(endtime))
         if int(args.get('Category', 9)) != 9:
             where_list.append(r""" t1.Category = {} """.format(args.get('Category')))
         temp = ''
@@ -147,7 +151,7 @@ class QueryGuarantee(GuaranteeBase):
         page = int(args.get('Page', 1))
         psize = int(args.get('PageSize', 10))
         if has_limit:
-            limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
+            limit_sql = r""" order by ID desc limit {},{};""".format((page - 1) * psize, psize)
             query_sql = query_sql + " " + temp + limit_sql
         else:
             query_sql = query_sql + ' ' + temp
@@ -184,7 +188,7 @@ class QueryGuarantee(GuaranteeBase):
             if item['Duration'] != '':
                 item['Duration'] = item['Duration'].strftime("%Y-%m-%d")
             item['IsExpire'] = '已过期' if datetime.datetime.strptime(item['Expiretime'],
-                                                                   "%Y-%m-%d") > nowdate else '未过期'
+                                                                   "%Y-%m-%d") < nowdate else '未过期'
             # item['Category'] = GKind[int(item['Category']) - 1]
             query_cg = r"""select * from tb_cguarantee where GID = {};""".format(item['ID'])
             item['CGuarantee'] = self._db.query(query_cg)
@@ -238,11 +242,21 @@ class UpdateGuarantee(GuaranteeBase):
         self._db.insert(insert_sql)
 
     def views(self):
+        is_null = self.args_is_null('Expiretime', 'Duration', 'ProjectID', 'CompanyID', 'GuaCompany', 'Capital',
+                                    'Nature', 'Name', 'Amount', 'Kind', 'Deadline', 'SignTime', 'Category', 'Totalrate',
+                                    'Total', 'RealAC', 'Marginratio', 'Margin', 'Bene', 'PID', 'CID', 'DID')
+        if is_null:
+            return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
         # 时间处理
         args['Expiretime'] = str_to_date(args['Expiretime'])
+        args['Duration'] = str_to_date(args['Duration'])
+        args['SignTime'] = str_to_date(args['SignTime'])
+        # args['SignTime'] = datetime.datetime.now() + datetime.timedelta(hours=8)
+        # args['Number'] = 'BSHS-' + str(int(time.time() * 1000))
+        args['Number'] = args['Name']
         update_sql = r"""update tb_guarantee set CompanyID='{CompanyID}',Capital='{Capital}',Nature='{Nature}',Name='{Name}',
-            Amount='{Amount}',Kind='{Kind}',ProjectID='{ProjectID}',
+            Amount='{Amount}',Kind='{Kind}',ProjectID='{ProjectID}',Duration='{Duration}',SignTime='{SignTime}',Number='{Number}',
             Category={Category}, Deadline='{Deadline}', Expiretime='{Expiretime}',Totalrate='{Totalrate}',
             Total='{Total}',RealAC='{RealAC}',Marginratio='{Marginratio}',Margin='{Margin}',Bene='{Bene}',PID={PID},CID={CID},
             DID={DID},Description='{Description}',GuaCompany='{GuaCompany}' where id={ID}""".format(**args)

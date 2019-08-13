@@ -20,7 +20,6 @@ class TempColnames():
 
 class Data_Excel():
 
-
     def __init__(self, excel_file, col_names):
         self.file = excel_file
         self.dict_name = col_names
@@ -64,7 +63,7 @@ class ImportFileBase(metaclass=ABCMeta):
     def __init__(self, files, colnames, db):
         self.colnames = colnames
         self.db = db
-        self.file = files
+        self.file = files.read()
         self.insert_sql = r""""""
         self.file_data = Data_Excel(self.file, self.colnames)
         self.item = {}
@@ -84,7 +83,8 @@ class ImportFileBase(metaclass=ABCMeta):
         return self.bad_info, self.total_bad
 
     def save(self):
-        for item in self.file_data.excel_data():
+        data_list = self.file_data.excel_data()
+        for item in data_list:
             self.item = item
             try:
                 check_field = self.check_field()
