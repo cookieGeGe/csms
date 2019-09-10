@@ -168,7 +168,7 @@ class UpdateProject(BaseView):
         # print(args)
         update_sql = r"""update tb_project set Name='{Name}',Type={Type}, GuaranType={GuaranType},Price='{Price}',
                 Duration='{Duration}',GAmount='{GAmount}',PrinPical='{PrinPical}',WagePercent='{WagePercent}',Status={Status},
-                StartTime='{StartTime}', EndTime='{EndTime}',Address='{Address}',Build={Build},Build={Build},
+                StartTime='{StartTime}', EndTime='{EndTime}',Address='{Address}',Build={Build},Cons={Cons},
                 ConsManager='{ConsManager}',OwnerManager='{OwnerManager}', Description='{Description}', PID={PID},CID={CID},DID={DID},
                 Total='{Total}',TotalPay='{TotalPay}',Issue='{Issue}',TotalMonth={TotalMonth} WHERE ID={ID}""".format(
             **args)

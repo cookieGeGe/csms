@@ -39,11 +39,11 @@ class CreatePicGroup(BaseView):
 
     def views(self):
         args = self.args
-        select_sql = r"""select id from tb_pic_group where name='{Name}' and type={Gtype} and Cid ={CID} and ptype={0}""".format(
-            self.ptype, **args)
-        exists_result = self._db.query(select_sql)
-        if exists_result:
-            return jsonify(status_code.DATA_HAS_EXISTS)
+        # select_sql = r"""select id from tb_pic_group where name='{Name}' and type={Gtype} and Cid ={CID} and ptype={0}""".format(
+        #     self.ptype, **args)
+        # exists_result = self._db.query(select_sql)
+        # if exists_result:
+        #     return jsonify(status_code.DATA_HAS_EXISTS)
         random_url = create_random_str(random.randint(4, 10))
         dir_path = os.path.join(upload_dir, self.dir + random_url)
         while os.path.exists(dir_path):
