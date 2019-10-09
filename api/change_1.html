@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>版本一修改</title>
+    <style type="text/css" media="screen">
+        div {
+            margin-top: 20px;
+            display: block;
+            margin-left: 0px;
+        }
+
+        div p {
+            margin-top: 15px;
+            margin-left: 50px;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div style="border: 1px solid grey">
+    <h1>企业相关：</h1>
+    <hr>
+    <div>
+        <h4>创建企业接口：/company/regist</h4>
+        <h4>更新企业接口：/company/update</h4>
+        <p>请求方式：post; </p>
+        <p>请求改变参数：<br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;BadRecord <br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;otherfile list 其他类型的文件列表, 如果没有就传入一个空列表 <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord int 值改为1或者2,或者3, 正常：1， 风险：2 黑名单：3 <br>
+
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>获取企业详情：/company/info</h4>
+        <p>请求方式：get; </p>
+        <p>返回结果：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;other_file_list list 其他类型的文件列表, 如果没有就传入一个空列表,返回多个结构体{id: , companyid:
+            filename:
+            ,filepath: } <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;HasBadRecord int 值改为1或者2,或者3, 正常：1， 风险：2 黑名单：3 <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;BadRecord <br>
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>上传图片列表：/company/uploadgrouppic</h4>
+        <p>请求方式：post; </p>
+        <p>请求参数：<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;file: list 上传的图片文件列表<br>
+        </p>
+        <p>返回结果：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;data list 其他类型的文件列表, 如果没有就传入一个空列表,返回多个结构体{id: 图片id, name:图片名字,
+            url:图片路径 }
+            <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;id <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;name <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;url <br>
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>上传图片列表：/company/remove/otherfile</h4>
+        <p>请求方式：delete; </p>
+        <p>请求参数：<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;id: 要删除的文件ID<br>
+        </p>
+    </div>
+</div>
+
+
+<div style="border: 1px solid grey">
+    <h1>项目相关：</h1>
+    <hr>
+    <div>
+        <h4>创建项目接口：/project/create</h4>
+        <h4>更新项目接口：/project/update</h4>
+        <p>请求方式：post; </p>
+        <p>请求改变参数：<br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;LaborManager <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;Supervisor <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;ConsManager list 改为多个负责人的名字列表<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;OwnerManager list 改为多个负责人的名字列表<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Duration datetime 越来的工期月数字段，改为时间对象，格式'2019-01-05' <br>
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>上传图片：/project/img/upload</h4>
+        <p>请求方式：post; </p>
+        <p>请求参数：<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;file: list 上传的图片文件列表<br>
+        </p>
+        <p>返回结果：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;data list 其他类型的文件列表, 如果没有就传入一个空列表,返回多个结构体{id: 图片id, name:图片名字,
+            url:图片路径 }
+            <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;id <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;name <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;url <br>
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>获取项目详情：/project/query</h4>
+        <p>请求方式：get; </p>
+        <p>返回结果：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;BuildName str 建设方名称 <br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;ConsName str 施工方名称 <br>
+        </p>
+    </div>
+    <hr>
+
+    <div>
+        <h4>获取项目进度详情：/project/progress/query</h4>
+        <p>请求方式：get; </p>
+        <p>返回结果：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;labor_total int 劳工总数 <br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;attend_percent float 打卡比例 <br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;bank_should_pay float 银行应付 <br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;bank_real_pay float 银行实际支付 <br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;bank_status 银行支付状态（对应银行管理的支付状态） <br>
+        </p>
+    </div>
+    <hr>
+
+    <div>
+        <h4>获取项目列表：/project/search</h4>
+        <p>请求方式：get; </p>
+        <p>返回结果：<br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;LaborManager<br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;Supervisor<br>
+            <span></span>&nbsp;&nbsp;&nbsp;&nbsp;WagePercent 工资发放 <br>
+        </p>
+    </div>
+    <hr>
+
+</div>
+
+
+<div style="border: 1px solid grey">
+    <h1>劳工相关：</h1>
+    <hr>
+    <!-- <div>
+        <h4>创建劳工接口：/project/create</h4>
+        <h4>更新劳工接口：/project/update</h4>
+        <p>请求方式：post; </p>
+        <p>请求改变参数：<br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;LaborManager <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;Supervisor <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Duration datetime 越来的工期月数字段，改为时间对象，格式'2019-01-05' <br>
+        </p>
+    </div>
+    <hr> -->
+    <div>
+        <h4>上传图片：/company/uploadpic</h4>
+        <p>请求方式：post; </p>
+        <p>请求参数：<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;file: list 上传的图片文件列表<br>
+        </p>
+        <p>返回结果：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;data list 其他类型的文件列表, 如果没有就传入一个空列表,返回多个结构体{id: 图片id, name:图片名字,
+            url:图片路径 }
+            <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;id <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;name <br>
+            <span>-</span>&nbsp;&nbsp;&nbsp;&nbsp;url <br>
+        </p>
+    </div>
+    <hr>
+
+
+</div>
+
+<div style="border: 1px solid grey">
+    <h1>保函相关：</h1>
+    <hr>
+    <div>
+        <h4>创建保函：/guarantee/create</h4>
+        <h4>创建保函：/guarantee/update</h4>
+        <p>请求方式：post; </p>
+        <p>请求参数：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;GuaCompany str 担保公司 <br>
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>创建保函：/guarantee/cguarantee/create</h4>
+        <h4>创建保函：/guarantee/cguarantee/update</h4>
+        <p>请求方式：post; </p>
+        <p>请求参数：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;Description str 备注 <br>
+        </p>
+    </div>
+    <hr>
+
+
+</div>
+
+<div style="border: 1px solid grey">
+    <h1>用户相关：</h1>
+    <hr>
+    <div>
+        <h4>用户查询：/user/query</h4>
+        <p>请求方式：get; </p>
+        <p>请求参数：<br>
+            <span>-</span> CompanyName
+        </p>
+        <p>返回结果：
+            <span>-</span> Name<br>
+
+        </p>
+    </div>
+    <hr>
+
+
+</div>
+
+
+<div style="border: 1px solid grey">
+    <h1>考勤和薪资计算相关：</h1>
+    <hr>
+    <div>
+        <h4></h4>
+        <p>请求方式：post; </p>
+        <p>请求参数：<br>
+
+        </p>
+        <p>返回结果：<br>
+
+        </p>
+    </div>
+    <hr>
+
+
+</div>
+
+<div style="border: 1px solid grey">
+    <h1>首页相关：</h1>
+    <hr>
+    <div>
+        <h4>获取饼状图和总数：/index/pie</h4>
+        <p>请求方式：get; </p>
+        <p>返回结果：<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;pie_labor: list 劳工饼状图数据<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;pie_company: list 企业饼状图数据<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;pie_project: list 项目饼状图<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;total_labor: int 所有的劳工数<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;total_company: int 所有企业数<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;total_project: int 所有项目数<br>
+        </p>
+        <p>
+            <img src="./pic/change/index_number.png">
+        </p>
+    </div>
+    <hr>
+    <div>
+        <h4>获取饼状图和总数：/index/info</h4>
+        <p>请求方式：get; </p>
+        <p>请求参数：<br>
+            <span>+</span>&nbsp;&nbsp;&nbsp;&nbsp;idcard str 身份证号码进行搜索
+        </p>
+        <p>返回结果：<br>
+        <div style="text-align: left;">
+            <img src="./pic/change/index_info_1.png">
+            <img src="./pic/change/index_info_2.png">
+        </div>
+        </p>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
+
+</html>

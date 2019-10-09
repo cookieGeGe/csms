@@ -3715,4 +3715,25 @@ CREATE TABLE `tb_wage`  (
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '工资表' ROW_FORMAT = Compact;
 
+
+-- 2019-10-09 添加
+
+CREATE TABLE `csms`.`tb_user_pro`  (
+  `id` int(0) NOT NULL AUTO_INCREMENT,
+  `uid` int(0) NULL COMMENT '用户ID',
+  `pid` int(0) NULL COMMENT '项目ID',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `user_project` FOREIGN KEY (`uid`) REFERENCES `csms`.`tb_user` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `project_per` FOREIGN KEY (`pid`) REFERENCES `csms`.`tb_project` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+ALTER TABLE `csms`.`tb_user`
+ADD COLUMN `permission` int(11) NULL DEFAULT 1 COMMENT '权限标志位' AFTER `CompanyID`;
+
+ALTER TABLE `csms`.`tb_project`
+ADD COLUMN `subcompany` varchar(2048) NULL DEFAULT '[]' COMMENT '分包企业' AFTER `TotalMonth`;
+
+
+
+
 SET FOREIGN_KEY_CHECKS = 1;

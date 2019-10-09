@@ -1,4 +1,6 @@
 from copy import deepcopy
+from json import dumps
+
 from flask import session, request, jsonify
 from flask.views import View
 
@@ -177,6 +179,54 @@ class BaseView(View, metaclass=ABCMeta):
                 if index < len(where_sql_list) - 1:
                     temp += ' and '
         return temp
+
+    def get_project_ids(self):
+        """根据权限类型获取用户可以管理的项目ID列表"""
+        if session['pertype'] == 1:
+            project_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+            # self.project_ids = self.set_ids(project_sql)
+        else:
+            project_sql = r"""select t2.ID from tb_user_pro as t1
+                                left join tb_project as t2 on t1.pid=t2.ID
+                                where t1.uid={}""".format(session['id'])
+        return self.set_ids(project_sql)
+
+    def get_labor_ids(self):
+        """根据权限获取用户可以管理的劳工列表"""
+        if session['pertype'] == 1:
+            labor_sql = r"""select t2.ID from tb_project as t1 
+                            left join tb_laborinfo as t2 on t1.id = t2.projectid
+                            where t1.did in ({})""".format(self.get_session_ids())
+        else:
+            labor_sql = r"""select t2.ID from tb_user_pro as t1
+                            left join tb_laborinfo as t2 on t2.projectid = t1.pid
+                            where t1.uid={};""".format(session['id'])
+        return self.set_ids(labor_sql)
+
+    def get_company_ids(self):
+        """根据权限类型获取用户可以管理的企业列表"""
+        if session['pertype'] == 1:
+            company_sql = r"""select Build,Cons,subcompany from tb_project where DID in ({});""".format(
+                self.get_session_ids())
+        else:
+            company_sql = r"""select t2.Build,t2.Cons,t2.subcompany from tb_user_pro as t1
+                                left join tb_project as t2 on t1.pid=t2.ID
+                                where t1.uid={}""".format(session['id'])
+        self.company_ids = []
+        result = self._db.query(company_sql)
+        if result:
+            for item in result:
+                self.company_ids.append(item['Build'])
+                self.company_ids.append(item['Cons'])
+                if item['subcompany'] == '' or item['subcompany'] is None:
+                    continue
+                subcompanys = dumps(item['subcompany'])
+                for subcom in subcompanys:
+                    if not isinstance(subcom, dict):
+                        continue
+                    if 'id' in subcom.keys():
+                        self.company_ids.append(subcom['id'])
+        return self.company_ids
 
 
 class DelteBase(BaseView):

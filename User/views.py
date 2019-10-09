@@ -43,7 +43,23 @@ class UserRegist(BaseView):
     def guest(self):
         return jsonify(status_code.PERMISSION_ERROR)
 
+    def insert_permission(self, tb, filed, value):
+        try:
+            uid = self._db.insert(self._insert_sql)
+            area_sql = r"""insert into {}({}, {}) value ({}, {})""".format(tb, filed[0], filed[1], uid, value)
+            self._db.insert(area_sql)
+            return True
+        except:
+            if uid:
+                delete_sql = r"""delete from tb_user where id = {};""".format(uid)
+                self._db.delete(delete_sql)
+            return False
+
     def views(self):
+        """
+        permission为1表示按照地区，为2表示按照项目
+        :return:
+        """
         ava_file = request.files.get('file', '')
         img_url = '/static/media/ava/home.png'
         if ava_file != '':
@@ -51,7 +67,7 @@ class UserRegist(BaseView):
         loginname_sql = r"""select id from tb_user where LoginName = '{}';""".format(self._form.get('UserName'))
         if len(self._db.query(loginname_sql)):
             return jsonify(status_code.USER_EXISTS)
-        self._insert_sql = r"""insert into tb_user(LoginName,UserName,Password,Email,Phone,Description,AdminType,CompanyID,Avatar,Status) 
+        self._insert_sql = r"""insert into tb_user(LoginName,UserName,Password,Email,Phone,Description,AdminType,CompanyID,Avatar,Status, permission) 
                                 value('{}', '{}','{}','{}','{}', '{}',{},{},'{}',1)"""
         self._insert_sql = self._insert_sql.format(
             self._form.get('UserName', ''),
@@ -62,18 +78,24 @@ class UserRegist(BaseView):
             self._form.get('Description', ''),
             int(self._form.get('AdminType', 1)),
             int(self._form.get('CompanyID', 0)),
-            img_url,
+            img_url, self._form.get('permission', 1)
         )
-        try:
-            uid = self._db.insert(self._insert_sql)
-            area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(uid,
-                                                                                             self._form.get('AreaID'))
-            self._db.insert(area_sql)
-        except:
-            if uid:
-                delete_sql = r"""delete from tb_user where id = {};""".format(uid)
-                self._db.delete(delete_sql)
-            return jsonify(status_code.DB_ERROR)
+        if self._form.get('permission', 1) ==1:
+            if not self.insert_permission('tb_user_area', ['userid', 'areaid'], self._form.get('AreaID')):
+                return jsonify(status_code.DB_ERROR)
+            # try:
+            #     uid = self._db.insert(self._insert_sql)
+            #     area_sql = r"""insert into tb_user_area(userid, areaid) value ({}, {})""".format(uid,
+            #                                                                                      self._form.get('AreaID'))
+            #     self._db.insert(area_sql)
+            # except:
+            #     if uid:
+            #         delete_sql = r"""delete from tb_user where id = {};""".format(uid)
+            #         self._db.delete(delete_sql)
+            #     return jsonify(status_code.DB_ERROR)
+        else:
+            if not self.insert_permission('tb_user_pro', ['uid', 'pid'], self._form.get('projectid')):
+                return jsonify(status_code.DB_ERROR)
         return jsonify(deepcopy(status_code.SUCCESS))
 
 
@@ -111,7 +133,7 @@ class UserLogin(BaseView):
 
     def views(self):
         args = self.args
-        sql = r"""select id,UserName,LoginName,Password,AdminType,Status from tb_user where loginname='{}';""".format(
+        sql = r"""select id,UserName,LoginName,Password,AdminType,Status,permission from tb_user where loginname='{}';""".format(
             args['LoginName'])
         result = self._db.query(sql)
         self.uid = result[0]['id']
@@ -133,6 +155,7 @@ class UserLogin(BaseView):
         success['Permission'], success['AllPermission'] = self.get_permissions(self.uid)
         session['Permission'], session['C'] = success['Permission'], success['AllPermission']
         session['login'] = True
+        session['pertype'] = result[0]['permission']
         # a = jsonify(success)
         # a.set_cookie('session', session)
         return jsonify(success)
