@@ -10,15 +10,22 @@ class FileImportLabor(ImportFileBase):
 
     def __init__(self, files, colnames, db):
         super(FileImportLabor, self).__init__(files, colnames, db)
+        self.table_name = 'tb_laborinfo'
         self.insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
                           JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
-                        ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
+                        ProjectID,IsPM,IssueAuth,Political,EmerCon,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
                         Remark, FeeStand, isFeeStand,Badrecord,isbadrecord)
                          value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
                          {CompanyID},{JobType},{ClassID},0,'{DepartureDate}','{EntryDate}','{Hardhatnum}',
                          '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
-                         '{Train}','{EmerCon}',{Province},{City},{District},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
-                         '{Remark}','{FeeStand}', {isFeeStand}, '{Badrecord}','{BadRecord}')"""
+                         '{EmerCon}',{Province},{City},{District},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
+                         '{Remark}','{FeeStand}', {isFeeStand}, '{Badrecord}','{isBadRecord}')"""
+        self.key_list = {
+            'Province': 'PID',
+            'City': 'CID',
+            'District': 'DID',
+            'SuperiorsID': 'Superiors',
+        }
 
     def formatter_company(self):
         query_sql = r"""select id from tb_company where name='{}';""".format(self.item.get('CompanyID', ''))
@@ -60,7 +67,7 @@ class FileImportLabor(ImportFileBase):
     def formatter_area(self):
         for key in ('Province', 'City', 'District'):
             if self.item.get(key, '') != '':
-                query_sql = r"""select id in tb_area where Name='{}';""".format(self.item.get(key))
+                query_sql = r"""select id from tb_area where Name='{}';""".format(self.item.get(key))
                 result = self.db.query(query_sql)
                 if result:
                     self.item[key] = result[0]['id']
@@ -85,12 +92,24 @@ class FileImportLabor(ImportFileBase):
 
     def formatter_public(self):
         self.item['CreateTime'] = datetime.datetime.now()
-        self.item['Badrecord'] = '0'
+        self.item['Identity'] = 0
+        self.item['Badrecord'] = 1 if self.item.get('Badrecord', '') != '' else 0
+        self.item['isBadRecord'] = self.item['Badrecord']
         self.item['Sex'] = 1 if self.item.get('Sex', '男') == '男' else 0
         self.item['IsPM'] = 1 if self.item.get('IsPM', '否') != '否' else 0
         self.item['isFeeStand'] = 1 if self.item.get('isFeeStand', '否') != '否' else 0
-        jobtype_list = ['钢筋工', '架子工', '模板工', '通风工', '机械设备安装工']
-        self.item['JobType'] = jobtype_list.index(self.item.get('JobType', '钢筋工'))
+        if self.item.get('JobType', '') != '':
+            jobtype_list = ['钢筋工', '架子工', '模板工', '通风工', '机械设备安装工']
+            self.item['JobType'] = jobtype_list.index(self.item.get('JobType', '钢筋工'))
+            if self.item['JobType'] == -1:
+                self.item['JobType'] = ''
+        if self.item.get('Education', '') != '':
+            jobtype_list = ['无', '小学', '初中', '高中', '大学', '硕士', '博士']
+            self.item['Education'] = jobtype_list.index(self.item.get('Education', '无'))
+            if self.item['Education'] == -1:
+                self.item['Education'] = ''
+        else:
+            self.item['JobType'] = 0
 
     def check_field(self):
         self.formatter_area()
@@ -103,9 +122,37 @@ class FileImportLabor(ImportFileBase):
             return True
         return False
 
+    def formatter_key(self):
+        for key in self.key_list.keys():
+            self.item[self.key_list[key]] = self.item[key]
+            del self.item[key]
+
     def check_mysql(self):
         query_sql = r"""select id from tb_laborinfo where idcard='{}';""".format(self.item.get('IDCard'))
         result = self.db.query(query_sql)
         if result:
             return True
         return False
+
+    def save(self):
+        data_list = self.file_data.excel_data()
+        for item in data_list:
+            self.item = item
+            try:
+                check_field = self.check_field()
+                self.formatter_key()
+                check_mysql = self.check_mysql()
+                # print(self.formatter_insert_sql())
+                if check_mysql or check_field:
+                    if len(self.bad_info) < 20:
+                        self.bad_info.append(item.get('Name'))
+                    self.total_bad += 1
+                    continue
+                # print(self.formatter_insert_sql())
+                self.db.insert(self.formatter_insert_sql())
+            except Exception as e:
+                print(e)
+                if len(self.bad_info) < 20:
+                    self.bad_info.append(item.get('Name'))
+                self.total_bad += 1
+                continue

@@ -311,9 +311,9 @@ class IndexNumberPic(IndexBase):
         if self.project_ids:
             where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
         if isbad == 1:
-            where_sql_list.append(r""" Status!=1 """)
+            where_sql_list.append(r""" Status > 1 """)
         if isbad == 0:
-            where_sql_list.append(r""" Status=1 """)
+            where_sql_list.append(r""" Status<=1 """)
 
         return where_sql_list
 

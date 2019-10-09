@@ -13,8 +13,8 @@ class TempColnames():
                'EndTime', 'Address', 'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor',
                'Description', 'Province', 'City', 'District']
     LABOR = ['Name', 'Age', 'Sex', 'Birthday', 'Address', 'Nationality', 'IDCard', 'Phone', 'CompanyID', 'JobType',
-             'ClassID', 'DepartureDate', 'EntryDate', 'Hardhatnum', 'Education', 'CreateTime', 'ProjectID', 'IsPM',
-             'IssueAuth', 'Political', 'Train', 'EmerCon', 'Province', 'City', 'District', 'SVP', 'EVP', 'SuperiorsID',
+             'ClassID', 'DepartureDate', 'EntryDate', 'Hardhatnum', 'Education', 'ProjectID', 'IsPM',
+             'IssueAuth', 'Political', 'EmerCon', 'Province', 'City', 'District', 'SVP', 'EVP', 'SuperiorsID',
              'IsLeader', 'Remark', 'FeeStand', 'isFeeStand', 'Badrecord']
 
 
@@ -82,20 +82,48 @@ class ImportFileBase(metaclass=ABCMeta):
     def bad_list(self):
         return self.bad_info, self.total_bad
 
+    def formatter_key(self):
+        pass
+
+    def formatter_insert_sql(self):
+        base_insert_sql = r"""insert into {}({}) value ({});"""
+        temp_key = ''
+        temp_value = ''
+        for index, dkey in enumerate(self.item):
+            dvalue = self.item[dkey]
+            if dvalue == '' or dvalue is None:
+                continue
+            temp_key += ' {} '.format(dkey)
+            # if dkey == 'EVP':
+            #     print(self.item[dkey])
+            # print(type(dvalue))
+            if isinstance(dvalue, int):
+                temp_value += ' {} '.format(dvalue)
+            else:
+                temp_value += r""" '{}' """.format(dvalue)
+            if index < len(self.item.keys()) - 1:
+                temp_key += ','
+                temp_value += ','
+        return base_insert_sql.format(self.table_name, temp_key, temp_value)
+
     def save(self):
         data_list = self.file_data.excel_data()
         for item in data_list:
             self.item = item
             try:
                 check_field = self.check_field()
+                self.formatter_key()
                 check_mysql = self.check_mysql()
+                # print(self.formatter_insert_sql())
                 if check_mysql or check_field:
                     if len(self.bad_info) < 20:
                         self.bad_info.append(item.get('Name'))
                     self.total_bad += 1
                     continue
-                self.db.insert(self.insert_sql.format(**item))
-            except:
+                # print(self.formatter_insert_sql())
+                self.db.insert(self.insert_sql.format(**self.item))
+            except Exception as e:
+                print(e)
                 if len(self.bad_info) < 20:
                     self.bad_info.append(item.get('Name'))
                 self.total_bad += 1

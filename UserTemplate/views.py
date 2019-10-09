@@ -160,7 +160,7 @@ class ImportComProLaTemp(TemplateBase):
         elif args.get('Name') == 'Project':
             import_temp = FileImportProject(files, TempColnames.PROJECT, self._db)
         else:
-            import_temp = FileImportLabor(files, TempColnames.PROJECT, self._db)
+            import_temp = FileImportLabor(files, TempColnames.LABOR, self._db)
         import_temp.save()
         result = import_temp.bad_info
         success = deepcopy(status_code.SUCCESS)

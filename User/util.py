@@ -7,6 +7,7 @@ from flask import jsonify
 
 from APP.settings import BASE_DIR, upload_dir
 from utils import status_code
+from utils.ImageCompress import CompressImage
 
 
 def save_image(image_file, base='static/media/ava'):
@@ -22,6 +23,12 @@ def save_image(image_file, base='static/media/ava'):
     save_name = os.path.join(new_base, new_name)
     url = os.path.join(BASE_DIR, save_name)
     image_file.save(url)
+    try:
+        compress = CompressImage(url)
+        compress.default_compress_image()
+    except Exception as e:
+        print(e)
+        pass
     img_url = '/' + base + '/' + new_name
     return img_url
 
