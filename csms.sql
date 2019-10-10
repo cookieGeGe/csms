@@ -3734,6 +3734,13 @@ ALTER TABLE `csms`.`tb_project`
 ADD COLUMN `subcompany` varchar(2048) NULL DEFAULT '[]' COMMENT '分包企业' AFTER `TotalMonth`;
 
 
+CREATE TABLE `csms`.`tb_bank`  (
+  `id` int(0) NOT NULL,
+  `name` varchar(255) NULL COMMENT '银行名称',
+  `description` varchar(255) NULL COMMENT '银行描述',
+  PRIMARY KEY (`id`)
+);
+
 
 
 SET FOREIGN_KEY_CHECKS = 1;

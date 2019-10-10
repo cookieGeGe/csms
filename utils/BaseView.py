@@ -22,6 +22,7 @@ class BaseView(View, metaclass=ABCMeta):
         self.args = None  # 前端传过来的参数字典
         self.ids = None  # 用户可以查看的权限范围ID列表
         self.success = deepcopy(status_code.SUCCESS)
+        self.get_total_row = """SELECT FOUND_ROWS() as total_row;"""
         # self.get_args()
 
     def get_args(self):

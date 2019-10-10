@@ -1,6 +1,7 @@
 from Area.urls import area
 from Attend.urls import attend
 from Bank.urls import bank
+from BankInfo.urls import bankinfo
 from Company.urls import company
 from Guarantee.urls import guarantee
 from Index.urls import index
@@ -21,3 +22,4 @@ def blue_regist(app):
     app.register_blueprint(user_template, url_prefix='/template/')
     app.register_blueprint(attend, url_prefix='/attend/')
     app.register_blueprint(index, url_prefix='/index/')
+    app.register_blueprint(bankinfo, url_prefix='/bankinfo/')
