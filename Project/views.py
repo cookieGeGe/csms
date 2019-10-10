@@ -872,8 +872,9 @@ class ALLProjectID(AllCompanyID):
         self.table = 'tb_project'
 
     def admin(self):
-        query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-        self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+        # self.ids = self.set_ids(query_sql)
+        self.ids = self.get_project_ids()
         return self.views()
 
     def get_labor_group_info(self, projectid):

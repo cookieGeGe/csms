@@ -190,6 +190,7 @@ class GetCompanyList(BaseView):
         #                 LEFT JOIN tb_company as t3 on t1.Cons = t3.id
         #                 where t1.DID in ({})""".format(self.get_session_ids())
         # self.ids = self.set_ids(query_sql)
+        self.ids = self.get_company_ids()
         return self.views()
 
     def guest(self):

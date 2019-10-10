@@ -98,7 +98,7 @@ class BaseView(View, metaclass=ABCMeta):
         """
         self.get_args()
         self._db = db
-        return self.administrator()
+        # return self.administrator()
         try:
             tempint = session['AdminType']
         except:

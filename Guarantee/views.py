@@ -4,7 +4,7 @@ from json import dumps, loads
 
 from copy import deepcopy
 
-from flask import request, jsonify
+from flask import request, jsonify, session
 
 from Company.views import CreatePicGroup
 from User.util import save_image
@@ -107,14 +107,13 @@ class QueryGuarantee(GuaranteeBase):
         super(QueryGuarantee, self).__init__()
 
     def admin(self):
-        # query_sql = r"""select t2.* from tb_project as t1
-        #                 RIGHT JOIN tb_guarantee as t2 on t1.id = t2.ProjectID
-        #                 where t1.DID in ({})""".format(self.get_session_ids())
-        # self.ids = self.set_ids(query_sql)
+        query_sql = r"""select t2.* from tb_project as t1
+                        right join tb_guarantee as t2 on t1.name = t2.projectid
+                        where t1.id in ({})""".format(','.join(self.get_project_ids()))
+        self.ids = self.set_ids(query_sql)
         return self.views()
 
     def main_query(self, query_sql, args, has_limit):
-
         where_list = []
         if self.ids != None:
             if not self.ids:

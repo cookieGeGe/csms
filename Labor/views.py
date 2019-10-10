@@ -252,6 +252,7 @@ class QueryLabor(LaborBase):
         """以项目ID为基准"""
         # query_sql = r"""select ID from tb_project where DID in ({})""".format(self.get_session_ids())
         # self.ids = self.set_ids(query_sql)
+        self.ids = self.get_project_ids()
         return self.views()
 
     def views(self):
@@ -264,10 +265,10 @@ class QueryLabor(LaborBase):
                             left JOIN tb_area as t6 on t6.ID = t1.CID
                             left JOIN tb_area as t7 on t7.ID = t1.DID"""
         where_sql_list = []
-        # if self.ids != None:
-        #     if not self.ids:
-        #         self.ids = [0, ]
-        #     where_sql_list.append(r""" t1.projectid in ({}) """.format(self.to_sql_where_id()))
+        if self.ids != None:
+            if not self.ids:
+                self.ids = [0, ]
+            where_sql_list.append(r""" t1.projectid in ({}) """.format(self.to_sql_where_id()))
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':
