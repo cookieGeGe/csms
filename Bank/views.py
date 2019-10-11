@@ -60,6 +60,7 @@ class QueryOneBank(BankBase):
 
     def __init__(self):
         super(QueryOneBank, self).__init__()
+        self.api_permission = 'bank_show'
 
     def views(self):
         query_sql = r"""select * from tb_wage where id={}""".format(
@@ -77,6 +78,7 @@ class QueryBank(BankBase):
 
     def __init__(self):
         super(QueryBank, self).__init__()
+        self.api_permission = 'bank_show'
 
     def admin(self):
         query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())

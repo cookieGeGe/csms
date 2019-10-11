@@ -180,6 +180,7 @@ class GetCompanyList(BaseView):
 
     def __init__(self):
         super(GetCompanyList, self).__init__()
+        self.api_permission = 'company_show'
 
     def administrator(self):
         return self.views()
@@ -318,6 +319,7 @@ class GetCompanyInfo(BaseView):
 
     def __init__(self):
         super(GetCompanyInfo, self).__init__()
+        self.api_permission = 'company_show'
 
     def administrator(self):
         return self.views()
@@ -598,8 +600,9 @@ class QueryCompanyProject(BaseView):
     def admin(self):
         self.ids = []
         if self.get_session_ids() != '':
-            query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-            self.ids = self.set_ids(query_sql)
+            self.ids = self.get_project_ids()
+            # query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+            # self.ids = self.set_ids(query_sql)
         return self.views()
 
     def views(self):

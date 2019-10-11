@@ -28,6 +28,8 @@
 
 /bankinfo/query		get
 
+​	id	查询具体银行的ID（必填，如果不是查询某个银行，是查询列表默认为0）
+
 ​	name	银行名称
 
 ​	page	页数（必填）
@@ -49,6 +51,12 @@
 /bankinfo/delete	delete
 
 ​	ID	银行ID（必填）
+
+
+
+查询银行接口：
+
+/bankinfo/allbank	get
 
 
 

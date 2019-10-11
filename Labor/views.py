@@ -247,6 +247,7 @@ class QueryLabor(LaborBase):
 
     def __init__(self):
         super(QueryLabor, self).__init__()
+        self.api_permission = 'labor_show'
 
     def admin(self):
         """以项目ID为基准"""
@@ -335,6 +336,7 @@ class LaborInfo(LaborBase):
 
     def __init__(self):
         super(LaborInfo, self).__init__()
+        self.api_permission = 'labor_show'
 
     def views(self):
         args = self.args

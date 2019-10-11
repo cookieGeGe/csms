@@ -83,6 +83,7 @@ class DeleteTemplate(TemplateBase):
 
     def __init__(self):
         super(DeleteTemplate, self).__init__()
+        self.api_permission = 'template_edit'
 
     def views(self):
         self.args_is_null('ID')
@@ -95,6 +96,7 @@ class QueryTemplate(TemplateBase):
 
     def __init__(self):
         super(QueryTemplate, self).__init__()
+        self.api_permission = 'template_show'
 
     def views(self):
         args = self.args
@@ -131,6 +133,7 @@ class QueryOneTemplate(TemplateBase):
 
     def __init__(self):
         super(QueryOneTemplate, self).__init__()
+        self.api_permission = 'template_show'
 
     def views(self):
         self.args_is_null('ID')

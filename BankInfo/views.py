@@ -69,7 +69,7 @@ class QueryBankInfo(BankInfoBase):
     def __init__(self):
         super(QueryBankInfo, self).__init__()
 
-    def views(self):
+    def main_query(self):
         if self.args_is_null('page', 'pagesize'):
             return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select SQL_CALC_FOUND_ROWS * from tb_bank """
@@ -79,6 +79,13 @@ class QueryBankInfo(BankInfoBase):
         end = int(self.args.get('page', 1)) * int(self.args.get('pagesize', 10))
         limit_sql = r""" limit {},{}; """.format(start, end)
         query_sql += limit_sql
+        return query_sql
+
+    def views(self):
+        if int(self.args.get('id', 0)) == 0:
+            query_sql = self.main_query()
+        else:
+            query_sql = r"""select SQL_CALC_FOUND_ROWS * from tb_bank where id={};""".format(self.args.get('id'))
         try:
             result, total = self._db.query(query_sql), self._db.query(self.get_total_row)
         except Exception as e:
@@ -93,3 +100,15 @@ class DeleteBankInfo(DelteBase):
     def __init__(self):
         super(DeleteBankInfo, self).__init__()
         self.table_name = 'tb_bank'
+
+
+class QueryAllBank(BankInfoBase):
+
+    def __init__(self):
+        super(QueryAllBank, self).__init__()
+
+    def views(self):
+        query_sql = r"""select id, name from tb_bank;"""
+        result = self._db.query(query_sql)
+        self.success['data'] = result
+        return jsonify(self.success)

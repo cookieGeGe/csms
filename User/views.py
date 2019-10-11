@@ -18,10 +18,12 @@ class UserRegist(BaseView):
         self._form = None
         self._insert_sql = None
 
-    def dispatch_request(self, db):
-        self.get_args()
-        self._db = db
-        return self.administrator()
+    # def dispatch_request(self, db):
+    #     self.get_args()
+    #     self._db = db
+    #     if session['AdminType']:
+    #         return self.admin()
+    #     return self.administrator()
 
     def filter(self):
         form = request.form
@@ -80,7 +82,7 @@ class UserRegist(BaseView):
             int(self._form.get('CompanyID', 0)),
             img_url, self._form.get('permission', 1)
         )
-        if self._form.get('permission', 1) ==1:
+        if self._form.get('permission', 1) == 1:
             if not self.insert_permission('tb_user_area', ['userid', 'areaid'], self._form.get('AreaID')):
                 return jsonify(status_code.DB_ERROR)
             # try:
@@ -312,6 +314,7 @@ class QueryUser(BaseView):
 
     def __init__(self):
         super(QueryUser, self).__init__()
+        self.api_permission = 'permission_user_edit'
 
     def administrator(self):
         return self.views()

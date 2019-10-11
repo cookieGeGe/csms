@@ -205,6 +205,7 @@ class QueryProject(BaseView):
 
     def __init__(self):
         super(QueryProject, self).__init__()
+        self.api_permission = 'project_show'
 
     def administrator(self):
         return self.views()
@@ -337,6 +338,7 @@ class ProgressProject(BaseView):
 
     def __init__(self):
         super(ProgressProject, self).__init__()
+        self.api_permission = 'project_show'
 
     def administrator(self):
         return self.views()
@@ -769,6 +771,7 @@ class ProjectMainQuery(BaseView):
 
     def __init__(self):
         super(ProjectMainQuery, self).__init__()
+        self.api_permission = 'project_show'
 
     def administrator(self):
         return self.views()

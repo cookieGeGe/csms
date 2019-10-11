@@ -105,6 +105,7 @@ class QueryGuarantee(GuaranteeBase):
 
     def __init__(self):
         super(QueryGuarantee, self).__init__()
+        self.api_permission = 'guarantee_show'
 
     def admin(self):
         query_sql = r"""select t2.* from tb_project as t1
