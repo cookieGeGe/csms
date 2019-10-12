@@ -314,7 +314,7 @@ class QueryUser(BaseView):
 
     def __init__(self):
         super(QueryUser, self).__init__()
-        self.api_permission = 'permission_user_edit'
+        self.api_permission = 'permission_show'
 
     def administrator(self):
         return self.views()
@@ -456,3 +456,27 @@ class GetAllPermission(BaseView):
         success['button_show'] = button_show
 
         return jsonify(success)
+
+
+class SuperAdminAddPer(BaseView):
+
+    def __init__(self):
+        super(SuperAdminAddPer, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        query_sql = r"""select id from tb_user where admintype=0;"""
+        result = self._db.query(query_sql)
+        values = []
+        if result:
+            for item in result:
+                values.append(r""" ({},{}) """.format(item['id'], self.args.get('id')))
+        if values:
+            insert_sql = r"""insert into tb_user_per(uid, pid) values {};""".format(','.join(values))
+            self._db.insert(insert_sql)
+        return jsonify(self.success)

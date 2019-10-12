@@ -6,16 +6,18 @@ import os
 import time
 import uuid
 
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from werkzeug.utils import secure_filename
 
 from APP.settings import BASE_DIR
 from Company.ImportCompany import FileImportCompany
+from Export.exportcontext import ExportContext
 from Labor.ImportLabor import FileImportLabor
 from Project.ImportProject import FileImportProject
 from utils import status_code
 from utils.BaseView import BaseView
 from utils.ImportTemp import TempColnames
+from Export.exportfile import ExportFile
 from utils.pulic_utils import str_to_datetime
 
 
@@ -173,3 +175,24 @@ class ImportComProLaTemp(TemplateBase):
             success['msg'] = '导入失败！'
             success['data'] = result
         return jsonify(success)
+
+
+class ExportFileView(TemplateBase):
+
+    def __init__(self):
+        super(ExportFileView, self).__init__()
+
+    def views(self):
+        if self.args_is_null('type', 'ft'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        factory = ExportFile()
+        export = factory.get_export_factory(self.args.get('type')).get_export_obj(self.args.get('ft'))
+        export_context = ExportContext(export)
+        export_context.query_data()
+        export_context.formatter()
+        export_context.render()
+        value = export_context.get_stream()
+        resp = make_response(value)
+        resp.headers["Content-Disposition"] = "attachment; filename={}".format(export_context.export_name)
+        resp.headers['Content-Type'] = '{}'.format(export_context.content_type)
+        return resp
