@@ -11,8 +11,8 @@ class ExportContext:
     def __init__(self, export_obj):
         self.export_obj = export_obj
 
-    def query_data(self):
-        self.export_obj.query_data()
+    def query_data(self, current_view):
+        self.export_obj.query_data(current_view)
 
     def formatter(self):
         self.export_obj.formatter()

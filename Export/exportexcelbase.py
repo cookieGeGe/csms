@@ -21,7 +21,7 @@ class ExportExcelBase(metaclass=ABCMeta):
         self.io = BytesIO()
 
     @abstractmethod
-    def query_data(self):
+    def query_data(self, view):
         """数据库中查询数据"""
         pass
 

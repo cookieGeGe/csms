@@ -188,7 +188,7 @@ class ExportFileView(TemplateBase):
         factory = ExportFile()
         export = factory.get_export_factory(self.args.get('type')).get_export_obj(self.args.get('ft'))
         export_context = ExportContext(export)
-        export_context.query_data()
+        export_context.query_data(self)
         export_context.formatter()
         export_context.render()
         value = export_context.get_stream()
