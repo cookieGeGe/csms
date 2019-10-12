@@ -40,8 +40,9 @@ class ExportExcelBase(metaclass=ABCMeta):
         """
         self.excel = xlsxwriter.Workbook(self.io)
         sheet = self.excel.add_worksheet(u'sheet1')
+        style = self.excel.add_format(self.xlsx_style())
         # 插入数据
-        sheet.write_row('A1', self.header)
+        sheet.write_row('A1', self.header, style)
         for i in len(self.data):
             sheet.write_row('A{}'.format(i + 2), self.data[i])
         self.excel.close()
@@ -59,3 +60,27 @@ class ExportExcelBase(metaclass=ABCMeta):
 
     def get_content_type(self):
         return self.content_type
+
+    def xlsx_style(**kwargs):
+        """
+        excel表格格式化
+        :param kwargs:
+        :return:
+        """
+        style = {
+            'bold': kwargs.get('bold', False),  # 加粗
+            'font_name': kwargs.get('font_name', 'SimSun'),  # 字体类型，默认宋体
+            'font_size': kwargs.get('font_size', 12),  # 字体大小，默认12
+            'font_color': kwargs.get('font_color', '#000000'),  # 字体颜色，黑色
+            'align': kwargs.get('align', 'center'),  # 默认水平居中
+            'valign': kwargs.get('valign', 'vcenter'),  # 默认垂直居中
+            'text_wrap': kwargs.get('text_wrap', True),  # 默认自动换行
+            'top': kwargs.get('top', 1),  # 上边界，线条宽度
+            'bottom': kwargs.get('bottom', 1),  # 边界
+            'left': kwargs.get('left', 1),  # 边界
+            'right': kwargs.get('right', 1),  # 边界
+            'bg_color': kwargs.get('bg_color', '#FFFFFF'),  # 背景颜色，白色
+            # 其他类型设置格式可以接着写
+        }
+
+        return style
