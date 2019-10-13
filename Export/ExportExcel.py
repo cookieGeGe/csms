@@ -4,16 +4,11 @@
 # @Site :
 # @File : ExportDocx.py
 # @Software: PyCharm
-from abc import ABCMeta, abstractmethod
-from io import BytesIO
-
-import xlsxwriter
+from Export.exportexcel_views import ExportExcelTest
 
 
 class ExportExcelFactory:
 
     def get_export_obj(self, export_type):
-        if export_type:
-            pass
-
-
+        if export_type == 'test':
+            return ExportExcelTest()

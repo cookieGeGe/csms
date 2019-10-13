@@ -9,6 +9,8 @@ from abc import ABCMeta, abstractmethod
 from docxtpl import DocxTemplate
 from io import BytesIO
 
+from Export.exportword_views import ExportWordTest
+
 
 class ExportWordFactory:
     """
@@ -16,8 +18,5 @@ class ExportWordFactory:
     """
 
     def get_export_obj(self, export_type):
-        if export_type:
-            pass
-
-
-
+        if export_type == 'test':
+            return ExportWordTest()

@@ -23,6 +23,7 @@ class BaseView(View, metaclass=ABCMeta):
         self.ids = None  # 用户可以查看的权限范围ID列表
         self.success = deepcopy(status_code.SUCCESS)
         self.get_total_row = """SELECT FOUND_ROWS() as total_row;"""
+        self.whitelist = ['/template/export']
         # self.get_args()
 
     def get_args(self):
@@ -100,6 +101,8 @@ class BaseView(View, metaclass=ABCMeta):
         self.get_args()
         self._db = db
         # return self.administrator()
+        if request.path in self.whitelist:
+            return self.administrator()
         try:
             tempint = session['AdminType']
         except:

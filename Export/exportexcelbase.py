@@ -35,7 +35,7 @@ class ExportExcelBase(metaclass=ABCMeta):
 
     def render(self):
         """
-        格式化数据
+        将格式化后的数据写入IO流
         :return:
         """
         self.excel = xlsxwriter.Workbook(self.io)
@@ -43,8 +43,8 @@ class ExportExcelBase(metaclass=ABCMeta):
         style = self.excel.add_format(self.xlsx_style())
         # 插入数据
         sheet.write_row('A1', self.header, style)
-        for i in len(self.data):
-            sheet.write_row('A{}'.format(i + 2), self.data[i])
+        for i in range(len(self.data)):
+            sheet.write_row('A{}'.format(i + 2), self.data[i], style)
         self.excel.close()
 
     def get_stream(self):
@@ -56,12 +56,14 @@ class ExportExcelBase(metaclass=ABCMeta):
         return self.io.getvalue()  # 获取文件流
 
     def get_name(self):
+        if self.export_name == '' or self.export_name is None:
+            raise NameError('export_template file name is None')
         return self.export_name
 
     def get_content_type(self):
         return self.content_type
 
-    def xlsx_style(**kwargs):
+    def xlsx_style(*args, **kwargs):
         """
         excel表格格式化
         :param kwargs:

@@ -40,6 +40,8 @@ class ExportDocxBase(metaclass=ABCMeta):
         if self.template is None:
             raise KeyError('请指定模板')
         self.doc = DocxTemplate(self.template)
+        if self.data is None:
+            raise TypeError('data is NoneType')
         self.doc.render(context=self.data)
 
     def get_stream(self):
@@ -53,6 +55,8 @@ class ExportDocxBase(metaclass=ABCMeta):
         return io_t.getvalue()  # 获取文件流
 
     def get_name(self):
+        if self.export_name == '' or self.export_name is None:
+            raise NameError('export_template file name is None')
         return self.export_name
 
     def get_content_type(self):
