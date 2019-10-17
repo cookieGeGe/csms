@@ -4,6 +4,8 @@
 # @Site :
 # @File : exportexcel_views.py
 # @Software: PyCharm
+import random
+
 from Export.exportexcelbase import ExportExcelBase
 
 
@@ -18,4 +20,4 @@ class ExportExcelTest(ExportExcelBase):
         print('excel test view:', view)
 
     def formatter(self):
-        self.data = [['测试', 1, 'abc', 12.345]]
+        self.data = [['测试', random.randint(0, 100), 'abc', '', random.random() * 100]]

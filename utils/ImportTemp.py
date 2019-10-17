@@ -16,6 +16,9 @@ class TempColnames():
              'ClassID', 'DepartureDate', 'EntryDate', 'Hardhatnum', 'Education', 'ProjectID', 'IsPM',
              'IssueAuth', 'Political', 'EmerCon', 'Province', 'City', 'District', 'SVP', 'EVP', 'SuperiorsID',
              'IsLeader', 'Remark', 'FeeStand', 'isFeeStand', 'Badrecord']
+    GUARANTEE = ['ProjectID', 'CompanyID', 'GuaCompany', 'Capital', 'Nature', 'Number', 'Amount', 'Kind', 'SignTime',
+                 'Deadline', 'Expiretime', 'Totalrate', 'Total', 'RealAC', 'Marginratio', 'Margin', 'Bene', 'Category',
+                 'Duration', 'Province', 'City', 'District', 'Description', 'Address']
 
 
 class Data_Excel():
@@ -81,6 +84,18 @@ class ImportFileBase(metaclass=ABCMeta):
     @property
     def bad_list(self):
         return self.bad_info, self.total_bad
+
+    def formatter_area(self):
+        for key in ('Province', 'City', 'District'):
+            if self.item.get(key, '') != '':
+                query_sql = r"""select id from tb_area where Name='{}';""".format(self.item.get(key))
+                result = self.db.query(query_sql)
+                if result:
+                    self.item[key] = result[0]['id']
+                else:
+                    self.item[key] = 0
+            else:
+                self.item[key] = 0
 
     def formatter_key(self):
         pass

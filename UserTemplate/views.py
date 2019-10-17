@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 from APP.settings import BASE_DIR
 from Company.ImportCompany import FileImportCompany
 from Export.exportcontext import ExportContext
+from Guarantee.ImportGuarantee import FileImportGuarantee
 from Labor.ImportLabor import FileImportLabor
 from Project.ImportProject import FileImportProject
 from utils import status_code
@@ -164,6 +165,8 @@ class ImportComProLaTemp(TemplateBase):
             import_temp = FileImportCompany(files, TempColnames.COMPANY, self._db)
         elif args.get('Name') == 'Project':
             import_temp = FileImportProject(files, TempColnames.PROJECT, self._db)
+        elif args.get('Name') == 'Guarantee':
+            import_temp = FileImportGuarantee(files, TempColnames.GUARANTEE, self._db)
         else:
             import_temp = FileImportLabor(files, TempColnames.LABOR, self._db)
         import_temp.save()

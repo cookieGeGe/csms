@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
     ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery, \
-    ALLProjectID, GetProjectCompany, UpdateProgressProject
+    ALLProjectID, GetProjectCompany, UpdateProgressProject, GetAllProjectConnect, GetAddProgressPicList
 
 project = Blueprint('project', __name__)
 
@@ -19,7 +19,8 @@ project.add_url_rule('/progress/query', methods=['GET'], view_func=ProgressProje
 # 添加项目进度 -
 project.add_url_rule('/progress/create', methods=['post'], view_func=ADDProgressProject.as_view('add_progress_pro'))
 # 更新项目进度
-project.add_url_rule('/progress/update', methods=['post'], view_func=UpdateProgressProject.as_view('upload_progress_pro'))
+project.add_url_rule('/progress/update', methods=['post'],
+                     view_func=UpdateProgressProject.as_view('upload_progress_pro'))
 # 新建项目图片目录 - 已测试
 project.add_url_rule('/group/create', methods=['Post'], view_func=CreateProPicGroup.as_view('create_pro_pic_group'))
 # 获取企业和其负责人 - 已测试
@@ -34,3 +35,13 @@ project.add_url_rule('/search', methods=['get'], view_func=ProjectMainQuery.as_v
 project.add_url_rule('/allproject', methods=['get'], view_func=ALLProjectID.as_view('all_project'))
 # 获取项目下的施工方和建设方
 project.add_url_rule('/company', methods=['get'], view_func=GetProjectCompany.as_view('get_project_company_list'))
+
+# 获取所有项目联系人
+project.add_url_rule('/progress/connect', methods=['get'], view_func=GetAllProjectConnect.as_view('progress_persons'))
+
+# 获取当月项目进度上传的图片
+project.add_url_rule(
+    '/progress/pic/list',
+    methods=['get'],
+    view_func=GetAddProgressPicList.as_view('progress_pic_list')
+)

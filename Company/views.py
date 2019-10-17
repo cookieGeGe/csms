@@ -340,7 +340,7 @@ class GetCompanyInfo(BaseView):
         if ID is None:
             return jsonify(status_code.ID_ERROR)
         query_sql = r"""select t1.ID, t1.Address, t1.BadRecord,t1.Description, t1.Legal, t1.License, t1.HasBadRecord,
-                        t1.Name, t1.Phone, t1.Type,t1.url,t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID, 
+                        t1.Name, t1.Phone, t1.Type, t1.url, t1.OtherInfo, t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID, 
                         t1.ProvinceID as province, t1.CityID as city, t1.DistrictID as district from tb_company as t1
                         LEFT JOIN tb_area as t2 on t1.ProvinceID = t2.ID
                         LEFT JOIN tb_area as t3 on t1.CityID = t3.ID
@@ -351,9 +351,14 @@ class GetCompanyInfo(BaseView):
             return jsonify(status_code.GET_COMPANY_INFO_FAILD)
         result = result[0]
         result['Phone'] = loads(result['Phone'])
+        for index, item in enumerate(result['Phone']):
+            if 'projectName' not in item.keys():
+                result['Phone'][index]['projectName'] = ''
         result['other_file_list'] = self.get_all_file(result['ID'], 0)
         result['license_list'] = self.get_all_file(result['ID'], 1)
         # result['License'] = loads(result['License'])
+        if result['OtherInfo'] is None:
+            result['OtherInfo'] = ''
         success = deepcopy(status_code.SUCCESS)
         success['company_info'] = result
         return jsonify(success)
@@ -423,15 +428,17 @@ class CreateCompany(BaseView):
         # self.args['License'] = file_img_url
         # self.args['License'] = '[]'
         insert_sql = r"""insert into tb_company(Name, Legal,Address,Phone,License,Type,ProvinceID,CityID,DistrictID,
-        HasBadRecord,Description) value ('{Name}','{Legal}','{Address}','{Phone}','0',{Type},
-        {ProvinceID},{CityID},{DistrictID}, {HasBadRecord}, '{Description}')""".format(**self.args)
+        HasBadRecord,Description, OtherInfo) value ('{Name}','{Legal}','{Address}','{Phone}','0',{Type},
+        {ProvinceID},{CityID},{DistrictID}, {HasBadRecord}, '{Description}', '{OtherInfo}')""".format(**self.args)
         cid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', cid, self.args.get('group_list', []), self._db)
         if isinstance(request.files.getlist('otherfile[]'), list):
             self.insert_otherfile(cid, request.files.getlist('otherfile[]'), 0)
         if isinstance(request.files.getlist('License[]'), list):
             self.insert_otherfile(cid, request.files.getlist('License[]'), 1)
-        return jsonify(status_code.SUCCESS)
+        self.success['CompanyID'] = cid
+        self.success['Name'] = self.args.get('Name')
+        return jsonify(self.success)
 
 
 class UpdateCompany(BaseView):

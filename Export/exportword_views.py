@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import datetime
 import os
+import random
 
 from APP.settings import static_dir
 from Export.exportwordbase import ExportDocxBase
@@ -24,6 +25,6 @@ class ExportWordTest(ExportDocxBase):
     def formatter(self):
         self.data = {
             'title': '测试文档',
-            'content': '建工管理软件导出测试文档',
+            'content': '建工管理软件导出测试文档——随机数{}'.format(random.randint(0, 100)),
             'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }

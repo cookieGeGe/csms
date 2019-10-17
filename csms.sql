@@ -3741,6 +3741,46 @@ CREATE TABLE `csms`.`tb_bank`  (
   PRIMARY KEY (`id`)
 );
 
+-- 已同步到my-aliyun
+
+--2019-10-13
+
+ALTER TABLE `csms`.`tb_company`
+ADD COLUMN `OtherInfo` varchar(4096) NULL COMMENT '其他信息' AFTER `url`;
+
+ALTER TABLE `csms`.`tb_company`
+MODIFY COLUMN `Phone` varchar(4096) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '联系方式' AFTER `Address`;
+
+ALTER TABLE `csms`.`tb_guarantee`
+MODIFY COLUMN `Kind` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '保函格式' AFTER `Amount`,
+ADD COLUMN `Address` varchar(4096) NULL COMMENT '工程所在地' AFTER `GuaCompany`;
+
+
+-- 2019-10-14
+ALTER TABLE `csms`.`tb_project`
+ADD COLUMN `Bank` int(255) NULL COMMENT '银行' AFTER `subcompany`;
+
+ALTER TABLE `csms`.`tb_project`
+CHANGE COLUMN `subcompany` `SubCompany` varchar(2048) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '[]' COMMENT '分包企业' AFTER `TotalMonth`;
+
+ALTER TABLE `csms`.`tb_progress`
+ADD COLUMN `Connect` varchar(4096) NULL COMMENT '月联系人' AFTER `month`;
+
+ALTER TABLE `csms`.`tb_project`
+ADD COLUMN `Account` varchar(255) NULL COMMENT '银行卡账号' AFTER `Bank`;
+
+ALTER TABLE `csms`.`tb_bank`
+MODIFY COLUMN `id` int(11) NOT NULL AUTO_INCREMENT FIRST;
+
+ALTER TABLE `csms`.`tb_progress`
+ADD COLUMN `Workers` int(255) NULL DEFAULT 0 COMMENT '用工人数' AFTER `Connect`,
+ADD COLUMN `ShouldIssues` varchar(255) NULL DEFAULT 0 COMMENT '应发放数' AFTER `Workers`,
+ADD COLUMN `RealIssues` varchar(255) NULL DEFAULT 0 COMMENT '实际发放数' AFTER `ShouldIssues`,
+ADD COLUMN `Payment` varchar(255) NULL DEFAULT 0 COMMENT '支付款项' AFTER `RealIssues`,
+ADD COLUMN `Overdraft` varchar(255) NULL DEFAULT 0 COMMENT '欠款' AFTER `Payment`,
+ADD COLUMN `TotalSalary` varchar(255) NULL DEFAULT 0 COMMENT '总工资' AFTER `Overdraft`;
+
+-- 已同步到阿里云
 
 
 SET FOREIGN_KEY_CHECKS = 1;

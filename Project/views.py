@@ -54,7 +54,7 @@ class CreateProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
-                                   'WagePercent')
+                                   'WagePercent', 'Bank', 'SubCompany', 'Account')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
@@ -88,10 +88,10 @@ class CreateProject(BaseView):
         # args['Supervisor'] = self.get_person_info(loads(args['Supervisor']))
         insert_sql = r"""insert into tb_project(name,type,guarantype,price,duration,gamount,prinpical,
             wagepercent,starttime,endtime,address,build,cons,consmanager,ownermanager,
-            description,status,pid,cid,did,total,totalpay,issue, totalmonth) value('{Name}', {Type}, {GuaranType}, '{Price}', 
+            description,status,pid,cid,did,total,totalpay,issue, totalmonth, bank, subcompany, account) value('{Name}', {Type}, {GuaranType}, '{Price}', 
             '{Duration}', '{GAmount}', '{PrinPical}', '{WagePercent}', '{StartTime}', '{EndTime}', '{Address}', {Build},
             {Cons}, '{ConsManager}', '{OwnerManager}', '{Description}', {Status},
-            {PID},{CID},{DID},'{Total}', '{TotalPay}', '{Issue}', {TotalMonth})"""
+            {PID},{CID},{DID},'{Total}', '{TotalPay}', '{Issue}', {TotalMonth}, {Bank}, '{SubCompany}', '{Account}')"""
         # if args.get('PrinPical', 'null') != 'null':
         #     args['PrinPical'] = dumps(args['PrinPical'])
         # for i in ('ConsManager', 'OwnerManager'):
@@ -138,7 +138,8 @@ class UpdateProject(BaseView):
 
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID', 'WagePercent',
-                                   'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime')
+                                   'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
+                                   'Bank', 'SubCompany', 'Account')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
@@ -166,11 +167,15 @@ class UpdateProject(BaseView):
         # args['ConsManager'] = self.get_person_info(int(args.get('Cons')), loads(args['ConsManager']))
         # args['OwnerManager'] = self.get_person_info(int(args.get('Build')), loads(args['OwnerManager']))
         # print(args)
-        update_sql = r"""update tb_project set Name='{Name}',Type={Type}, GuaranType={GuaranType},Price='{Price}',
-                Duration='{Duration}',GAmount='{GAmount}',PrinPical='{PrinPical}',WagePercent='{WagePercent}',Status={Status},
-                StartTime='{StartTime}', EndTime='{EndTime}',Address='{Address}',Build={Build},Cons={Cons},
-                ConsManager='{ConsManager}',OwnerManager='{OwnerManager}', Description='{Description}', PID={PID},CID={CID},DID={DID},
-                Total='{Total}',TotalPay='{TotalPay}',Issue='{Issue}',TotalMonth={TotalMonth} WHERE ID={ID}""".format(
+        update_sql = r"""
+        update tb_project 
+        set Name='{Name}',Type={Type}, GuaranType={GuaranType},Price='{Price}',
+            Duration='{Duration}',GAmount='{GAmount}',PrinPical='{PrinPical}',WagePercent='{WagePercent}',Status={Status},
+            StartTime='{StartTime}', EndTime='{EndTime}',Address='{Address}',Build={Build},Cons={Cons},
+            ConsManager='{ConsManager}',OwnerManager='{OwnerManager}', Description='{Description}', PID={PID},CID={CID},DID={DID},
+            Total='{Total}',TotalPay='{TotalPay}',Issue='{Issue}',TotalMonth={TotalMonth},Bank={Bank},SubCompany='{SubCompany}',
+            Account='{Account}'
+        WHERE ID={ID}""".format(
             **args)
         self._db.update(update_sql)
         return jsonify(status_code.SUCCESS)
@@ -200,7 +205,7 @@ class DeleteProject(BaseView):
 
 class QueryProject(BaseView):
     """
-    项目查询
+    单个项目查询
     """
 
     def __init__(self):
@@ -220,17 +225,45 @@ class QueryProject(BaseView):
         oldmonth = oldtime.month
         return (nowyear - oldyear) * 12 + (nowmonth - oldmonth)
 
+    def formatter_subcompany(self, subcompany):
+        subcompany_list = []
+        if subcompany:
+            for item in subcompany:
+                temp_id = item.get('ID', None)
+                if temp_id is None:
+                    continue
+                query_company_sql = r"""select ID,Name, HasBadRecord from tb_company where id={};""".format(
+                    int(item.get('ID')))
+                company_result = self._db.query(query_company_sql)
+                if not company_result:
+                    continue
+                item['CompanyName'] = company_result[0]['Name']
+                item['Status'] = 1 if int(company_result[0]['HasBadRecord']) > 1 else 0
+                subcompany_list.append(item)
+        return subcompany_list
+
     def views(self):
         if self.args_is_null('ID'):
             return jsonify(status_code.CONTENT_IS_NULL)
-        query_sql = r"""select t1.*,t2.Name as PID_Name,t3.Name as CID_Name,t4.Name as DID_Name, t5.Name as BuildName, t6.Name as ConsName from tb_project as t1
-                        LEFT JOIN tb_area as t2 on t1.PID = t2.ID
-                        LEFT JOIN tb_area as t3 on t1.CID = t3.ID
-                        LEFT JOIN tb_area as t4 on t1.DID = t4.ID
-                        LEFT JOIN tb_company as t5 on t5.id = t1.Build
-                        LEFT JOIN tb_company as t6 on t6.id = t1.Cons
-                        where t1.id={}""".format(self.args.get('ID'))
+        query_sql = r"""select t1.*,t7.Name as BankName,t2.Name as PID_Name,t3.Name as CID_Name,t4.Name as DID_Name,
+                t5.Name as BuildName, t6.Name as ConsName, t5.HasBadRecord as BuildStatus, t6.HasBadRecord as ConsStatus
+                from tb_project as t1
+                LEFT JOIN tb_area as t2 on t1.PID = t2.ID
+                LEFT JOIN tb_area as t3 on t1.CID = t3.ID
+                LEFT JOIN tb_area as t4 on t1.DID = t4.ID
+                LEFT JOIN tb_company as t5 on t5.id = t1.Build
+                LEFT JOIN tb_company as t6 on t6.id = t1.Cons
+                left join tb_bank as t7 on t7.id = t1.bank
+                where t1.id={}""".format(self.args.get('ID'))
         result = self._db.query(query_sql)[0]
+
+        # 格式化分包企业
+        subcompany = loads(result['SubCompany'])
+        subcompany_list = self.formatter_subcompany(subcompany)
+        result['SubCompany'] = subcompany_list
+        result['BuildStatus'] = 1 if int(result['BuildStatus']) > 1 else 0
+        result['ConsStatus'] = 1 if int(result['ConsStatus']) > 1 else 0
+
         if result.get('PrinPical', 'null') != 'null':
             result['PrinPical'] = loads(result['PrinPical'])
         # for i in ('ConsManager', 'OwnerManager'):
@@ -446,7 +479,8 @@ class ADDProgressProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
                                    'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'Total', 'PPay',
-                                   'LPay', 'Percent')
+                                   'LPay', 'Percent', 'Connect', 'Workers', 'ShouldIssues', 'RealIssues', 'Payment',
+                                   'Overdraft', 'TotalSalary')
         for i in ('Total', 'PPay', 'LPay'):
             if not self.is_number(self.args.get(i)):
                 return jsonify(status_code.INPUT_NUMBER_ERROR)
@@ -471,9 +505,11 @@ class ADDProgressProject(BaseView):
             else:
                 args[i] = 0
         insert_sql = r"""insert into tb_progress(ProjectID, Status, UploadTime, Person, Remark,Rtype,Contract,Content,
-            RealName,Attend,Wage,Rights,Lwage, LAB, PAB, Arrears, LPayCert,PPay, LPay, Total, Percent,year,month) value ({ProjectID},
+            RealName,Attend,Wage,Rights,Lwage, LAB, PAB, Arrears, LPayCert, Percent,year,month,Connect,Workers, 
+            ShouldIssues, RealIssues, Payment, Overdraft, TotalSalary) value ({ProjectID},
             {Status}, '{UploadTime}', '{Person}','{Remark}',{Rtype},{Contract},'{Content}',{RealName},{Attend},{Wage},
-            {Rights},{Lwage},{LAB},{PAB},{Arrears},{LPayCert},'{PPay}', '{LPay}','{Total}', '{Percent}', '{year}', '{month}');"""
+            {Rights},{Lwage},{LAB},{PAB},{Arrears},{LPayCert}, '{Percent}', '{year}', '{month}','{Connect}','{Workers}',
+             '{ShouldIssues}', '{RealIssues}', '{Payment}', '{Overdraft}', '{TotalSalary}');"""
         args['UploadTime'] = datetime.datetime.now()
         progress_id = self._db.insert(insert_sql.format(**args))
         if self.args.get('ImgGroupID', []):
@@ -484,14 +520,14 @@ class ADDProgressProject(BaseView):
         #     if args.get(i):
         #         if args.get(temp, []):
         #             update_progress_pic(progress_id, args.get(temp), self._db)
-        update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}', status={} where id={};""".format(
-            str(float(result[0]['Total']) + float(args['Total'])),
-            str(float(result[0]['TotalPay']) + float(args['PPay'])),
-            str(float(result[0]['Issue']) + float(args['LPay'])),
-            2,
-            args['ProjectID']
-        )
-        self._db.update(update_sql)
+        # update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}', status={} where id={};""".format(
+        #     str(float(result[0]['Total']) + float(args['Total'])),
+        #     str(float(result[0]['TotalPay']) + float(args['PPay'])),
+        #     str(float(result[0]['Issue']) + float(args['LPay'])),
+        #     2,
+        #     args['ProjectID']
+        # )
+        # self._db.update(update_sql)
         success = deepcopy(status_code.SUCCESS)
         success['msg'] = '上传成功'
         return jsonify(success)
@@ -531,7 +567,8 @@ class UpdateProgressProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
                                    'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'ID', 'Total', 'PPay',
-                                   'LPay', 'Percent')
+                                   'LPay', 'Percent', 'Connect', 'Workers', 'ShouldIssues', 'RealIssues', 'Payment',
+                                   'Overdraft', 'TotalSalary')
         for i in ('Total', 'PPay', 'LPay'):
             if not self.is_number(self.args.get(i)):
                 return jsonify(status_code.INPUT_NUMBER_ERROR)
@@ -556,26 +593,28 @@ class UpdateProgressProject(BaseView):
             else:
                 args[i] = 0
 
-        old_data_sql = r"""select PPay,LPay,Total from tb_progress where id={}""".format(self.args.get('ID'))
-        old_data = self._db.query(old_data_sql)
+        # old_data_sql = r"""select PPay,LPay,Total from tb_progress where id={}""".format(self.args.get('ID'))
+        # old_data = self._db.query(old_data_sql)
 
         update_progress_sql = r"""update tb_progress set ProjectID={ProjectID}, Status={Status},
                     Person='{Person}',Remark='{Remark}',Rtype={Rtype},Contract={Contract},Content='{Content}',RealName={RealName},
                     Attend={Attend},Wage={Wage}, Rights={Rights},Lwage={Lwage},LAB={LAB},PAB={PAB},Arrears={Arrears}, 
-                    LPayCert={LPayCert},PPay='{PPay}', LPay='{LPay}', Total='{Total}',Percent='{Percent}',year='{year}',
-                    month='{month}' where id ={ID}"""
+                    LPayCert={LPayCert},Percent='{Percent}',year='{year}',
+                    month='{month}', Connect='{Connect}',Workers='{Workers}', ShouldIssues='{ShouldIssues}',
+                    RealIssues= '{RealIssues}', Payment='{Payment}', Overdraft='{Overdraft}', 
+                    TotalSalary = '{TotalSalary}' where id ={ID};"""
         args['UploadTime'] = datetime.datetime.now()
         self._db.update(update_progress_sql.format(**args))
         if self.args.get('ImgGroupID', []):
             update_progress_pic(self.args.get('ID'), self.args.get('ImgGroupID'), self._db)
-        if old_data:
-            update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}' where id={};""".format(
-                str(eval(result[0]['Total']) - eval(old_data[0]['Total']) + eval(args['Total'])),
-                str(eval(result[0]['TotalPay']) - eval(old_data[0]['PPay']) + eval(args['PPay'])),
-                str(eval(result[0]['Issue']) - eval(old_data[0]['LPay']) + eval(args['LPay'])),
-                args['ProjectID']
-            )
-            self._db.update(update_sql)
+        # if old_data:
+        #     update_sql = r"""update tb_project set Total='{}', TotalPay='{}', Issue='{}' where id={};""".format(
+        #         str(eval(result[0]['Total']) - eval(old_data[0]['Total']) + eval(args['Total'])),
+        #         str(eval(result[0]['TotalPay']) - eval(old_data[0]['PPay']) + eval(args['PPay'])),
+        #         str(eval(result[0]['Issue']) - eval(old_data[0]['LPay']) + eval(args['LPay'])),
+        #         args['ProjectID']
+        #     )
+        #     self._db.update(update_sql)
         success = deepcopy(status_code.SUCCESS)
         success['msg'] = '上传成功'
         return jsonify(success)
@@ -642,18 +681,18 @@ class GetProgressGicList(BaseView):
         query_sql = r"""select * from tb_pic_group where CID={} and ptype={};""".format(self.args.get('ID'), 1)
         reslut = self._db.query(query_sql)
         group_list = {
-            'project': [],  # 项目分组
-            'Progress_list': [],  # 进度分组
-            'Contract_list': [],  # 签到合同分组
-            'RealName_list': [],  # 实名制分组
-            'Attend_list': [],  # 考勤分组
-            'Wage_list': [],  # 工资专户分组
-            'Rights_list': [],  # 维权公示牌
-            'Lwages_list': [],  # 工资公示牌
-            'LAB_list': [],  # 劳务专员
-            'PAB_list': [],  # 项目经理
-            'Arrears_list': [],  # 欠薪预案
-            'LPayCert_list': [],  # 工资支付分组
+            'project': [],  # 项目分组  0
+            'Progress_list': [],  # 进度分组  1
+            'Contract_list': [],  # 签到合同分组 2
+            'RealName_list': [],  # 实名制分组  3
+            'Attend_list': [],  # 考勤分组  4
+            'Wage_list': [],  # 工资专户分组  5
+            'Rights_list': [],  # 维权公示牌  6 ----
+            'Lwages_list': [],  # 工资公示牌  7
+            'LAB_list': [],  # 劳务专员  8
+            'PAB_list': [],  # 项目经理  9
+            'Arrears_list': [],  # 欠薪预案  10  ----
+            'LPayCert_list': [],  # 工资支付分组  11
 
         }
         for item in reslut:
@@ -951,4 +990,60 @@ class GetProjectCompany(BaseView):
         success = deepcopy(status_code.SUCCESS)
         success['companyinfo'] = build_result
         success['labor_group_info'] = self.get_labor_group_info(int(args.get('ProjectID')))
+        return jsonify(success)
+
+
+class GetAllProjectConnect(BaseView):
+    """
+    获取项目下联系人
+    """
+
+    def __init__(self):
+        super(GetAllProjectConnect, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        if self.args_is_null('ID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        query = r"""select PrinPical from tb_project where id={};""".format(self.args.get('ID', 0))
+        result = self._db.query(query)
+        persons = []
+        for item in result:
+            person_info = '{} {} {}'.format(
+                item.get('name', '') if item.get('name', '') != '' else '未知',
+                item.get('post', '') if item.get('post', '') != '' else '未知',
+                item.get('phone', '') if item.get('phone', '') != '' else '未知',
+            )
+            persons.append(person_info)
+        self.success['connect_list'] = persons
+        return jsonify(self.success)
+
+
+class GetAddProgressPicList(BaseView):
+
+    def __init__(self):
+        super(GetAddProgressPicList, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        ID = self.args.get('ID')
+        if ID is None:
+            return jsonify(status_code.ID_ERROR)
+        query_sql = r"""select * from tb_pics where GroupID={} and progressid=0;""".format(ID)
+        result_list = self._db.query(query_sql)
+        group_list = []
+        success = deepcopy(status_code.SUCCESS)
+        for item in result_list:
+            group_list.append(item)
+        success['pic_list'] = group_list
         return jsonify(success)

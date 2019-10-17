@@ -70,13 +70,13 @@ class QueryBankInfo(BankInfoBase):
         super(QueryBankInfo, self).__init__()
 
     def main_query(self):
-        if self.args_is_null('page', 'pagesize'):
+        if self.args_is_null('Page', 'PageSize'):
             return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select SQL_CALC_FOUND_ROWS * from tb_bank """
         if self.args.get('name', '') != '':
-            query_sql += r""" where CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(self.args.get('name', ''))
-        start = (int(self.args.get('page', 1)) - 1) * int(self.args.get('pagesize', 10))
-        end = int(self.args.get('page', 1)) * int(self.args.get('pagesize', 10))
+            query_sql += r""" where CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(self.args.get('Name', ''))
+        start = (int(self.args.get('Page', 1)) - 1) * int(self.args.get('PageSize', 10))
+        end = int(self.args.get('Page', 1)) * int(self.args.get('PageSize', 10))
         limit_sql = r""" limit {},{}; """.format(start, end)
         query_sql += limit_sql
         return query_sql
