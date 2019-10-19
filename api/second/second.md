@@ -85,6 +85,18 @@ OtherInfo 	其他信息
 ```
 Bank		银行ID  int         
 SubCompany	分包企业   list字符串   里面是多个企业对象包括，企业ID，Person企业负责人
+subCompany : [
+	{
+		ID: 企业1的ID,
+		Person: 企业负责人
+	}，
+	{
+		ID: 企业2的ID,
+		Person: 企业负责人
+	}，
+]
+
+
 Account		银行卡号
 ```
 

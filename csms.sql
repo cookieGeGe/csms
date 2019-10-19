@@ -3780,6 +3780,18 @@ ADD COLUMN `Payment` varchar(255) NULL DEFAULT 0 COMMENT '支付款项' AFTER `R
 ADD COLUMN `Overdraft` varchar(255) NULL DEFAULT 0 COMMENT '欠款' AFTER `Payment`,
 ADD COLUMN `TotalSalary` varchar(255) NULL DEFAULT 0 COMMENT '总工资' AFTER `Overdraft`;
 
+--2019-10-19
+
+ALTER TABLE `csms`.`tb_wage`
+MODIFY COLUMN `RPay` float(20, 2) NULL DEFAULT NULL COMMENT '实际到账金额' AFTER `WTime`,
+ADD COLUMN `ActualPay` varchar(255) NULL COMMENT '实际支付金额' AFTER `month`;
+
+ALTER TABLE `csms`.`tb_wage`
+MODIFY COLUMN `ActualPay` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '实际支付金额' AFTER `month`;
+
+ALTER TABLE `csms`.`tb_wage`
+ADD COLUMN `Receipt` varchar(255) NULL COMMENT '银行回单' AFTER `ActualPay`;
+
 -- 已同步到阿里云
 
 

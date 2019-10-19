@@ -54,7 +54,7 @@ class CreateProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
-                                   'WagePercent', 'Bank', 'SubCompany', 'Account')
+                                   'WagePercent', 'Bank', 'subCompany', 'Account')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
@@ -91,7 +91,7 @@ class CreateProject(BaseView):
             description,status,pid,cid,did,total,totalpay,issue, totalmonth, bank, subcompany, account) value('{Name}', {Type}, {GuaranType}, '{Price}', 
             '{Duration}', '{GAmount}', '{PrinPical}', '{WagePercent}', '{StartTime}', '{EndTime}', '{Address}', {Build},
             {Cons}, '{ConsManager}', '{OwnerManager}', '{Description}', {Status},
-            {PID},{CID},{DID},'{Total}', '{TotalPay}', '{Issue}', {TotalMonth}, {Bank}, '{SubCompany}', '{Account}')"""
+            {PID},{CID},{DID},'{Total}', '{TotalPay}', '{Issue}', {TotalMonth}, {Bank}, '{subCompany}', '{Account}')"""
         # if args.get('PrinPical', 'null') != 'null':
         #     args['PrinPical'] = dumps(args['PrinPical'])
         # for i in ('ConsManager', 'OwnerManager'):
@@ -99,7 +99,9 @@ class CreateProject(BaseView):
         project_id = self._db.insert(insert_sql.format(**args))
         update_pic_and_group('tb_pic_group', project_id, self.args.get('group_list'), self._db)
         # update_pic_and_group('tb_pics', project_id, self.args.get('Img_list'), self._db)
-        return jsonify(status_code.SUCCESS)
+        self.success['ID'] = project_id
+        self.success['Name'] = self.args.get('Name', '')
+        return jsonify(self.success)
 
 
 class UpdateProject(BaseView):
@@ -139,7 +141,7 @@ class UpdateProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID', 'WagePercent',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
-                                   'Bank', 'SubCompany', 'Account')
+                                   'Bank', 'subCompany', 'Account')
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
@@ -173,7 +175,7 @@ class UpdateProject(BaseView):
             Duration='{Duration}',GAmount='{GAmount}',PrinPical='{PrinPical}',WagePercent='{WagePercent}',Status={Status},
             StartTime='{StartTime}', EndTime='{EndTime}',Address='{Address}',Build={Build},Cons={Cons},
             ConsManager='{ConsManager}',OwnerManager='{OwnerManager}', Description='{Description}', PID={PID},CID={CID},DID={DID},
-            Total='{Total}',TotalPay='{TotalPay}',Issue='{Issue}',TotalMonth={TotalMonth},Bank={Bank},SubCompany='{SubCompany}',
+            Total='{Total}',TotalPay='{TotalPay}',Issue='{Issue}',TotalMonth={TotalMonth},Bank={Bank},SubCompany='{subCompany}',
             Account='{Account}'
         WHERE ID={ID}""".format(
             **args)
@@ -686,7 +688,7 @@ class GetProgressGicList(BaseView):
             'Contract_list': [],  # 签到合同分组 2
             'RealName_list': [],  # 实名制分组  3
             'Attend_list': [],  # 考勤分组  4
-            'Wage_list': [],  # 工资专户分组  5
+            'Wage_list': [],  # 工资专户分组  5 ----
             'Rights_list': [],  # 维权公示牌  6 ----
             'Lwages_list': [],  # 工资公示牌  7
             'LAB_list': [],  # 劳务专员  8

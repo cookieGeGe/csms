@@ -48,7 +48,7 @@ class CompressImage(object):
         :return: 压缩文件地址，压缩文件大小
         """
         o_size = self.get_size(self.infile)
-        print(o_size)
+        # print(o_size)
         if o_size <= mb:
             im = Image.open(self.infile)
             im.save(self.outfile, quality=quality)
@@ -61,7 +61,7 @@ class CompressImage(object):
                 break
             quality -= step
             o_size = self.get_size(self.outfile)
-            print(o_size)
+            # print(o_size)
         return self.outfile
 
     def resize_image(self, x_s=200):
