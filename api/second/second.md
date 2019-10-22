@@ -102,10 +102,10 @@ Account		银行卡号
 
 
 
-新建项目进度：
+新建和编辑项目进度：
 
 ```
-Connect		月联系人	str
+Connect		项目联系人（联系人字符串）	str
 Workers		用工人数	int
 ShouldIssues	应发放数	str
 RealIssues		实际发放数	str
@@ -113,6 +113,28 @@ Payment			支付款项	str
 Overdraft		欠款		str
 TotalSalary		总工资		str
 ```
+
+
+
+项目进度中获取项目下所有劳工：
+
+```
+/labor/one/project		get		获取一个项目下的所有劳工（项目ID38下有两个劳工，没有头像）
+请求参数：
+	projectid	项目ID	int
+返回值：
+	{
+		data:[
+			{
+				id:劳工ID	int,
+				name:劳工姓名 str,
+				avatar:劳工头像 str	图片链接地址
+			}
+		]
+	}
+```
+
+
 
 
 
@@ -128,14 +150,22 @@ ConsStatus		施工方是否不良（1为不良，0为正常）
 
 
 
-项目进度：
+项目进度中获取项目联系人接口：
 
 ```
 /project/progress/connect		get
 
+	ID 项目ID int
+
 返回数据:
-	connect_list		list  ['person1', 'person2']
+	connect_list		list  ['person1', 'person2']  多个联系人字符串
 ```
+
+
+
+
+
+项目进度中获取图片分组接口：
 
 ```	
 /project/progrerss/pic/list		get (只需要修改图片链接就可以了)

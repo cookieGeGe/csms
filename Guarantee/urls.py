@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from Guarantee.views import CreateCGuarantee, UpdateCGuarantee, CreateGuaranteePic, GetPicGroupList, CreateGuarantee, \
-    UpdateGuarantee, QueryGuarantee
+    UpdateGuarantee, QueryGuarantee, RemoveCGuatantee
 
 guarantee = Blueprint('Guarantee', __name__)
 
@@ -19,3 +19,6 @@ guarantee.add_url_rule('/create', methods=['POST'], view_func=CreateGuarantee.as
 guarantee.add_url_rule('/update', methods=['POST'], view_func=UpdateGuarantee.as_view('update_guarantee'))
 # 查询保函
 guarantee.add_url_rule('/query', methods=['get'], view_func=QueryGuarantee.as_view('query_guarantee'))
+
+# 删除反担保
+guarantee.add_url_rule('/cguarantee/remove', methods=['get'], view_func=RemoveCGuatantee.as_view('delete_cguarantee'))

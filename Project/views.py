@@ -54,8 +54,11 @@ class CreateProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
-                                   'WagePercent', 'Bank', 'subCompany', 'Account')
-        if isnull:
+                                   'WagePercent', 'Bank', 'Account')
+        subcompany_is_null = 0
+        if self.args.get('subCompany', '[]') == '' or self.args.get('subCompany', '[]') == '[]':
+            subcompany_is_null = 1
+        if isnull or subcompany_is_null:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
             return jsonify(status_code.WagePercent_IS_NULL)
@@ -141,8 +144,11 @@ class UpdateProject(BaseView):
     def views(self):
         isnull = self.args_is_null('Name', 'Type', 'GuaranType', 'Price', 'PID', 'CID', 'DID', 'WagePercent',
                                    'Build', 'Cons', 'ConsManager', 'OwnerManager', 'StartTime', 'EndTime',
-                                   'Bank', 'subCompany', 'Account')
-        if isnull:
+                                   'Bank', 'Account')
+        subcompany_is_null = 0
+        if self.args.get('subCompany', '[]') == '' or self.args.get('subCompany', '[]') == '[]':
+            subcompany_is_null = 1
+        if isnull or subcompany_is_null:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
             return jsonify(status_code.WagePercent_IS_NULL)
@@ -417,6 +423,31 @@ class ProgressProject(BaseView):
             status = 2
         return should_pay, real_pay, status
 
+    def formatter_person(self, persons):
+        back_data = []
+        for person in persons:
+            labor_id = None
+            if 'ID' in person.keys():
+                labor_id = person['ID']
+            if 'id' in person.keys():
+                labor_id = person['id']
+            if labor_id == None:
+                person['avatar'] = ''
+                person['id'] = ''
+            else:
+                query_sql = r"""select t1.id, t1.name, t1.avatar, t1.entrydate as time, t1.phone, t2.ClassName as class from tb_laborinfo as t1 
+                                left join tb_class as t2 on t2.ID = t1.ClassID
+                                where t1.id = {};""".format(labor_id)
+                result = self._db.query(query_sql)
+                if not result:
+                    continue
+                if result[0]['time'] is not None and result[0]['time'] != '':
+                    person['time'] = self.time_to_str(result[0]['time'])
+                for key in ('avatar', 'name', 'phone', 'class'):
+                    person[key] = result[0].get(key, '')
+            back_data.append(deepcopy(person))
+        return back_data
+
     def views(self):
         if self.args_is_null('ProgressID'):
             return jsonify(status_code.CONTENT_IS_NULL)
@@ -424,7 +455,7 @@ class ProgressProject(BaseView):
         result = self._db.query(query_sql)
         if result:
             result = result[0]
-            result['Person'] = loads(result['Person'])
+            result['Person'] = self.formatter_person(loads(result['Person']))
             query_all_pics = r"""select t1.* from tb_pics as t1 where t1.progressid={} and t1.ptype=1 
                     and t1.type>0;""".format(self.args.get('ProgressID'))
             pics_result = self._db.query(query_all_pics)
@@ -1016,12 +1047,14 @@ class GetAllProjectConnect(BaseView):
         result = self._db.query(query)
         persons = []
         for item in result:
-            person_info = '{} {} {}'.format(
-                item.get('name', '') if item.get('name', '') != '' else '未知',
-                item.get('post', '') if item.get('post', '') != '' else '未知',
-                item.get('phone', '') if item.get('phone', '') != '' else '未知',
-            )
-            persons.append(person_info)
+            temp_prinpical = loads(item['PrinPical'])
+            for prinpical in temp_prinpical:
+                person_info = '{} {} {}'.format(
+                    prinpical.get('name', '') if prinpical.get('name', '') != '' else '未知',
+                    prinpical.get('post', '') if prinpical.get('post', '') != '' else '未知',
+                    prinpical.get('phone', '') if prinpical.get('phone', '') != '' else '未知',
+                )
+                persons.append(person_info)
         self.success['connect_list'] = persons
         return jsonify(self.success)
 
@@ -1038,9 +1071,9 @@ class GetAddProgressPicList(BaseView):
         return self.views()
 
     def views(self):
-        ID = self.args.get('ID')
-        if ID is None:
+        if self.args_is_null('ID'):
             return jsonify(status_code.ID_ERROR)
+        ID = self.args.get('ID')
         query_sql = r"""select * from tb_pics where GroupID={} and progressid=0;""".format(ID)
         result_list = self._db.query(query_sql)
         group_list = []

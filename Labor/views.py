@@ -42,7 +42,7 @@ class CreateLabor(LaborBase):
             if args.get(key) == 'undefined':
                 args[key] = ''
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'ClassID',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand', 'SVP', 'EVP')
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand', 'SubCompany')
         if args.get('isPM') == 'false':
             args['isPM'] = 0
         else:
@@ -60,15 +60,15 @@ class CreateLabor(LaborBase):
             if args['DepartureDate'] < args['EntryDate']:
                 return jsonify(status_code.LABOR_TIME_ERROR)
         # args['CreateTime'] = self.time_format(args[''])
-        args['SVP'] = str_to_date(args['SVP'])
-        args['EVP'] = str_to_date(args['EVP'])
+        # args['SVP'] = str_to_date(args['SVP'])
+        # args['EVP'] = str_to_date(args['EVP'])
         args['Age'] = datetime.datetime.now().year - args['Birthday'].year
         query_sql = "select id from tb_laborinfo where IDCard = '{}';".format(args.get('IDCard'))
         result = self._db.query(query_sql)
         if result:
             return jsonify(status_code.LABOR_IS_EXISTS)
         args['CreateTime'] = datetime.datetime.now()
-        for i in ('IDP', 'IDB', 'CloseupPhoto', 'Train', 'Avatar'):
+        for i in ('IDP', 'IDB', 'CloseupPhoto', 'Avatar'):
             temp_img = request.files.get(i, '')
             args[i] = ''
             if temp_img != '':
@@ -93,23 +93,25 @@ class CreateLabor(LaborBase):
             insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
                                       JobType, ClassID, Identity,EntryDate,Hardhatnum,Education,CreateTime,
                                     ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
-                                     CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord)
+                                     CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord,SubCompany)
                                      value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
                                      {CompanyID},{JobType},{ClassID},{Identity},'{EntryDate}','{Hardhatnum}',
                                      '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
                                      '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
-                                     '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', {isFeeStand},'{BadRecord}')""".format(
+                                     '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', 
+                                     {isFeeStand},'{BadRecord}','SubCompany')""".format(
                 **args)
         else:
             insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
                           JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
                         ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
-                         CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord)
+                         CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord,SubCompany)
                          value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
                          {CompanyID},{JobType},{ClassID},{Identity},'{DepartureDate}','{EntryDate}','{Hardhatnum}',
                          '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
                          '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
-                         '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', {isFeeStand},'{BadRecord}')""".format(
+                         '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', 
+                         {isFeeStand},'{BadRecord}','SubCompany')""".format(
                 **args)
         lid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', lid, args.get('group_list'), self._db)
@@ -150,8 +152,9 @@ class UpdateLabor(LaborBase):
         for key in args.keys():
             if args.get(key) == 'undefined':
                 args[key] = ''
-        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand')
+        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand', 'SVP',
+                                   'EVP', 'SubCompany')
         if args.get('isPM') == 'false':
             args['isPM'] = 0
         else:
@@ -169,10 +172,6 @@ class UpdateLabor(LaborBase):
         # args['CreateTime'] = str_to_date(args[''])
         args['SVP'] = str_to_date(args['SVP'])
         args['EVP'] = str_to_date(args['EVP'])
-        isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address')
-        if isnull:
-            return jsonify(status_code.CONTENT_IS_NULL)
         idp_img = request.files.get('IDP', '')
         if idp_img != '':
             args['IDP'] = save_image(idp_img, 'static/media/labor')
@@ -182,9 +181,9 @@ class UpdateLabor(LaborBase):
         idp_img = request.files.get('CloseupPhoto', '')
         if idp_img != '':
             args['CloseupPhoto'] = save_image(idp_img, 'static/media/labor')
-        idp_img = request.files.get('Train', '')
-        if idp_img != '':
-            args['Train'] = save_image(idp_img, 'static/media/labor')
+        # idp_img = request.files.get('Train', '')
+        # if idp_img != '':
+        #     args['Train'] = save_image(idp_img, 'static/media/labor')
         # bad_list = []
         # for item in request.files.get('BadRecord'):
         #     img_file = item['file']
@@ -467,7 +466,10 @@ class GetOnePAllL(LaborBase):
         super(GetOnePAllL, self).__init__()
 
     def views(self):
-        query_sql = r"""select id,name from tb_laborinfo where projectid = {};""".format(self.args.get('projectid'))
+        if self.args_is_null('projectid'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        query_sql = r"""select id,name,avatar from tb_laborinfo where projectid = {};""".format(
+            self.args.get('projectid'))
         result = self._db.query(query_sql)
         success = deepcopy(status_code.SUCCESS)
         success['data'] = result

@@ -3792,6 +3792,39 @@ MODIFY COLUMN `ActualPay` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_c
 ALTER TABLE `csms`.`tb_wage`
 ADD COLUMN `Receipt` varchar(255) NULL COMMENT '银行回单' AFTER `ActualPay`;
 
+
+-- 2019-10-20
+
+ALTER TABLE `csms`.`tb_guarantee`
+ADD COLUMN `CreateUser` int(255) NULL DEFAULT 1 COMMENT '创建人' AFTER `Address`,
+ADD CONSTRAINT `create_user_id` FOREIGN KEY (`CreateUser`) REFERENCES `csms`.`tb_user` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+alter table tb_guarantee convert to character set utf8;
+alter database csms character set utf8;
+
+ALTER TABLE `csms`.`tb_guarantee`
+MODIFY COLUMN `Bene` varchar(4096) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '受益人' AFTER `Margin`;
+
+-- 删除公司项目索引
+
+ALTER TABLE `csms`.`tb_guarantee`
+MODIFY COLUMN `Description` varchar(4096) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述' AFTER `DID`;
+
+ALTER TABLE `csms`.`tb_guarantee`
+MODIFY COLUMN `CompanyID` varchar(4096) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '公司名称' AFTER `ID`;
+
+
+ALTER TABLE `csms`.`tb_cguarantee`
+MODIFY COLUMN `GID` int(11) UNSIGNED NULL DEFAULT 00000000000 COMMENT '保函ID' AFTER `Pimg`;
+
+-- 2019-10-22
+ALTER TABLE `csms`.`tb_laborinfo`
+ADD COLUMN `SubCompany` int(255) NULL DEFAULT 0 COMMENT '分包公司ID' AFTER `isFeeStand`;
+
+ALTER TABLE `csms`.`tb_laborinfo`
+MODIFY COLUMN `Train` int(255) NULL DEFAULT 0 COMMENT '是否培训如果培训则上传图片' AFTER `Political`;
+
+
 -- 已同步到阿里云
 
 

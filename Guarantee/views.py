@@ -79,10 +79,13 @@ class CreateGuarantee(GuaranteeBase):
         # args['Number'] = 'BSHS-' + str(int(time.time() * 1000))
         args['Number'] = args['Name']
         insert_sql = r"""insert into tb_guarantee(CompanyID,Capital, Nature,Name,Number,Amount,Kind,ProjectID,SignTime,
-            Category, Deadline, Expiretime,Totalrate,Total,RealAC,Marginratio,Margin,Bene,PID,CID,DID,Description,Duration,GuaCompany)
+            Category, Deadline, Expiretime,Totalrate,Total,RealAC,Marginratio,Margin,Bene,PID,CID,DID,Description,
+            Duration,GuaCompany,Address,createuser)
             value ('{CompanyID}','{Capital}','{Nature}','{Name}','{Number}','{Amount}','{Kind}','{ProjectID}','{SignTime}',
             {Category},'{Deadline}','{Expiretime}','{Totalrate}','{Total}','{RealAC}','{Marginratio}','{Margin}',
-            '{Bene}',{PID},{CID},{DID},'{Description}','{Duration}', '{GuaCompany}');""".format(**args)
+            '{Bene}',{PID},{CID},{DID},'{Description}','{Duration}', '{GuaCompany}','{Address}', {0});""".format(
+            self._uid, **args
+        )
         guarantee_id = self._db.insert(insert_sql)
         self.update_img(guarantee_id, args.get('group_list', '[]'))
         c_list = []
@@ -105,21 +108,25 @@ class QueryGuarantee(GuaranteeBase):
 
     def __init__(self):
         super(QueryGuarantee, self).__init__()
+        self.is_admin = 0
         self.api_permission = 'guarantee_show'
 
     def admin(self):
-        query_sql = r"""select t2.* from tb_project as t1
-                        right join tb_guarantee as t2 on t1.name = t2.projectid
-                        where t1.id in ({})""".format(','.join(self.get_project_ids()))
-        self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select t2.* from tb_project as t1
+        #                 right join tb_guarantee as t2 on t1.name = t2.projectid
+        #                 where t1.id in ({})""".format(','.join(self.get_project_ids()))
+        # self.ids = self.set_ids(query_sql)
+        self.is_admin = 1
         return self.views()
 
     def main_query(self, query_sql, args, has_limit):
         where_list = []
-        if self.ids != None:
-            if not self.ids:
-                self.ids = [0, ]
-            where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
+        # if self.ids != None:
+        #     if not self.ids:
+        #         self.ids = [0, ]
+        #     where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
+        if self.is_admin == 1:
+            where_list.append(r""" t1.CreateUser = {} """.format(self._uid))
         for name in ('Number', 'Kind', 'Bene', 'Total'):
             if args.get(name, '') != '':
                 where_list.append(r""" CONCAT(IFNULL(t1.{},'')) LIKE '%{}%' """.format(name, args.get(name)))
@@ -259,7 +266,8 @@ class UpdateGuarantee(GuaranteeBase):
             Amount='{Amount}',Kind='{Kind}',ProjectID='{ProjectID}',Duration='{Duration}',SignTime='{SignTime}',Number='{Number}',
             Category={Category}, Deadline='{Deadline}', Expiretime='{Expiretime}',Totalrate='{Totalrate}',
             Total='{Total}',RealAC='{RealAC}',Marginratio='{Marginratio}',Margin='{Margin}',Bene='{Bene}',PID={PID},CID={CID},
-            DID={DID},Description='{Description}',GuaCompany='{GuaCompany}' where id={ID}""".format(**args)
+            DID={DID},Description='{Description}',GuaCompany='{GuaCompany}',Address='{Address}'  where id={ID}""".format(
+            **args)
         self._db.update(update_sql)
         if args.get('CGuarantee_list', '') != '':
             query_sql = r"""select id from tb_cguarantee where GID={}""".format(args.get('ID'))
@@ -346,3 +354,22 @@ class GetPicGroupList(GuaranteeBase):
         success = deepcopy(status_code.SUCCESS)
         success['group_list'] = result
         return jsonify(success)
+
+
+class RemoveCGuatantee(GuaranteeBase):
+
+    def __init__(self):
+        super(RemoveCGuatantee, self).__init__()
+
+    def views(self):
+        args = self.args
+        if self.args_is_null('ID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        remove_sql = r"""delete from tb_cguarantee where id={};""".format(args.get('ID'))
+        try:
+            self._db.delete(remove_sql)
+            # print(remove_sql)
+        except Exception as e:
+            print(e)
+            return jsonify(status_code.DB_ERROR)
+        return jsonify(status_code.SUCCESS)

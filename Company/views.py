@@ -411,6 +411,9 @@ class CreateCompany(BaseView):
         # self.args['Phone'] = dumps(self.args['Phone'])
         if self.args_is_null('Name', 'ProvinceID', 'CityID', 'DistrictID', 'Type', 'Legal', 'Address'):
             return jsonify(status_code.CONTENT_IS_NULL)
+        if isinstance(request.files.getlist('License[]'), list):
+            if not len(request.files.getlist('License[]')):
+                return jsonify(status_code.CONTENT_IS_NULL)
         if self.has_data('tb_company', 'name', self.args.get('Name'), None):
             return jsonify(status_code.DATA_HAS_EXISTS)
         # self.args['HasBadRecord'] = 2 if self.args['HasBadRecord'] == 'true' else 1
