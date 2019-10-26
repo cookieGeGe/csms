@@ -196,6 +196,6 @@ class ExportFileView(TemplateBase):
         export_context.render()
         value = export_context.get_stream()
         resp = make_response(value)
-        resp.headers["Content-Disposition"] = "attachment; filename={}".format(export_context.export_name)
+        resp.headers["Content-Disposition"] = "attachment; filename={}".format(export_context.export_name).encode('utf8')
         resp.headers['Content-Type'] = '{}'.format(export_context.content_type)
         return resp

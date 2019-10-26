@@ -163,6 +163,7 @@ class GetGroupPicList(BaseView):
         return self.admin()
 
     def views(self):
+        """ID为分组ID"""
         ID = self.args.get('ID')
         if ID is None:
             return jsonify(status_code.ID_ERROR)

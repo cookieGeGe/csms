@@ -42,7 +42,6 @@ class IndexBase(BaseView):
             self.project_ids = [0, ]
         return self.views()
 
-
     def list_to_str(self, list):
         return [str(x) for x in list]
 
@@ -59,7 +58,6 @@ class GetBadRecordInfo(IndexBase):
         super(GetBadRecordInfo, self).__init__()
         self.company_ids = []
         self.project_ids = []
-
 
     def create_where_sql(self, where_sql_list):
         temp = ''
@@ -79,6 +77,12 @@ class GetBadRecordInfo(IndexBase):
             where_sql_list.append(r""" ID in ({}) """.format(','.join(self.list_to_str(self.company_ids))))
         if self.args.get('companyname', '') != '':
             where_sql_list.append(r"""  CONCAT(IFNULL(Name,'')) LIKE '%{}%' """.format(self.args.get('companyname')))
+        if int(self.args.get('DID', 0)) != 0:
+            where_sql_list.append(r""" DistrictID={} """.format(int(self.args.get('DID'))))
+        if int(self.args.get('CID', 0)) != 0:
+            where_sql_list.append(r""" cityid={} """.format(int(self.args.get('CID'))))
+        if int(self.args.get('PID', 0)) != 0:
+            where_sql_list.append(r""" ProvinceID={} """.format(int(self.args.get('PID'))))
         return where_sql_list
 
     def get_company(self):
@@ -96,6 +100,12 @@ class GetBadRecordInfo(IndexBase):
         if self.args.get('projectname', '') != '':
             where_sql_list.append(
                 r"""  CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%'  """.format(self.args.get('projectname')))
+        if int(self.args.get('DID', 0)) != 0:
+            where_sql_list.append(r""" t1.DID={} """.format(int(self.args.get('DID'))))
+        if int(self.args.get('CID', 0)) != 0:
+            where_sql_list.append(r""" t1.CID={} """.format(int(self.args.get('CID'))))
+        if int(self.args.get('PID', 0)) != 0:
+            where_sql_list.append(r""" t1.PID={} """.format(int(self.args.get('PID'))))
         if temp_id:
             where_sql_list.append(r""" t1.Status > 1 """)
             # where_sql_list.append(r""" t3.ProjectID is null """)
@@ -109,8 +119,14 @@ class GetBadRecordInfo(IndexBase):
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(self.args.get('laborname')))
         if self.args.get('idcrad', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.IDCard,'')) LIKE '%{}%' """.format(self.args.get('idcrad')))
+        if int(self.args.get('DID', 0)) != 0:
+            where_sql_list.append(r""" t1.DID={} """.format(int(self.args.get('DID'))))
+        if int(self.args.get('CID', 0)) != 0:
+            where_sql_list.append(r""" t1.CID={} """.format(int(self.args.get('CID'))))
+        if int(self.args.get('PID', 0)) != 0:
+            where_sql_list.append(r""" t1.PID={} """.format(int(self.args.get('PID'))))
         if temp_id:
-            where_sql_list.append(r""" t1.isbadrecord = {} """.format(temp_id))
+            where_sql_list.append(r""" t1.isbadrecord > 0 """)
         return where_sql_list
 
     def get_project(self):
@@ -143,11 +159,38 @@ left join (select id,ProjectID from tb_progress where year={} and month ={}  gro
         # item['attend'] = '考勤未上传' if item['attend'] is None else '考勤已上传'
         return result
 
+    def get_bank_info(self):
+        query_sql = r"""
+        select t1.id,t1.name,sum(t2.labors+0) as totalcards, sum(t2.pay+0) as totalpay, count(t2.id) as totalproject from tb_bank as t1
+        left join 
+            (
+                select t1.*,t2.pay  from (
+                    select t1.id, t1.bank, t2.labors from tb_project as t1
+                    left join (select count(id) as labors, projectid from tb_laborinfo GROUP BY ProjectID) as t2 on t1.id = t2.projectid
+                    ) as t1
+            
+                left join (
+                    select t1.id,t1.bank,t2.pay from tb_project as t1
+                    left join (select sum(ActualPay+0) as pay, projectid from tb_wage group by ProjectID) as t2 on t1.id = t2.projectid
+                ) as t2 on t1.id=t2.id
+            ) as t2 on t1.id=t2.bank GROUP BY t1.id ORDER BY totalproject desc limit 0,10;
+        """
+        result = self._db.query(query_sql)
+        for item in result:
+            for key in item.keys():
+                if item[key] is None or item[key] == '':
+                    item[key] = 0
+                if key == 'totalcards' and item[key] != None:
+                    item[key] = int(item[key])
+
+        return result
+
     def views(self):
         success = deepcopy(status_code.SUCCESS)
         success['company'] = self.get_company()
         success['project'] = self.get_project()
         success['labor'] = self.get_labor()
+        success['bankinfo'] = self.get_bank_info()
         # print(success['labor'])
         return jsonify(success)
 
@@ -215,7 +258,7 @@ class MessageTotal(IndexBase):
         where_sql_list = []
         if self.project_ids:
             where_sql_list.append(r""" t1.projectID in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
-        where_sql_list.append(r""" t1.badrecord = 1 """)
+        where_sql_list.append(r""" t1.isbadrecord > 0 """)
         return where_sql_list
 
     def get_project(self):
@@ -318,9 +361,9 @@ class IndexNumberPic(IndexBase):
         if self.project_ids:
             where_sql_list.append(r""" projectid in ({}) """.format(','.join(self.list_to_str(self.project_ids))))
         if isbad == 1:
-            where_sql_list.append(r""" Isbadrecord=1 """)
-        if isbad == 0:
-            where_sql_list.append(r""" Isbadrecord=0 """)
+            where_sql_list.append(r""" Isbadrecord>0 """)
+        # if isbad == 0:
+        #     where_sql_list.append(r""" Isbadrecord=0 """)
         return where_sql_list
 
     def get_pie_labor(self):

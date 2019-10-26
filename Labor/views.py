@@ -2,7 +2,7 @@ import datetime
 from copy import deepcopy
 from json import dumps, loads
 
-from flask import jsonify, request
+from flask import jsonify, request, session
 
 from Company.utils import update_pic_and_group
 from Company.views import CreatePicGroup, AllCompanyID
@@ -35,6 +35,47 @@ class CreateLabor(LaborBase):
     def __init__(self):
         super(CreateLabor, self).__init__()
         self.api_permission = 'labor_edit'
+        self._insert_list = ['Name', 'Age', 'Sex', 'Birthday', 'Address', 'Nationality', 'IDCard', 'Phone',
+                             'CompanyID', 'JobType', 'ClassID', 'Identity', 'EntryDate', 'Hardhatnum',
+                             'Education', 'CreateTime', 'ProjectID', 'IsPM', 'IssueAuth', 'Political',
+                             'Train', 'EmerCon', 'IDP', 'IDB', 'PID', 'CID', 'DID', 'SuperiorsID', 'IsLeader',
+                             'CloseupPhoto', 'Remark', 'FeeStand', 'Avatar',
+                             'isFeeStand', 'SubCompany']
+        self._bad_field_list = ['BadRecord', 'Isbadrecord']
+        self.edit_badrecord = 'labor_badrecord_edit'
+        self.bad_list = ['正常', '不良', '黑名单']
+
+    def get_insert_sql(self, args):
+        field_str = []
+        value_str = []
+        if self.edit_badrecord in session['Permission']:
+            field_str.append(' userid ')
+            value_str.append(r""" '{}' """.format(self._uid))
+            self._insert_list += self.edit_badrecord
+        if args.get('DepartureDate', '') != '':
+            field_str.append(' DepartureDate ')
+            value_str.append(r""" '{}' """.format(args.get('DepartureDate', '')))
+        for key in self._insert_list:
+            field_str.append(' {} '.format(key))
+            if isinstance(args.get(key), int):
+                value_str.append(r""" {} """.format(args.get(key, '')))
+            else:
+                value_str.append(r""" '{}' """.format(args.get(key, '')))
+        return ','.join(field_str), ','.join(value_str)
+
+    def chech_badrecord_info(self, args):
+        query_sql = r"""select t1.Name, t1.Isbadrecord, t1.BadRecord, t1.IDCard, t2.LoginName from tb_laborinfo as t1
+                        left join tb_user as t2 on t1.userid = t2.id
+                        where t1.IDCard = '{}' and t1.isbadrecord > 0;""".format(args.get('IDCard'))
+        result = self._db.query(query_sql)
+        msg = ''
+        if result:
+            for item in result:
+                temp_msg = r"""{}曾有不良劳务信息，被{}账号列为{}人员。\n""".format(
+                    item['Name'], item['LoginName'], self.bad_list[int(item['Isbadrecord'])]
+                )
+                msg += temp_msg
+            self.success = {'code': 50029, 'msg': msg}
 
     def views(self):
         args = self.args
@@ -42,7 +83,8 @@ class CreateLabor(LaborBase):
             if args.get(key) == 'undefined':
                 args[key] = ''
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'ClassID',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand', 'SubCompany')
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand',
+                                   'SubCompany')
         if args.get('isPM') == 'false':
             args['isPM'] = 0
         else:
@@ -53,6 +95,7 @@ class CreateLabor(LaborBase):
             return jsonify(status_code.CLASS_ID_NULL)
         if len(args.get('IDCard')) != 18:
             return jsonify(status_code.LABOR_IDCARD_ERROR)
+        self.chech_badrecord_info(args)
         args['Birthday'] = str_to_date(args['Birthday'])
         args['EntryDate'] = str_to_date(args['EntryDate'])
         if args['DepartureDate'] != '':
@@ -89,34 +132,35 @@ class CreateLabor(LaborBase):
         #     args['ClassID'] = class_result[0]['ClassID']
         args['Identity'] = 0
         # print(args)
-        if args.get('DepartureDate', '') == '':
-            insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
-                                      JobType, ClassID, Identity,EntryDate,Hardhatnum,Education,CreateTime,
-                                    ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
-                                     CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord,SubCompany)
-                                     value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
-                                     {CompanyID},{JobType},{ClassID},{Identity},'{EntryDate}','{Hardhatnum}',
-                                     '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
-                                     '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
-                                     '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', 
-                                     {isFeeStand},'{BadRecord}','SubCompany')""".format(
-                **args)
-        else:
-            insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
-                          JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
-                        ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
-                         CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord,SubCompany)
-                         value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
-                         {CompanyID},{JobType},{ClassID},{Identity},'{DepartureDate}','{EntryDate}','{Hardhatnum}',
-                         '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
-                         '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
-                         '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}', 
-                         {isFeeStand},'{BadRecord}','SubCompany')""".format(
-                **args)
+        # if args.get('DepartureDate', '') == '':
+        #     insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
+        #                               JobType, ClassID, Identity,EntryDate,Hardhatnum,Education,CreateTime,
+        #                             ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,Superiors,IsLeader,
+        #                              CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord,SubCompany)
+        #                              value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
+        #                              {CompanyID},{JobType},{ClassID},{Identity},'{EntryDate}','{Hardhatnum}',
+        #                              '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
+        #                              '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},{SuperiorsID},{IsLeader},
+        #                              '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}',
+        #                              {isFeeStand},'{BadRecord}','{SubCompany}')""".format(
+        #         **args)
+        # else:
+        #     insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
+        #                   JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
+        #                 ProjectID,IsPM,IssueAuth,Political,Train,EmerCon,IDP,IDB,PID,CID,DID,Superiors,IsLeader,
+        #                  CloseupPhoto,Remark, BadRecord, FeeStand, Avatar, isFeeStand,isbadrecord,SubCompany)
+        #                  value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
+        #                  {CompanyID},{JobType},{ClassID},{Identity},'{DepartureDate}','{EntryDate}','{Hardhatnum}',
+        #                  '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
+        #                  '{Train}','{EmerCon}','{IDP}','{IDB}',{PID},{CID},{DID},{SuperiorsID},{IsLeader},
+        #                  '{CloseupPhoto}','{Remark}','{BadRecord}','{FeeStand}', '{Avatar}',
+        #                  {isFeeStand},'{BadRecord}','{SubCompany}')""".format(
+        #         **args)
+        insert_sql = r"""insert into tb_laborinfo({}) value ({})""".format(*self.get_insert_sql(args))
         lid = self._db.insert(insert_sql)
         update_pic_and_group('tb_pic_group', lid, args.get('group_list'), self._db)
         # update_pic_and_group('tb_pics', lid, args.get('Img_list'), self._db)
-        return jsonify(status_code.SUCCESS)
+        return jsonify(self.success)
 
 
 class CreateLaborPicGroup(CreatePicGroup):
@@ -146,6 +190,43 @@ class UpdateLabor(LaborBase):
     def __init__(self):
         super(UpdateLabor, self).__init__()
         self.api_permission = 'labor_edit'
+        self._insert_list = ['Name', 'Age', 'Sex', 'Birthday', 'Address', 'Nationality', 'IDCard', 'Phone',
+                             'CompanyID', 'JobType', 'ClassID', 'Identity', 'EntryDate', 'Hardhatnum',
+                             'Education', 'CreateTime', 'ProjectID', 'IsPM', 'IssueAuth', 'Political',
+                             'Train', 'EmerCon', 'IDP', 'IDB', 'PID', 'CID', 'DID', 'SuperiorsID', 'IsLeader',
+                             'CloseupPhoto', 'Remark', 'FeeStand', 'Avatar',
+                             'isFeeStand', 'SubCompany']
+        self._bad_field_list = ['BadRecord', 'Isbadrecord']
+        self.edit_badrecord = 'labor_badrecord_edit'
+        self.bad_list = ['正常', '不良', '黑名单']
+
+    def get_update_sql(self, args):
+        value_str = []
+        if self.edit_badrecord in session['Permission']:
+            value_str.append(r""" userid={} """.format(self._uid))
+            self._insert_list += self.edit_badrecord
+        if args.get('DepartureDate', '') != '':
+            value_str.append(r""" DepartureDate='{}' """.format(args.get('DepartureDate', '')))
+        for key in self._insert_list:
+            if isinstance(args.get(key), int):
+                value_str.append(r""" {}={} """.format(key, args.get(key)))
+            else:
+                value_str.append(r""" {} = '{}' """.format(key, args.get(key)))
+        return ','.join(value_str)
+
+    def chech_badrecord_info(self, args):
+        query_sql = r"""select t1.Name, t1.Isbadrecord, t1.BadRecord, t1.IDCard, t2.LoginName from tb_laborinfo as t1
+                                left join tb_user as t2 on t1.userid = t2.id
+                                where t1.IDCard = '{}' and t1.isbadrecord > 0;""".format(args.get('IDCard'))
+        result = self._db.query(query_sql)
+        msg = ''
+        if result:
+            for item in result:
+                temp_msg = r"""{}曾有不良劳务信息，被{}账号列为{}人员。\n""".format(
+                    item['Name'], item['LoginName'], self.bad_list[int(item['Isbadrecord'])]
+                )
+                msg += temp_msg
+            self.success = {'code': 50029, 'msg': msg}
 
     def views(self):
         args = self.args
@@ -153,8 +234,8 @@ class UpdateLabor(LaborBase):
             if args.get(key) == 'undefined':
                 args[key] = ''
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
-                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand', 'SVP',
-                                   'EVP', 'SubCompany')
+                                   'IssueAuth', 'CompanyID', 'Birthday', 'Address', 'EntryDate', 'isFeeStand',
+                                   'SubCompany')
         if args.get('isPM') == 'false':
             args['isPM'] = 0
         else:
@@ -163,6 +244,7 @@ class UpdateLabor(LaborBase):
             return jsonify(status_code.CONTENT_IS_NULL)
         if len(args.get('IDCard')) != 18:
             return jsonify(status_code.LABOR_IDCARD_ERROR)
+        self.chech_badrecord_info(args)
         args['Birthday'] = str_to_date(args['Birthday'])
         args['EntryDate'] = str_to_date(args['EntryDate'])
         if args['DepartureDate'] != '':
@@ -170,8 +252,8 @@ class UpdateLabor(LaborBase):
             if args['DepartureDate'] < args['EntryDate']:
                 return jsonify(status_code.LABOR_TIME_ERROR)
         # args['CreateTime'] = str_to_date(args[''])
-        args['SVP'] = str_to_date(args['SVP'])
-        args['EVP'] = str_to_date(args['EVP'])
+        # args['SVP'] = str_to_date(args['SVP'])
+        # args['EVP'] = str_to_date(args['EVP'])
         idp_img = request.files.get('IDP', '')
         if idp_img != '':
             args['IDP'] = save_image(idp_img, 'static/media/labor')
@@ -210,7 +292,7 @@ class UpdateLabor(LaborBase):
         if args.get('DepartureDate', '') == '':
             del args['DepartureDate']
         update_sql = r"""update tb_laborinfo set """
-        for key in ('Avatar', 'IDP', 'IDB', 'CloseupPhoto', 'Train'):
+        for key in ('Avatar', 'IDP', 'IDB', 'CloseupPhoto'):
             if args[key] == '' or args[key] == 'undefined':
                 del args[key]
         for key in ('IsPM', 'IsLeader'):
@@ -218,16 +300,19 @@ class UpdateLabor(LaborBase):
                 args[key] = 1
             else:
                 args[key] = 0
-        set_str = ''
-        for index, item in enumerate(args.keys()):
-            temp = ''
-            if isinstance(args[item], int):
-                temp = str(item) + '=' + str(args[item])
-            else:
-                temp = str(item) + "='" + str(args[item]) + "'"
-            if index < len(args.keys()) - 1:
-                temp += ','
-            set_str += temp
+        for key in ('SVP', 'EVP'):
+            if key in args.keys():
+                del args[key]
+        # for index, item in enumerate(args.keys()):
+        #     temp = ''
+        #     if isinstance(args[item], int):
+        #         temp = str(item) + '=' + str(args[item])
+        #     else:
+        #         temp = str(item) + "='" + str(args[item]) + "'"
+        #     if index < len(args.keys()) - 1:
+        #         temp += ','
+        #     set_str += temp
+        set_str = self.get_update_sql(args)
         update_sql = update_sql + set_str + ' where id={}'.format(laborid)
         self._db.update(update_sql)
         return jsonify(status_code.SUCCESS)
@@ -292,8 +377,12 @@ class QueryLabor(LaborBase):
                 where_sql_list.append(r"""  t1.Age>=49 and t1.Age<55  """)
             if int(args.get('Age', 0)) == 5:
                 where_sql_list.append(r""" t1.Age>=55 """)
-        if int(args.get('Isbad', 2)) != 2:
-            where_sql_list.append(r""" t1.isBadRecord = {} """.format(args.get('Isbad')))
+        if int(args.get('Isbad', 2)) == 1:
+            where_sql_list.append(r""" t1.isBadRecord > 0 """)
+        elif int(args.get('Isbad', 2)) == 0:
+            where_sql_list.append(r""" t1.isBadRecord = 0 """)
+        else:
+            pass
         if args.get('Name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('Name')))
         if args.get('IDCard', '') != '':
@@ -367,8 +456,11 @@ class LaborInfo(LaborBase):
                 pic_group_dict['info'].append(item)
         # labor_info['BadRecord'] = loads(labor_info['BadRecord'])
         # labor_info['Birthday'] = self.time_to_str(labor_info['Birthday'])
-        for i in ('Birthday', 'DepartureDate', 'EntryDate', 'CreateTime', 'SVP', 'EVP'):
+        labor_info['isDeparture'] = False
+        for i in ('Birthday', 'DepartureDate', 'EntryDate', 'CreateTime'):
             if labor_info[i] != None:
+                if i == 'DepartureDate' and labor_info[i] < datetime.datetime.now():
+                    labor_info['isDeparture'] = True
                 labor_info[i] = labor_info[i].strftime("%Y-%m-%d")
         success = deepcopy(status_code.SUCCESS)
         success['labor'] = labor_info

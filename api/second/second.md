@@ -186,6 +186,56 @@ ConsStatus		施工方是否不良（1为不良，0为正常）
 
 
 
+劳工新建、编辑：
+
+```
+增加字段：
+	SubCompany	分包公司ID	int
+	Isbadrecord		不良分类（0-2代表正常，不良，黑名单） int
+	BadRecord	不良信息备注		str
+修改字段:
+	Train	劳工是否培训（0表示未培训，不上传图片）		int
+    
+```
+
+劳工详情
+
+```
+增加返回字段：
+	isDeparture		bool	劳工是否离场，离场为true
+```
+
+
+
+
+
+权限：
+
+```
+增加权限：
+	permission_show		查看权限管理
+	labor_badrecord_show	查看劳工不良信息
+	labor_badrecord_edit	编辑劳工不良信息
+```
+
+
+
+首页：
+
+```
+/index/info
+增加返回值：
+	bankinfo:[
+		{
+			id: 4
+            name: "瑞士银行S"		银行名称
+            totalcards: 2			银行卡数
+            totalpay: 2042			代发项目金额
+            totalproject: 7			代发项目数
+		},
+	]
+```
+
 
 
 

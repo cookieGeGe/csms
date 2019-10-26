@@ -3824,6 +3824,11 @@ ADD COLUMN `SubCompany` int(255) NULL DEFAULT 0 COMMENT '分包公司ID' AFTER `
 ALTER TABLE `csms`.`tb_laborinfo`
 MODIFY COLUMN `Train` int(255) NULL DEFAULT 0 COMMENT '是否培训如果培训则上传图片' AFTER `Political`;
 
+-- 2019-10-23
+
+ALTER TABLE `csms`.`tb_laborinfo`
+DROP COLUMN `UserID`,
+ADD COLUMN `UserID` int(11) NULL DEFAULT 1 COMMENT '用户ID' AFTER `SubCompany`;
 
 -- 已同步到阿里云
 

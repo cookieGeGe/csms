@@ -4,6 +4,7 @@
 # @Site :
 # @File : exportwordbase.py
 # @Software: PyCharm
+import datetime
 from abc import ABCMeta, abstractmethod
 from io import BytesIO
 
@@ -18,6 +19,9 @@ class ExportDocxBase(metaclass=ABCMeta):
         self.export_name = ''
         self.data = None
         self.doc = None
+        self.export_data = {
+            'export_time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
 
     @abstractmethod
     def query_data(self, view):
@@ -61,3 +65,11 @@ class ExportDocxBase(metaclass=ABCMeta):
 
     def get_content_type(self):
         return self.content_type
+
+    def content_is_null(self, *args):
+        for arg in args:
+            if arg is None:
+                return True
+            if arg == '':
+                return True
+        return False

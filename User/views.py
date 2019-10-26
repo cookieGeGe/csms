@@ -414,6 +414,7 @@ class GetAllPermission(BaseView):
 
     def __init__(self):
         super(GetAllPermission, self).__init__()
+        self.except_show = ['permission_show', 'labor_badrecord_show']
 
     def admin(self):
         return self.views()

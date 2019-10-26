@@ -510,13 +510,13 @@ class ADDProgressProject(BaseView):
         return False
 
     def views(self):
-        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
-                                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'Total', 'PPay',
-                                   'LPay', 'Percent', 'Connect', 'Workers', 'ShouldIssues', 'RealIssues', 'Payment',
+        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Lwage',
+                                   'LAB', 'PAB', 'LPayCert', 'Contract', 'ProjectID',
+                                   'Percent', 'Connect', 'Workers', 'ShouldIssues', 'RealIssues', 'Payment',
                                    'Overdraft', 'TotalSalary')
-        for i in ('Total', 'PPay', 'LPay'):
-            if not self.is_number(self.args.get(i)):
-                return jsonify(status_code.INPUT_NUMBER_ERROR)
+        # for i in ('Total', 'PPay', 'LPay'):
+        #     if not self.is_number(self.args.get(i)):
+        #         return jsonify(status_code.INPUT_NUMBER_ERROR)
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
@@ -531,17 +531,17 @@ class ADDProgressProject(BaseView):
         reload_start = datetime.datetime.strptime(result[0]['StartTime'].strftime("%Y-%m"), "%Y-%m")
         if reload_start > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
             return jsonify(status_code.PROGRESS_TIME_ERROR)
-        for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
-                  'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'Progress'):
+        for i in ('Status', 'RealName', 'Attend', 'Lwage',
+                  'LAB', 'PAB', 'LPayCert', 'Contract', 'Progress'):
             if args[i] == 'true':
                 args[i] = 1
             else:
                 args[i] = 0
         insert_sql = r"""insert into tb_progress(ProjectID, Status, UploadTime, Person, Remark,Rtype,Contract,Content,
-            RealName,Attend,Wage,Rights,Lwage, LAB, PAB, Arrears, LPayCert, Percent,year,month,Connect,Workers, 
+            RealName,Attend,Lwage, LAB, PAB, LPayCert, Percent,year,month,Connect,Workers, 
             ShouldIssues, RealIssues, Payment, Overdraft, TotalSalary) value ({ProjectID},
-            {Status}, '{UploadTime}', '{Person}','{Remark}',{Rtype},{Contract},'{Content}',{RealName},{Attend},{Wage},
-            {Rights},{Lwage},{LAB},{PAB},{Arrears},{LPayCert}, '{Percent}', '{year}', '{month}','{Connect}','{Workers}',
+            {Status}, '{UploadTime}', '{Person}','{Remark}',{Rtype},{Contract},'{Content}',{RealName},{Attend},
+            {Lwage},{LAB},{PAB},{LPayCert}, '{Percent}', '{year}', '{month}','{Connect}','{Workers}',
              '{ShouldIssues}', '{RealIssues}', '{Payment}', '{Overdraft}', '{TotalSalary}');"""
         args['UploadTime'] = datetime.datetime.now()
         progress_id = self._db.insert(insert_sql.format(**args))
@@ -598,13 +598,13 @@ class UpdateProgressProject(BaseView):
         return False
 
     def views(self):
-        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
-                                   'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'ProjectID', 'ID', 'Total', 'PPay',
-                                   'LPay', 'Percent', 'Connect', 'Workers', 'ShouldIssues', 'RealIssues', 'Payment',
+        isnull = self.args_is_null('Status', 'RealName', 'Attend', 'Lwage',
+                                   'LAB', 'PAB', 'LPayCert', 'Contract', 'ProjectID', 'ID',
+                                   'Percent', 'Connect', 'Workers', 'ShouldIssues', 'RealIssues', 'Payment',
                                    'Overdraft', 'TotalSalary')
-        for i in ('Total', 'PPay', 'LPay'):
-            if not self.is_number(self.args.get(i)):
-                return jsonify(status_code.INPUT_NUMBER_ERROR)
+        # for i in ('Total', 'PPay', 'LPay'):
+        #     if not self.is_number(self.args.get(i)):
+        #         return jsonify(status_code.INPUT_NUMBER_ERROR)
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
@@ -619,8 +619,8 @@ class UpdateProgressProject(BaseView):
         reload_start = datetime.datetime.strptime(result[0]['StartTime'].strftime("%Y-%m"), "%Y-%m")
         if reload_start > args['UploadTime'] or args['UploadTime'] > result[0]['EndTime']:
             return jsonify(status_code.PROGRESS_TIME_ERROR)
-        for i in ('Status', 'RealName', 'Attend', 'Wage', 'Rights', 'Lwage',
-                  'LAB', 'PAB', 'Arrears', 'LPayCert', 'Contract', 'Progress'):
+        for i in ('Status', 'RealName', 'Attend', 'Lwage',
+                  'LAB', 'PAB', 'LPayCert', 'Contract', 'Progress'):
             if args[i] == 'true':
                 args[i] = 1
             else:
@@ -631,7 +631,7 @@ class UpdateProgressProject(BaseView):
 
         update_progress_sql = r"""update tb_progress set ProjectID={ProjectID}, Status={Status},
                     Person='{Person}',Remark='{Remark}',Rtype={Rtype},Contract={Contract},Content='{Content}',RealName={RealName},
-                    Attend={Attend},Wage={Wage}, Rights={Rights},Lwage={Lwage},LAB={LAB},PAB={PAB},Arrears={Arrears}, 
+                    Attend={Attend}, Lwage={Lwage},LAB={LAB},PAB={PAB},
                     LPayCert={LPayCert},Percent='{Percent}',year='{year}',
                     month='{month}', Connect='{Connect}',Workers='{Workers}', ShouldIssues='{ShouldIssues}',
                     RealIssues= '{RealIssues}', Payment='{Payment}', Overdraft='{Overdraft}', 
