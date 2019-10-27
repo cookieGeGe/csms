@@ -317,3 +317,41 @@ class ExportProgressWord(ExportDocxBase):
             # if self.data[key] is not None and self.data[key] != '':
             if isinstance(self.data[key], datetime.datetime):
                 self.data[key] = self.data[key].strftime("%Y-%m-%d %H:%M:%S")
+
+
+class ExportLaborWord(ExportDocxBase):
+    template = os.path.join(template_base, 'export_labor.docx')
+
+    def __init__(self):
+        super(ExportLaborWord, self).__init__()
+        self.export_name = None
+        self.db = None
+        self.args = None
+
+    def query_data(self, view):
+        self.db = view._db
+        self.args = view.args
+        self.data = self.get_labor_default()
+
+    def get_labor_default(self):
+        query_sql = r"""select t1.*, t2.ClassName as ClassName, t3.Name as ProjectName, t4.Name as CompanyName, t5.Name as PName, t6.Name as CName, t7.Name as DName, t8.name as SuperiorsName from tb_laborinfo as t1
+                        left join tb_class as t2 on t1.ClassID = t2.id
+                        left join tb_project as t3 on t1.projectid = t3.id
+                        left join tb_company as t4 on t1.CompanyID = t4.id
+                        left JOIN tb_area as t5 on t5.ID = t1.PID
+                        left JOIN tb_area as t6 on t6.ID = t1.CID
+                        left JOIN tb_area as t7 on t7.ID = t1.DID
+                        left join tb_laborinfo as t8 on t8.id = t1.Superiors
+                        where t1.id = 53;"""
+        result = self.db.query(query_sql)
+        return result[0] if result else {}
+
+    def formatter(self):
+        self.export_name = '{}.docx'.format(self.data.get('Name', 'project'))
+        if not len(self.data.keys()):
+            raise Exception('未找到数据')
+        self.data.update(self.export_data)
+        for key in ('IsPM', 'IsLeader'):
+            self.data[key] = '是' if self.data[key] else '否'
+        self.data['Isbadrecord'] = self.labor_bad_list[self.data['Isbadrecord']]
+        self.data['isFeeStand'] = '合同工' if self.data['isFeeStand'] else '临时工'
