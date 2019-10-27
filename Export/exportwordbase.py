@@ -22,6 +22,13 @@ class ExportDocxBase(metaclass=ABCMeta):
         self.export_data = {
             'export_time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
+        self.company_type_list = [
+            '施工企业', '监理单位', '勘察设计', '劳务公司', '房地产开发', '政府及事业单位', '其他业主单位', '其他'
+        ]
+        self.company_bad_list = ['', '正常', '风险', '黑名单']
+        self.project_bad_list = ['正常', '常态监管', '重点', '严重']
+        self.project_type_list = ['政府投资', '民营开发', '国企分包', '其他']
+        self.bank_status_list = ['全额到', '部分到', '未到']
 
     @abstractmethod
     def query_data(self, view):
@@ -66,10 +73,29 @@ class ExportDocxBase(metaclass=ABCMeta):
     def get_content_type(self):
         return self.content_type
 
-    def content_is_null(self, *args):
+    def content_is_null(self, *args, data):
         for arg in args:
-            if arg is None:
+            if data[arg] is None:
                 return True
-            if arg == '':
+            if data[arg] == '':
                 return True
         return False
+
+    def query_company_data(self, company_id):
+        query_sql = r"""select t1.ID, t1.Address, t1.BadRecord,t1.Description, t1.Legal, t1.License, t1.HasBadRecord,
+                                t1.Name, t1.Phone, t1.Type, t1.url, t1.OtherInfo, t2.Name as ProvinceID, t3.Name as CityID, t4.Name as DistrictID, 
+                                t1.ProvinceID as province, t1.CityID as city, t1.DistrictID as district from tb_company as t1
+                                LEFT JOIN tb_area as t2 on t1.ProvinceID = t2.ID
+                                LEFT JOIN tb_area as t3 on t1.CityID = t3.ID
+                                LEFT JOIN tb_area as t4 on t1.DistrictID = t4.ID
+                                where t1.id = {};""".format(company_id)
+        resutl = self.db.query(query_sql)
+        return resutl
+
+    def get_type_or_bad(self, key_list, index):
+        if isinstance(index, str):
+            index = int(index)
+        if index < len(key_list) - 1:
+            return key_list[index]
+        else:
+            return ''
