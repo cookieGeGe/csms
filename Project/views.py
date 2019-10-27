@@ -353,10 +353,35 @@ class QueryProject(BaseView):
                         all_month[str(temp_year)].append(temp)
         return all_month
 
+    def formatter_person(self, persons):
+        back_data = []
+        for person in persons:
+            labor_id = None
+            if 'ID' in person.keys():
+                labor_id = person['ID']
+            if 'id' in person.keys():
+                labor_id = person['id']
+            if labor_id == None:
+                person['avatar'] = ''
+                person['id'] = ''
+            else:
+                query_sql = r"""select t1.id, t1.name, t1.avatar, t1.entrydate as time, t1.phone, t2.ClassName as class from tb_laborinfo as t1 
+                                left join tb_class as t2 on t2.ID = t1.ClassID
+                                where t1.id = {};""".format(labor_id)
+                result = self._db.query(query_sql)
+                if not result:
+                    continue
+                if result[0]['time'] is not None and result[0]['time'] != '':
+                    person['time'] = self.time_to_str(result[0]['time'])
+                for key in ('avatar', 'name', 'phone', 'class'):
+                    person[key] = result[0].get(key, '')
+            back_data.append(deepcopy(person))
+        return back_data
+
     def get_default_progress(self, progressid):
         query_sql = r"""select * from tb_progress where id = {}""".format(progressid)
         result = self._db.query(query_sql)[0]
-        result['Person'] = loads(result['Person'])
+        result['Person'] = self.formatter_person(loads(result['Person']))
         query_all_pics = r"""select * from tb_pics where progressid={} and ptype=1 
                         and type>0;""".format(progressid)
         pics_result = self._db.query(query_all_pics)

@@ -28,3 +28,7 @@ class ExportWordFactory:
             return exportword_views.ExportProgressWord()
         elif export_type == 'labor':
             return exportword_views.ExportLaborWord()
+        elif export_type == 'guarantee':
+            return exportword_views.ExportGuaranteeWord()
+        else:
+            raise Exception('没有找到模板!')

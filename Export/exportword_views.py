@@ -355,3 +355,57 @@ class ExportLaborWord(ExportDocxBase):
             self.data[key] = '是' if self.data[key] else '否'
         self.data['Isbadrecord'] = self.labor_bad_list[self.data['Isbadrecord']]
         self.data['isFeeStand'] = '合同工' if self.data['isFeeStand'] else '临时工'
+
+
+class ExportGuaranteeWord(ExportDocxBase):
+    template = os.path.join(template_base, 'export_guarantee.docx')
+
+    def __init__(self):
+        super(ExportGuaranteeWord, self).__init__()
+        self.export_name = None
+        self.db = None
+        self.args = None
+
+    def query_data(self, view):
+        self.db = view._db
+        self.args = view.args
+        self.data = self.get_default_guarantee()
+
+    def get_default_guarantee(self):
+        query_sql = r"""
+            select SQL_CALC_FOUND_ROWS t1.*, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
+            INNER JOIN tb_area as t4 on t1.PID = t4.id
+            INNER JOIN tb_area as t5 on t1.CID = t5.id
+            INNER JOIN tb_area as t6 on t1.DID = t6.id
+            where t1.id = {};
+        """.format(self.args.get('id'))
+        result = self.db.query(query_sql)
+        return result[0] if result else {}
+
+    def get_all_cguarantee(self):
+        result = []
+        if not self.content_is_null('Number', data=self.data):
+            query_sql = r"""select * from tb_cguarantee where gid={};""".format(self.args.get('id'))
+            result = self.db.query(query_sql)
+            for item in result:
+                for key in item.keys():
+                    if key == 'Description':
+                        print(key)
+                    if item[key] is None:
+                        item[key] = ''
+        return result
+
+    def formatter(self):
+        self.export_name = '{}.docx'.format(self.data.get('Name', 'project'))
+        if not len(self.data.keys()):
+            raise Exception('未找到数据')
+        self.data.update(self.export_data)
+        self.data['Cguarantee'] = self.get_all_cguarantee()
+        if self.data['Expiretime'] < datetime.datetime.now():
+            self.data['isExpire'] = '是'
+        else:
+            self.data['isExpire'] = '否'
+
+        for key in self.data.keys():
+            if self.data[key] is None:
+                self.data[key] = ''

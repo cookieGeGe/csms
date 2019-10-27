@@ -31,6 +31,9 @@ class ExportDocxBase(metaclass=ABCMeta):
         self.bank_status_list = ['全额到', '部分到', '未到']
         self.progress_type_list = ['正常', '常态监管', '重点监管', '严重监管']
         self.labor_bad_list = ['正常', '不良', '黑名单']
+        self.guarantee_type_list = [
+            '投标', '履约', '预付款', '农民工工资支付', '业主支付', '质量', '资本金', '房屋质量', '其他'
+        ]
 
     @abstractmethod
     def query_data(self, view):
