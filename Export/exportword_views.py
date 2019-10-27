@@ -141,7 +141,15 @@ class ExportProjectWord(ExportDocxBase):
         :return:
         """
         result = self.query_company_data(companyid)
-        temp = {}
+        temp = {
+            'Name': '',
+            'ProvinceID': '',
+            'CityID': '',
+            'DistrictID': '',
+            'Address': '',
+            'HasBadRecord': '',
+            'Description': ''
+        }
         if result:
             company = result[0]
             temp = {
@@ -226,3 +234,86 @@ class ExportProjectWord(ExportDocxBase):
             if isinstance(self.data[key], datetime.datetime):
                 self.data[key] = self.data[key].strftime("%Y-%m-%d %H:%M:%S")
 
+
+class ExportProgressWord(ExportDocxBase):
+    template = os.path.join(template_base, 'export_progress.docx')
+
+    def __init__(self):
+        super(ExportProgressWord, self).__init__()
+        self.export_name = None
+        self.db = None
+        self.args = None
+
+    def query_data(self, view):
+        self.db = view._db
+        self.args = view.args
+        self.data = self.get_default_progress_data()
+
+    def get_default_progress_data(self):
+        query_sql = r"""
+                    select t1.*,t2.Name as project_name from tb_progress as t1
+                    left join tb_project as t2 on t1.ProjectID = t2.ID
+                    where t1.id = {};
+                    """.format(self.args.get('id'))
+        result = self.db.query(query_sql)
+        return result[0] if result else {}
+
+    def query_bank_info(self):
+        query_sql = r"""
+            select * from tb_wage where projectid={} and month={} and year={};
+            """.format(self.args.get('id'), self.data['month'], self.data['year'])
+        result = self.db.query(query_sql)
+        temp = {
+            'RPay': '',
+            'ActualPay': '',
+            'Diff': '',
+            'BankStatus': ''
+        }
+        if result:
+            item = result[0]
+            temp = {
+                'RPay': item['RPay'],
+                'ActualPay': item['ActualPay'],
+                'Diff': eval(item['RPay']) - eval(item['ActualPay']),
+                'BankStatus': self.bank_status_list[item['Status']]
+            }
+        return temp
+
+    def formatter_person(self, persons):
+        persons = loads(persons)
+        person_list = []
+        for person in persons:
+            query_sql = r"""
+            select t1.name, t1.phone, t1.EntryDate as time, t2.ClassName as class from tb_laborinfo as t1
+            left join tb_class as t2 on t1.ClassID = t2.id
+            where t1.id = {};""".format(person.get('id'))
+            result = self.db.query(query_sql)
+            if result:
+                if result[0]['name'] is None or result[0]['name'] == '':
+                    continue
+                temp = result[0]
+                temp['wage'] = person['wage']
+                person_list.append(deepcopy(temp))
+        return person_list
+
+    def formatter(self):
+        self.export_name = '{}.docx'.format(self.data.get('Name', 'project'))
+        if not len(self.data.keys()):
+            raise Exception('未找到数据')
+        self.data.update(self.export_data)
+        # self.data['Status'] = '是' if self.data['Status'] else '否'
+        self.data['Connect'] = self.data['Connect'].replace('&nbsp;', '')
+        self.data['RType'] = self.progress_type_list[self.data['RType']]
+        self.data['Bank'] = self.query_bank_info()
+        self.data['Difference'] = eval(self.data['TotalSalary']) - eval(self.data['RealIssues'])
+        self.data['Person'] = self.formatter_person(self.data['Person'])
+        for key in ('Status', 'Contract', 'RealName', 'Attend', 'Lwage', 'LAB', 'PAB', 'LPayCert'):
+            if key == 'Status':
+                self.data[key] = '是' if self.data[key] else '否'
+            else:
+                self.data[key] = '有' if self.data[key] else '无'
+
+        for key in ('UploadTime',):
+            # if self.data[key] is not None and self.data[key] != '':
+            if isinstance(self.data[key], datetime.datetime):
+                self.data[key] = self.data[key].strftime("%Y-%m-%d %H:%M:%S")

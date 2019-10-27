@@ -24,3 +24,5 @@ class ExportWordFactory:
             return exportword_views.ExportCompanyWord()
         elif export_type == 'project':
             return exportword_views.ExportProjectWord()
+        elif export_type == 'progress':
+            return exportword_views.ExportProgressWord()
