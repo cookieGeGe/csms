@@ -609,18 +609,20 @@ class QueryCompanyProject(BaseView):
         return self.views()
 
     def admin(self):
-        self.ids = []
-        if self.get_session_ids() != '':
-            self.ids = self.get_project_ids()
+        # self.ids = []
+        # if self.get_session_ids() != '':
+        #     self.ids = self.get_project_ids()
             # query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
             # self.ids = self.set_ids(query_sql)
+        self.ids = self.get_project_ids()
         return self.views()
 
     def views(self):
         args = self.args
         query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.Status from tb_project as t1
                         LEFT JOIN tb_company as t2 on t1.Build = t2.ID or t1.Cons =t2.ID
-                        where t2.ID = {} """.format(int(args.get('id')))
+                        where (t2.ID = {}  or CONCAT(IFNULL(t1.SubCompany,'')) LIKE '%"ID":"{}"%')
+                        """.format(int(args.get('id')), int(args.get('id')))
         where_list = []
         if self.ids != None:
             if self.ids == []:

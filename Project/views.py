@@ -186,7 +186,9 @@ class UpdateProject(BaseView):
         WHERE ID={ID}""".format(
             **args)
         self._db.update(update_sql)
-        return jsonify(status_code.SUCCESS)
+        self.success['ID'] = self.args.get('ID')
+        self.success['Name'] = self.args.get('Name', '')
+        return jsonify(self.success)
 
 
 class DeleteProject(BaseView):
@@ -362,14 +364,15 @@ class QueryProject(BaseView):
             if 'id' in person.keys():
                 labor_id = person['id']
             if labor_id == None:
-                person['avatar'] = ''
-                person['id'] = ''
+                continue
             else:
                 query_sql = r"""select t1.id, t1.name, t1.avatar, t1.entrydate as time, t1.phone, t2.ClassName as class from tb_laborinfo as t1 
                                 left join tb_class as t2 on t2.ID = t1.ClassID
                                 where t1.id = {};""".format(labor_id)
                 result = self._db.query(query_sql)
                 if not result:
+                    continue
+                if result[0]['name'] == '' or result[0]['name'] is None:
                     continue
                 if result[0]['time'] is not None and result[0]['time'] != '':
                     person['time'] = self.time_to_str(result[0]['time'])
@@ -457,14 +460,15 @@ class ProgressProject(BaseView):
             if 'id' in person.keys():
                 labor_id = person['id']
             if labor_id == None:
-                person['avatar'] = ''
-                person['id'] = ''
+                continue
             else:
                 query_sql = r"""select t1.id, t1.name, t1.avatar, t1.entrydate as time, t1.phone, t2.ClassName as class from tb_laborinfo as t1 
                                 left join tb_class as t2 on t2.ID = t1.ClassID
                                 where t1.id = {};""".format(labor_id)
                 result = self._db.query(query_sql)
                 if not result:
+                    continue
+                if result[0]['name'] == '' or result[0]['name'] is None:
                     continue
                 if result[0]['time'] is not None and result[0]['time'] != '':
                     person['time'] = self.time_to_str(result[0]['time'])
@@ -586,9 +590,9 @@ class ADDProgressProject(BaseView):
         #     args['ProjectID']
         # )
         # self._db.update(update_sql)
-        success = deepcopy(status_code.SUCCESS)
-        success['msg'] = '上传成功'
-        return jsonify(success)
+        self.success['ID'] = progress_id
+        self.success['Name'] = self.args.get('Name', '')
+        return jsonify(self.success)
 
 
 class UpdateProgressProject(BaseView):
@@ -673,9 +677,9 @@ class UpdateProgressProject(BaseView):
         #         args['ProjectID']
         #     )
         #     self._db.update(update_sql)
-        success = deepcopy(status_code.SUCCESS)
-        success['msg'] = '上传成功'
-        return jsonify(success)
+        self.success['ID'] = self.args.get('ID')
+        self.success['Name'] = self.args.get('Name', '')
+        return jsonify(self.success)
 
 
 class CreateProPicGroup(CreatePicGroup):
@@ -874,11 +878,12 @@ class ProjectMainQuery(BaseView):
         return self.views()
 
     def admin(self):
-        if self.get_session_ids() != '':
-            query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-            self.ids = self.set_ids(query_sql)
-        else:
-            self.ids = []
+        # if self.get_session_ids() != '':
+        #     query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+        #     self.ids = self.set_ids(query_sql)
+        # else:
+        #     self.ids = []
+        self.ids = self.get_project_ids()
         return self.views()
 
     def views(self):
@@ -1005,12 +1010,24 @@ class ALLProjectID(AllCompanyID):
         build_result.extend(cons_result)
         return build_result
 
+    def get_project_subcompany(self, projectid):
+        query_sql = r"""select SubCompany from tb_project where id={};""".format(projectid)
+        subcompanys = loads(self._db.query(query_sql)[0]['SubCompany'])
+        companys = []
+        for subcompany in subcompanys:
+            query_sql = r"""select ID,Name from tb_company where id = {};""".format(subcompany['ID'])
+            result = self._db.query(query_sql)
+            if result:
+                companys.append(result[0])
+        return companys
+
     def views(self):
         query_sql = self.get_query_sql()
         result = self._db.query(query_sql)
         for item in result:
             item['companyinfo'] = self.get_project_company(item['ID'])
             item['labor_group_info'] = self.distinct(self.get_labor_group_info(item['ID']))
+            item['subcompany'] = self.get_project_subcompany(item['ID'])
         success = deepcopy(status_code.SUCCESS)
         success['list'] = result
         return jsonify(success)
@@ -1034,6 +1051,17 @@ class GetProjectCompany(BaseView):
         result = self._db.query(query_sql)
         return result
 
+    def get_project_subcompany(self, projectid):
+        query_sql = r"""select SubCompany from tb_project where id={};""".format(projectid)
+        subcompanys = loads(self._db.query(query_sql)[0]['SubCompany'])
+        companys = []
+        for subcompany in subcompanys:
+            query_sql = r"""select ID,Name form tb_company where id = {};""".format(subcompany['ID'])
+            result = self._db.query(query_sql)
+            if result:
+                companys.append(result[0])
+        return companys
+
     def views(self):
         args = self.args
         build_query_sql = r"""select t2.id as ID, t2.Name as Name from tb_project as t1
@@ -1048,6 +1076,7 @@ class GetProjectCompany(BaseView):
         success = deepcopy(status_code.SUCCESS)
         success['companyinfo'] = build_result
         success['labor_group_info'] = self.get_labor_group_info(int(args.get('ProjectID')))
+        success['subcompany'] = self.get_project_subcompany(int(args.get('ProjectID')))
         return jsonify(success)
 
 
@@ -1107,3 +1136,21 @@ class GetAddProgressPicList(BaseView):
             group_list.append(item)
         success['pic_list'] = group_list
         return jsonify(success)
+
+
+class GetALLProjectID(BaseView):
+
+    def __init__(self):
+        super(GetALLProjectID, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        query_sql = r"""select ID,Name from tb_project;"""
+        result = self._db.query(query_sql)
+        self.success['data'] = result
+        return jsonify(self.success)

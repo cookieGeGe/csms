@@ -10,8 +10,8 @@ class FileImportCompany(ImportFileBase):
     def __init__(self, files, colnames, db):
         super(FileImportCompany, self).__init__(files, colnames, db)
         self.insert_sql = r""" insert into tb_company(Name, Legal, Address, Type, ProvinceID, CityID, Districtid, Phone, 
-        Description,BadRecord, HasBadRecord) value ('{Name}', '{Leage}', '{Address}', {Type}, {Province}, {City}, {District}, 
-        '{Phone}', '{Description}','{BadRecord}',{HasBadRecord})"""
+        Description,BadRecord, HasBadRecord, otherinfo) value ('{Name}', '{Leage}', '{Address}', {Type}, {Province}, {City}, {District}, 
+        '{Phone}', '{Description}','{BadRecord}',{HasBadRecord}, '{OtherInfo}')"""
 
     def formatter_area(self):
         for key in ('Province', 'City', 'District'):
@@ -46,14 +46,14 @@ class FileImportCompany(ImportFileBase):
                 for person in person_list:
                     person = re.sub('，', ',', person)
                     one_person = person.split(',')
-                    if len(one_person) == 3:
-                        persons.append({
-                            'name': one_person[0],
-                            'pos': one_person[1],
-                            'phone': one_person[2]
-                        })
-                    else:
+                    if len(one_person) != 4:
                         continue
+                    persons.append({
+                        'name': one_person[0],
+                        'pos': one_person[1],
+                        'phone': one_person[2],
+                        'projectName': one_person[3]
+                    })
                 self.item['Phone'] = dumps(persons)
             else:
                 self.item['Phone'] = dumps([])
@@ -65,10 +65,14 @@ class FileImportCompany(ImportFileBase):
             if self.formatter_type():
                 return True
             self.formatter_area()
-            if self.item.get('BadRecord', '') != '':
-                self.item['HasBadRecord'] = 1
+            if self.item.get('HasBadRecord', '') != '':
+                badrecord_list = ['正常', '风险', '黑名单']
+                self.item['HasBadRecord'] = badrecord_list.index(self.item.get('HasBadRecord', '正常'))
+                if self.item['HasBadRecord'] == -1:
+                    self.item['HasBadRecord'] = 0
             else:
                 self.item['HasBadRecord'] = 0
+            self.item['BadRecord'] = self.item['HasBadRecord']
             self.formatter_connection()
             return False
         except:

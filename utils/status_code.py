@@ -35,4 +35,6 @@ INPUT_NUMBER_ERROR = {'code': 50026, 'msg': '请检查支付情况是否是数�
 PASSWORD_IS_NULL = {'code': 50027, 'msg': '密码不能为空'}
 WagePercent_IS_NULL = {'code': 50027, 'msg': '工资占比不能为0'}
 CLASS_ID_NULL = {'code': 50028, 'msg': '请先创建班组长,或者选择班组长'}
+SubcompanyID_ID_NULL = {'code': 50030, 'msg': '请选择分包公司'}
+SUPERIORS_ERROR = {'code': 50030, 'msg': '上级负责人不能为该组组员'}
 

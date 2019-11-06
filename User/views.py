@@ -62,6 +62,15 @@ class UserRegist(BaseView):
         permission为1表示按照地区，为2表示按照项目
         :return:
         """
+        args_is_null = self.args_is_null('UserName', 'permission', 'Password')
+        if args_is_null:
+            return jsonify(status_code.CONTENT_IS_NULL)
+        if int(self.args.get('permission')) == 1:
+            if self.args_is_null('AreaID'):
+                return jsonify(status_code.CONTENT_IS_NULL)
+        else:
+            if self.args_is_null('projectid'):
+                return jsonify(status_code.CONTENT_IS_NULL)
         ava_file = request.files.get('file', '')
         img_url = '/static/media/ava/home.png'
         if ava_file != '':
@@ -70,7 +79,7 @@ class UserRegist(BaseView):
         if len(self._db.query(loginname_sql)):
             return jsonify(status_code.USER_EXISTS)
         self._insert_sql = r"""insert into tb_user(LoginName,UserName,Password,Email,Phone,Description,AdminType,CompanyID,Avatar,Status, permission) 
-                                value('{}', '{}','{}','{}','{}', '{}',{},{},'{}',1)"""
+                                value('{}', '{}','{}','{}','{}', '{}',{},{},'{}',1, {})"""
         self._insert_sql = self._insert_sql.format(
             self._form.get('UserName', ''),
             self._form.get('UserName', ''),
@@ -98,7 +107,9 @@ class UserRegist(BaseView):
         else:
             if not self.insert_permission('tb_user_pro', ['uid', 'pid'], self._form.get('projectid')):
                 return jsonify(status_code.DB_ERROR)
-        return jsonify(deepcopy(status_code.SUCCESS))
+        print(self.args)
+        self.success['data'] = self.args
+        return jsonify(self.success)
 
 
 class UserLogin(BaseView):
@@ -274,9 +285,19 @@ class UpdateUser(BaseView):
         return self.views()
 
     def views(self):
+        args_is_null = self.args_is_null('UserName', 'permission')
+        if args_is_null:
+            return jsonify(status_code.CONTENT_IS_NULL)
+        if int(self.args.get('permission')) == 1:
+            if self.args_is_null('AreaID'):
+                return jsonify(status_code.CONTENT_IS_NULL)
+        else:
+            if self.args_is_null('projectid'):
+                return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
-        loginname_sql = r"""select t1.*, t2.AreaID  from tb_user as t1
+        loginname_sql = r"""select t1.*, t2.AreaID, t3.pid  from tb_user as t1
                             left join tb_user_area as t2 on t1.id = t2.UserID
+                            left join tb_user_pro as t3 on t1.id = t3.uid
                             where t1.ID =  {ID}""".format(**args)
         result = self._db.query(loginname_sql)[0]
         ava_file = request.files.get('file', '')
@@ -289,25 +310,45 @@ class UpdateUser(BaseView):
             update_sql = r"""update tb_user set LoginName = '{UserName}',
                                             UserName = '{UserName}',
                                             Description='{Description}',
-                                            Avatar='{Avatar}' where id={ID};""".format(**args)
+                                            Avatar='{Avatar}',
+                                            permission={permission} where id={ID};""".format(**args)
         else:
             # args['Password'] = generate_password_hash(args.get('Password', ''))
             update_sql = r"""update tb_user set LoginName = '{UserName}',
                                                 UserName = '{UserName}',
                                                 Password='{Password}',
                                                 Description='{Description}',
-                                                Avatar='{Avatar}' where id ={ID} ;""".format(**args)
+                                                Avatar='{Avatar}',
+                                                permission = '{permission}' where id ={ID} ;""".format(**args)
         self._db.update(update_sql)
-        if result['AreaID'] is None:
-            insert_sql = r"""insert tb_user_area(areaid,userid) value ({}, {});""".format(args['AreaID'], result['ID'])
-            self._db.insert(insert_sql)
-        elif int(result['AreaID']) != int(args['AreaID']):
-            update_area_sql = r"""update tb_user_area set AreaID = {} where UserID = {}""".format(int(args['AreaID']),
-                                                                                                  int(result['ID']))
-            self._db.update(update_area_sql)
+        if int(args.get('permission')) == 1:
+            if result['AreaID'] is None:
+                insert_sql = r"""insert tb_user_area(areaid,userid) value ({}, {});""".format(args['AreaID'],
+                                                                                              result['ID'])
+                self._db.insert(insert_sql)
+            elif int(result['AreaID']) != int(args['AreaID']):
+                update_area_sql = r"""update tb_user_area set AreaID = {} where UserID = {}""".format(
+                    int(args['AreaID']),
+                    int(result['ID']))
+                self._db.update(update_area_sql)
+            else:
+                pass
         else:
-            pass
-        return jsonify(status_code.SUCCESS)
+            if result['pid'] is None:
+                insert_sql = r"""insert tb_user_pro(uid,pid) value ({},{});""".format(
+                    int(result['ID']), args.get('projectid')
+                )
+                self._db.insert(insert_sql)
+            elif int(result['pid']) != int(args['projectid']):
+                update_sql = r"""update tb_user_pro set pid={} where uid={};""".format(
+                    args.get('projectid'), result['ID']
+                )
+                self._db.update(update_sql)
+            else:
+                pass
+        print(args)
+        self.success['data'] = args
+        return jsonify(self.success)
 
 
 class QueryUser(BaseView):
@@ -370,6 +411,12 @@ class QueryUser(BaseView):
         limit_sql = ' limit {},{} '.format((page - 1) * pagesize, pagesize)
         return where_sql + limit_sql
 
+    def get_user_project(self, userid):
+        query_sql = r"""select t1.*, t2.name from tb_user_pro as t1
+                        left join tb_project as t2 on t1.pid = t2.id
+                        where t1.uid={};""".format(userid)
+        return self._db.query(query_sql)
+
     def views(self):
         args = self.args
         query_sql = r"""select SQL_CALC_FOUND_ROWS t1.* from tb_user as t1"""
@@ -380,26 +427,34 @@ class QueryUser(BaseView):
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         for item in result:
-            query_area_id = r"""select * from tb_user_area where userid = {};""".format(item['ID'])
-            area_id_list = self._db.query(query_area_id)
-            if not area_id_list:
-                item['AreaName'] = ''
-                item['PID'], item['CID'], item['DID'] = 0, 0, 0
-                item['PName'], item['CName'], item['DName'] = '', '', ''
+            if item['permission'] == 1:
+                query_area_id = r"""select * from tb_user_area where userid = {};""".format(item['ID'])
+                area_id_list = self._db.query(query_area_id)
+                if not area_id_list:
+                    item['AreaName'] = ''
+                    item['PID'], item['CID'], item['DID'] = 0, 0, 0
+                    item['PName'], item['CName'], item['DName'] = '', '', ''
+                else:
+                    area_list = self.find_father(area_id_list[0]['AreaID'])
+                    item['AreaName'] = '-'.join(area_list[::2][::-1])
+                    item['PID'], item['CID'], item['DID'] = 0, 0, 0
+                    item['PName'], item['CName'], item['DName'] = '', '', ''
+                    if len(area_list[::-1][::2]) == 1:
+                        item['PName'] = area_list[::2][::-1][0]
+                        item['PID'] = area_list[::-1][::2][0]
+                    elif len(area_list[::-1][::2]) == 2:
+                        item['PName'], item['CName'] = area_list[::2][::-1]
+                        item['PID'], item['CID'] = area_list[::-1][::2]
+                    elif len(area_list[::-1][::2]) == 3:
+                        item['PID'], item['CID'], item['DID'] = area_list[::-1][::2]
+                        item['PName'], item['CName'], item['DName'] = area_list[::2][::-1]
             else:
-                area_list = self.find_father(area_id_list[0]['AreaID'])
-                item['AreaName'] = '-'.join(area_list[::2][::-1])
-                item['PID'], item['CID'], item['DID'] = 0, 0, 0
-                item['PName'], item['CName'], item['DName'] = '', '', ''
-                if len(area_list[::-1][::2]) == 1:
-                    item['PName'] = area_list[::2][::-1][0]
-                    item['PID'] = area_list[::-1][::2][0]
-                elif len(area_list[::-1][::2]) == 2:
-                    item['PName'], item['CName'] = area_list[::2][::-1]
-                    item['PID'], item['CID'] = area_list[::-1][::2]
-                elif len(area_list[::-1][::2]) == 3:
-                    item['PID'], item['CID'], item['DID'] = area_list[::-1][::2]
-                    item['PName'], item['CName'], item['DName'] = area_list[::2][::-1]
+                temp_project = self.get_user_project(item['ID'])
+                item['projectid'] = ''
+                item['projectname'] = ''
+                if temp_project:
+                    item['projectname'] = temp_project[0]['name']
+                    item['projectid'] = temp_project[0]['pid']
         success = deepcopy(status_code.SUCCESS)
         success['user_list'] = result
         success['total'] = total[0]['total_row']

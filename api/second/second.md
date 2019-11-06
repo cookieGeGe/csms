@@ -195,7 +195,7 @@ ConsStatus		施工方是否不良（1为不良，0为正常）
 	BadRecord	不良信息备注		str
 修改字段:
 	Train	劳工是否培训（0表示未培训，不上传图片）		int
-    
+    TrainPic	劳工培训图片
 ```
 
 劳工详情
@@ -238,4 +238,23 @@ ConsStatus		施工方是否不良（1为不良，0为正常）
 
 
 
+导出模板：
+
+接口：
+
+```python
+/template/export	get
+参数：
+	type	 str	word/excel（word表示下载word，现在全是word）
+	ft		str		导出word的类型（
+					company		导出企业
+					project		导出项目
+					progress	导出项目进度
+					labor		导出劳工
+					guarantee	导出保函
+					）
+					
+	id		int		导出指定ID的对应数据。如：ft=company是id为企业ID，ft=project时id为项目					ID
+	
+```
 

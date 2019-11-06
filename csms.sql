@@ -3833,6 +3833,9 @@ ADD COLUMN `UserID` int(11) NULL DEFAULT 1 COMMENT '用户ID' AFTER `SubCompany`
 ALTER TABLE `csms`.`tb_laborinfo`
 MODIFY COLUMN `BadRecord` varchar(4096) NULL DEFAULT 0 COMMENT '不良记录' AFTER `Remark`;
 
+ALTER TABLE `csms`.`tb_laborinfo`
+ADD COLUMN `TrainPic` varchar(4096) NULL COMMENT '培训图片' AFTER `UserID`;
+
 -- 已同步到阿里云
 
 

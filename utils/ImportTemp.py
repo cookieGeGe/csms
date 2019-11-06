@@ -8,14 +8,14 @@ from xlrd import xldate_as_datetime
 class TempColnames():
     ATTEND = ['name', 'idcard', 'atime', 'amin', 'amout', 'pmin', 'pmout']
     COMPANY = ['Name', 'Leage', 'Address', 'Type', 'Province', 'City', 'District', 'Connection', 'Description',
-               'BadRecord']
+               'HasBadRecord', 'OtherInfo']
     PROJECT = ['Name', 'Type', 'GuaranType', '{Price}', 'Duration', 'GAmount', 'PrinPical', 'WagePercent', 'StartTime',
-               'EndTime', 'Address', 'Build', 'Cons', 'ConsManager', 'OwnerManager', 'LaborManager', 'Supervisor',
-               'Description', 'Province', 'City', 'District']
+               'EndTime', 'Address', 'Build', 'Cons', 'ConsManager', 'OwnerManager',
+               'Description', 'Province', 'City', 'District', 'SubCompany', 'Bank', 'Account']
     LABOR = ['Name', 'Age', 'Sex', 'Birthday', 'Address', 'Nationality', 'IDCard', 'Phone', 'CompanyID', 'JobType',
              'ClassID', 'DepartureDate', 'EntryDate', 'Hardhatnum', 'Education', 'ProjectID', 'IsPM',
-             'IssueAuth', 'Political', 'EmerCon', 'Province', 'City', 'District', 'SVP', 'EVP', 'SuperiorsID',
-             'IsLeader', 'Remark', 'FeeStand', 'isFeeStand', 'Badrecord']
+             'IssueAuth', 'Political', 'EmerCon', 'Province', 'City', 'District', 'SuperiorsID',
+             'IsLeader', 'Remark', 'FeeStand', 'isFeeStand', 'Badrecord', 'Train', 'isbadrecord']
     GUARANTEE = ['ProjectID', 'CompanyID', 'GuaCompany', 'Capital', 'Nature', 'Number', 'Amount', 'Kind', 'SignTime',
                  'Deadline', 'Expiretime', 'Totalrate', 'Total', 'RealAC', 'Marginratio', 'Margin', 'Bene', 'Category',
                  'Duration', 'Province', 'City', 'District', 'Description', 'Address']

@@ -1,5 +1,5 @@
 from copy import deepcopy
-from json import dumps
+from json import dumps, loads
 
 from flask import session, request, jsonify
 from flask.views import View
@@ -127,17 +127,23 @@ class BaseView(View, metaclass=ABCMeta):
         """
         for i in args:
             if self.args.get(i, None) is None:
+                print(i)
                 return True
             if self.args.get(i, '') == '':
+                print(i)
                 return True
             if self.args.get(i, '') == 'null':
+                print(i)
                 return True
             if self.args.get(i, '') == 'NaN':
+                print(i)
                 return True
             if i in ('ProvinceID', 'CityID', 'DistrictID', 'PID', 'CID', 'DID', 'province', 'city', 'district'):
                 if self.args.get(i, '') == '0':
+                    print(i)
                     return True
             if self.args.get(i) == 'undefined' or self.args.get(i) == '请选择':
+                print(i)
                 return True
         return False
 
@@ -225,12 +231,12 @@ class BaseView(View, metaclass=ABCMeta):
                 self.company_ids.append(item['Cons'])
                 if item['subcompany'] == '' or item['subcompany'] is None:
                     continue
-                subcompanys = dumps(item['subcompany'])
+                subcompanys = loads(item['subcompany'])
                 for subcom in subcompanys:
                     if not isinstance(subcom, dict):
                         continue
-                    if 'id' in subcom.keys():
-                        self.company_ids.append(subcom['id'])
+                    if 'ID' in subcom.keys():
+                        self.company_ids.append(subcom['ID'])
         return self.company_ids
 
 

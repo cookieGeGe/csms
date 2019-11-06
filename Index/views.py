@@ -378,7 +378,7 @@ class IndexNumberPic(IndexBase):
             'name': '正常劳工',
             'value': self._db.query(query_no_bad_sql + self.create_where_sql(self.labor_where(0)))[0]['total']
         }
-        return [bad_data, data], self._db.query(total + self.create_where_sql(self.labor_where(2)))[0]['total']
+        return [bad_data, data], self._db.query(total + self.create_where_sql(self.labor_where(2)))[0]['total'], bad_data['value']
 
     def get_pie_company(self):
         total = r"""select count(id) as total from tb_company"""
@@ -392,7 +392,7 @@ class IndexNumberPic(IndexBase):
             'name': '正常企业',
             'value': self._db.query(query_no_bad_sql + self.create_where_sql(self.company_where(0)))[0]['total']
         }
-        return [bad_data, data], self._db.query(total + self.create_where_sql(self.company_where(2)))[0]['total']
+        return [bad_data, data], self._db.query(total + self.create_where_sql(self.company_where(2)))[0]['total'], bad_data['value']
 
     def get_pie_project(self):
         total = r"""select count(id) as total from tb_project """
@@ -406,12 +406,12 @@ class IndexNumberPic(IndexBase):
             'name': '正常项目',
             'value': self._db.query(query_no_bad_sql + self.create_where_sql(self.project_where(0)))[0]['total']
         }
-        return [bad_data, data], self._db.query(total + self.create_where_sql(self.project_where(2)))[0]['total']
+        return [bad_data, data], self._db.query(total + self.create_where_sql(self.project_where(2)))[0]['total'], bad_data['value']
 
     def views(self):
-        pie_labor, total_labor = self.get_pie_labor()
-        pie_company, total_company = self.get_pie_company()
-        pie_project, total_project = self.get_pie_project()
+        pie_labor, total_labor, bad_labor = self.get_pie_labor()
+        pie_company, total_company, bad_company = self.get_pie_company()
+        pie_project, total_project, bad_project = self.get_pie_project()
         success = deepcopy(status_code.SUCCESS)
         success['pie_labor'] = pie_labor
         success['pie_company'] = pie_company
@@ -419,4 +419,7 @@ class IndexNumberPic(IndexBase):
         success['total_labor'] = total_labor
         success['total_company'] = total_company
         success['total_project'] = total_project
+        success['bad_company'] = bad_company
+        success['bad_project'] = bad_project
+        success['bad_labor'] = bad_labor
         return jsonify(success)

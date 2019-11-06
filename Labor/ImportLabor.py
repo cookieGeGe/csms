@@ -13,13 +13,13 @@ class FileImportLabor(ImportFileBase):
         self.table_name = 'tb_laborinfo'
         self.insert_sql = r"""insert into tb_laborinfo(Name, Age,Sex,Birthday,Address, Nationality,IDCard,Phone,CompanyID,
                           JobType, ClassID, Identity, DepartureDate,EntryDate,Hardhatnum,Education,CreateTime,
-                        ProjectID,IsPM,IssueAuth,Political,EmerCon,PID,CID,DID,SVP,EVP,Superiors,IsLeader,
-                        Remark, FeeStand, isFeeStand,Badrecord,isbadrecord)
+                        ProjectID,IsPM,IssueAuth,Political,EmerCon,PID,CID,DID,Superiors,IsLeader,
+                        Remark, FeeStand, isFeeStand,Badrecord,isbadrecord,Train)
                          value ('{Name}',{Age},{Sex},'{Birthday}','{Address}','{Nationality}','{IDCard}','{Phone}',
                          {CompanyID},{JobType},{ClassID},0,'{DepartureDate}','{EntryDate}','{Hardhatnum}',
                          '{Education}','{CreateTime}',{ProjectID},{IsPM},'{IssueAuth}','{Political}',
-                         '{EmerCon}',{Province},{City},{District},'{SVP}','{EVP}',{SuperiorsID},{IsLeader},
-                         '{Remark}','{FeeStand}', {isFeeStand}, '{Badrecord}','{isBadRecord}')"""
+                         '{EmerCon}',{Province},{City},{District},{SuperiorsID},{IsLeader},
+                         '{Remark}','{FeeStand}', {isFeeStand}, '{Badrecord}','{isBadRecord}','{Train}')"""
         self.key_list = {
             'Province': 'PID',
             'City': 'CID',
@@ -98,6 +98,7 @@ class FileImportLabor(ImportFileBase):
         self.item['Sex'] = 1 if self.item.get('Sex', '男') == '男' else 0
         self.item['IsPM'] = 1 if self.item.get('IsPM', '否') != '否' else 0
         self.item['isFeeStand'] = 1 if self.item.get('isFeeStand', '否') != '否' else 0
+        self.item['Train'] = 1 if self.item.get('Train', '否') != '否' else 0
         if self.item.get('JobType', '') != '':
             jobtype_list = ['钢筋工', '架子工', '模板工', '通风工', '机械设备安装工']
             self.item['JobType'] = jobtype_list.index(self.item.get('JobType', '钢筋工'))
@@ -110,6 +111,13 @@ class FileImportLabor(ImportFileBase):
                 self.item['Education'] = ''
         else:
             self.item['JobType'] = 0
+        if self.item.get('isbadrecord', '') != '':
+            badrecord_list = ['正常', '不良', '黑名单']
+            self.item['isbadrecord'] = badrecord_list.index(self.item.get('isbadrecord', '正常'))
+            if self.item['isbadrecord'] == -1:
+                self.item['isbadrecord'] = 0
+        else:
+            self.item['isbadrecord'] = 0
 
     def check_field(self):
         self.formatter_area()

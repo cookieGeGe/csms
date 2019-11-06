@@ -409,3 +409,6 @@ class ExportGuaranteeWord(ExportDocxBase):
         for key in self.data.keys():
             if self.data[key] is None:
                 self.data[key] = ''
+        self.data['SignTime'] = self.data['SignTime'].strftime("%Y-%m-%d")
+        self.data['Expiretime'] = self.data['Expiretime'].strftime("%Y-%m-%d")
+        self.data['Category'] = self.guarantee_type_list[self.data['Category']]

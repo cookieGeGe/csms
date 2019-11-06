@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
     ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery, \
-    ALLProjectID, GetProjectCompany, UpdateProgressProject, GetAllProjectConnect, GetAddProgressPicList
+    ALLProjectID, GetProjectCompany, UpdateProgressProject, GetAllProjectConnect, GetAddProgressPicList, GetALLProjectID
 
 project = Blueprint('project', __name__)
 
@@ -45,3 +45,5 @@ project.add_url_rule(
     methods=['get'],
     view_func=GetAddProgressPicList.as_view('progress_pic_list')
 )
+
+project.add_url_rule('/search/all', methods=['get'], view_func=GetALLProjectID.as_view('all_project_id'))
