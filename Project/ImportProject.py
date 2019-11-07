@@ -9,6 +9,7 @@ class FileImportProject(ImportFileBase):
 
     def __init__(self, files, colnames, db):
         super(FileImportProject, self).__init__(files, colnames, db)
+        self.table_name = 'tb_project'
         self.insert_sql = r"""insert into tb_project(name,type,guarantype,price,duration,gamount,prinpical,
             wagepercent,starttime,endtime,address,build,cons,consmanager,ownermanager,
             description,status,pid,cid,did,total,totalpay,issue, subcompany, bank, account) value('{Name}', {Type}, {GuaranType}, '{Price}', 
@@ -28,7 +29,7 @@ class FileImportProject(ImportFileBase):
         return True
 
     def formatter_area(self):
-        for key in ('Province', 'City', 'District'):
+        for key in ('PID', 'CID', 'DID'):
             if self.item.get(key, '') != '':
                 query_sql = r"""select id from tb_area where Name='{}';""".format(self.item.get(key))
                 result = self.db.query(query_sql)
@@ -64,18 +65,21 @@ class FileImportProject(ImportFileBase):
     def formatter_subcompany(self):
         sub = []
         if self.item.get('SubCompany', '') != '':
-            subcompany = self.item.get('SubCompany').replace('；', ';').plit(';')
+            subcompany = self.item.get('SubCompany').replace('；', ';').split(';')
             for info in subcompany:
                 temp_list = info.split(',')
-                if temp_list != 2:
+                if len(temp_list) != 4:
                     continue
-                query_sql = r"""select id from tb_company where name='{}';""".format(temp_list[0])
+                query_sql = r"""select id, phone from tb_company where name='{}';""".format(temp_list[0])
                 result = self.db.query(query_sql)
                 if not result:
                     continue
+                name_index = result[0]['phone'].find(temp_list[1])
+                if name_index == -1:
+                    continue
                 temp = {
                     'ID': result[0]['id'],
-                    'Person': temp_list[1]
+                    'Person': ' '.join(temp_list[1:])
                 }
                 sub.append(temp)
         return sub
@@ -85,7 +89,7 @@ class FileImportProject(ImportFileBase):
             con_str = self.item.get('PrinPical')
             if con_str != '':
                 self.item['PrinPical'] = re.sub('；', ';', self.item.get('PrinPical'))
-                person_list = self.item['Connection'].split(';')
+                person_list = self.item['PrinPical'].split(';')
                 persons = []
                 for person in person_list:
                     person = re.sub('，', ',', person)
@@ -99,34 +103,41 @@ class FileImportProject(ImportFileBase):
                         })
                     else:
                         continue
-                self.item['PrinPical'] = dumps(persons)
+                self.item['PrinPical'] = dumps(persons, ensure_ascii=False)
             else:
-                self.item['PrinPical'] = dumps([])
+                self.item['PrinPical'] = dumps([], ensure_ascii=False)
         else:
-            self.item['PrinPical'] = dumps([])
+            self.item['PrinPical'] = dumps([], ensure_ascii=False)
 
     def formatter_manager(self):
-        for key in ('ConsManager', 'OwnerManager'):
-            temp_manager = self.item.get(key, '')
+        for key in ('Cons', 'Owner'):
+            temp_manager = self.item.get(key + 'Manager', '')
             if temp_manager != '':
                 temp_manager = re.sub('，', ',', temp_manager)
-                manager_list = temp_manager.split(',')
-                if len(manager_list) == 4:
-                    query_company = r"""select id,name,PrinPical from tb_project where name ='{}';""".format(
-                        manager_list[0])
-                    result = self.db.query(query_company)
-                    if result:
-                        self.item[key] = dumps({
-                            'id': result[0]['id'],
-                            'name': manager_list[0],
-                            'pname': manager_list[1],
-                            'post': manager_list[2],
-                            'phone': manager_list[3]
-                        })
-                    else:
+                temp_manager = re.sub('；', ';', temp_manager)
+                manager_list = temp_manager.split(';')
+                if manager_list:
+                    result = []
+                    for item in manager_list:
+                        split_item = item.split(',')
+                        if len(split_item) != 3:
+                            continue
+                        tempid = self.item[key] if key != 'Owner' else self.item['Build']
+                        query_sql = r"""select phone from tb_company where id = {} 
+                                        and  CONCAT(IFNULL(phone,'')) LIKE '%{}%' ;""".format(
+                            tempid, split_item[0]
+                        )
+                        temp_result = self.db.query(query_sql)
+                        if temp_result:
+                            result.append(' '.join(split_item))
+                    if not result:
                         return True
+                    else:
+                        self.item[key + 'Manager'] = ';'.join(result)
+                        return False
                 else:
                     return True
+
             else:
                 return True
         return False
@@ -137,7 +148,7 @@ class FileImportProject(ImportFileBase):
             result = self.formatter_subcompany()
             if not result:
                 return True
-            self.item['SubCompany'] = dumps(result)
+            self.item['SubCompany'] = dumps(result, ensure_ascii=False)
             if self.formatter_type() or self.formatter_bank() or self.formatter_build_cons() or self.formatter_manager():
                 return True
             self.formatter_prinpical()
@@ -151,3 +162,26 @@ class FileImportProject(ImportFileBase):
         if result:
             return True
         return False
+
+    def save(self):
+        data_list = self.file_data.excel_data()
+        for item in data_list:
+            self.item = item
+            try:
+                check_field = self.check_field()
+                self.formatter_key()
+                check_mysql = self.check_mysql()
+                # print(self.formatter_insert_sql())
+                if check_mysql or check_field:
+                    if len(self.bad_info) < 20:
+                        self.bad_info.append(item.get('Name'))
+                    self.total_bad += 1
+                    continue
+                # print(self.formatter_insert_sql())
+                self.db.insert(self.formatter_insert_sql())
+            except Exception as e:
+                print(e)
+                if len(self.bad_info) < 20:
+                    self.bad_info.append(item.get('Name'))
+                self.total_bad += 1
+                continue

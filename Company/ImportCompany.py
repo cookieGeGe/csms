@@ -49,16 +49,16 @@ class FileImportCompany(ImportFileBase):
                     if len(one_person) != 4:
                         continue
                     persons.append({
-                        'name': one_person[0],
-                        'pos': one_person[1],
-                        'phone': one_person[2],
-                        'projectName': one_person[3]
+                        "name": str(one_person[0]),
+                        'post': str(one_person[1]),
+                        'phone': str(one_person[2]),
+                        'projectName': str(one_person[3])
                     })
-                self.item['Phone'] = dumps(persons)
+                self.item['Phone'] = dumps(persons, ensure_ascii=False)
             else:
-                self.item['Phone'] = dumps([])
+                self.item['Phone'] = dumps([], ensure_ascii=False)
         else:
-            self.item['Phone'] = dumps([])
+            self.item['Phone'] = dumps([], ensure_ascii=False)
 
     def check_field(self):
         try:

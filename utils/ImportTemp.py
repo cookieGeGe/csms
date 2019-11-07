@@ -9,9 +9,9 @@ class TempColnames():
     ATTEND = ['name', 'idcard', 'atime', 'amin', 'amout', 'pmin', 'pmout']
     COMPANY = ['Name', 'Leage', 'Address', 'Type', 'Province', 'City', 'District', 'Connection', 'Description',
                'HasBadRecord', 'OtherInfo']
-    PROJECT = ['Name', 'Type', 'GuaranType', '{Price}', 'Duration', 'GAmount', 'PrinPical', 'WagePercent', 'StartTime',
+    PROJECT = ['Name', 'Type', 'GuaranType', 'Price', 'Duration', 'GAmount', 'PrinPical', 'WagePercent', 'StartTime',
                'EndTime', 'Address', 'Build', 'Cons', 'ConsManager', 'OwnerManager',
-               'Description', 'Province', 'City', 'District', 'SubCompany', 'Bank', 'Account']
+               'Description', 'PID', 'CID', 'DID', 'SubCompany', 'Bank', 'Account']
     LABOR = ['Name', 'Age', 'Sex', 'Birthday', 'Address', 'Nationality', 'IDCard', 'Phone', 'CompanyID', 'JobType',
              'ClassID', 'DepartureDate', 'EntryDate', 'Hardhatnum', 'Education', 'ProjectID', 'IsPM',
              'IssueAuth', 'Political', 'EmerCon', 'Province', 'City', 'District', 'SuperiorsID',
