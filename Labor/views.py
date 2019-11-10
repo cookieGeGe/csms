@@ -507,10 +507,13 @@ class QueryLabor(LaborBase):
                 temp += i
                 if index < len(where_sql_list) - 1:
                     temp += 'and'
-        page = int(args.get('Page', 1))
-        psize = int(args.get('PageSize', 10))
-        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
-        query_sql = query_sql_base + " " + temp + limit_sql
+        if int(args.get('export', '0')) == 0:
+            page = int(args.get('Page', 1))
+            psize = int(args.get('PageSize', 10))
+            limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
+            query_sql = query_sql_base + " " + temp + limit_sql
+        else:
+            query_sql = query_sql_base + ' ' + temp
         # print(query_sql)
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
@@ -525,10 +528,13 @@ class QueryLabor(LaborBase):
             # item['BadRecord'] = loads(item['BadRecord'])
             # print(item['BadRecord'])
             labors.append(deepcopy(item))
-        success = deepcopy(status_code.SUCCESS)
-        success['labor_list'] = labors
-        success['total'] = total[0]['total_row']
-        return jsonify(success)
+        if int(args.get('export', '0')) == 0:
+            success = deepcopy(status_code.SUCCESS)
+            success['labor_list'] = labors
+            success['total'] = total[0]['total_row']
+            return jsonify(success)
+        else:
+            return self.export_file('labor', labors)
 
 
 class LaborInfo(LaborBase):

@@ -243,9 +243,10 @@ class GetCompanyList(BaseView):
             query_sql += item
             if index < len(where_sql_list) - 1:
                 query_sql += ' and '
-        query_sql += ' limit {0},{1};'
-        start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
-        query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
+        if int(args.get('export', '0')) == 0:
+            query_sql += ' limit {0},{1};'
+            start_limit = (int(args.get('Page', 1)) - 1) * int(args.get('PageSize'))
+            query_sql = query_sql.format(start_limit, int(args.get('PageSize')), **args)
         # print(query_sql)
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
@@ -254,9 +255,12 @@ class GetCompanyList(BaseView):
             item['Phone'] = loads(item['Phone'])
 
             # item['License'] = loads(item['License'])
-        success['company_list'] = result
-        success['total'] = total[0]['total_row']
-        return jsonify(success)
+        if int(args.get('export', '0')) == 0:
+            success['company_list'] = result
+            success['total'] = total[0]['total_row']
+            return jsonify(success)
+        else:
+            return self.export_file('company', result)
 
 
 class UploadPic(BaseView):

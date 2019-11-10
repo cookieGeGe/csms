@@ -5,6 +5,7 @@
 # @File : exportexcelbase.py
 # @Software: PyCharm
 from abc import abstractmethod, ABCMeta
+from copy import deepcopy
 from io import BytesIO
 
 import xlsxwriter
@@ -12,6 +13,7 @@ import xlsxwriter
 
 class ExportExcelBase(metaclass=ABCMeta):
     header = []  # 待实现
+    header_Name = []  # 待实现
     content_type = 'application/x-xlsx'
 
     def __init__(self):
@@ -25,13 +27,22 @@ class ExportExcelBase(metaclass=ABCMeta):
         """数据库中查询数据"""
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def formatter(self):
         """
         将查出来的数据格式化成一个二维列表
         :return:
         """
-        pass
+        if not self.temp_data:
+            raise Exception('未找到数据')
+        if not self.header_Name:
+            raise Exception('没有找到header_Name')
+        self.data = []
+        for item in self.temp_data:
+            temp = []
+            for key in self.header_Name:
+                temp.append(self.formatter_key(item, key))
+            self.data.append(deepcopy(temp))
 
     def render(self):
         """
@@ -70,7 +81,7 @@ class ExportExcelBase(metaclass=ABCMeta):
         :return:
         """
         style = {
-            'bold': kwargs.get('bold', False),  # 加粗
+            # 'bold': kwargs.get('bold', False),  # 加粗
             'font_name': kwargs.get('font_name', 'SimSun'),  # 字体类型，默认宋体
             'font_size': kwargs.get('font_size', 12),  # 字体大小，默认12
             'font_color': kwargs.get('font_color', '#000000'),  # 字体颜色，黑色

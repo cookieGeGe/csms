@@ -1,9 +1,11 @@
 from copy import deepcopy
 from json import dumps, loads
 
-from flask import session, request, jsonify
+from flask import session, request, jsonify, make_response
 from flask.views import View
 
+from Export.exportcontext import ExportContext
+from Export.exportfile import ExportFile
 from utils import status_code
 from utils.pulic_utils import str_to_datetime
 from utils.sqlutils import coon_mysql
@@ -100,7 +102,7 @@ class BaseView(View, metaclass=ABCMeta):
         """
         self.get_args()
         self._db = db
-        # return self.administrator()
+        return self.administrator()
         if request.path in self.whitelist:
             return self.administrator()
         try:
@@ -238,6 +240,20 @@ class BaseView(View, metaclass=ABCMeta):
                     if 'ID' in subcom.keys():
                         self.company_ids.append(subcom['ID'])
         return self.company_ids
+
+    def export_file(self, file_type, data):
+        factory = ExportFile()
+        export = factory.get_export_factory('excel').get_export_obj(file_type)
+        export_context = ExportContext(export)
+        export_context.query_data(data)
+        export_context.formatter()
+        export_context.render()
+        value = export_context.get_stream()
+        resp = make_response(value)
+        resp.headers["Content-Disposition"] = "attachment; filename={}".format(export_context.export_name).encode(
+            'utf8')
+        resp.headers['Content-Type'] = '{}'.format(export_context.content_type)
+        return resp
 
 
 class DelteBase(BaseView):

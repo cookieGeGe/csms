@@ -934,8 +934,11 @@ class ProjectMainQuery(BaseView):
                     temp += 'and'
         page = int(args.get('Page', 1))
         psize = int(args.get('PageSize', 10))
-        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
-        query_sql = query_sql_base + " " + temp + limit_sql
+        if int(args.get('export', '0')) == 0:
+            limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
+            query_sql = query_sql_base + " " + temp + limit_sql
+        else:
+            query_sql = query_sql_base + " " + temp
         # print(query_sql.format(**wstatus))
         result = self._db.query(query_sql.format(**wstatus))
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
@@ -962,9 +965,12 @@ class ProjectMainQuery(BaseView):
                 projects.append(item)
         success = deepcopy(status_code.SUCCESS)
         # print(projects)
-        success['project'] = projects
-        success['total'] = total[0]['total_row']
-        return jsonify(success)
+        if int(args.get('export', '0')) == 0:
+            success['project'] = projects
+            success['total'] = total[0]['total_row']
+            return jsonify(success)
+        else:
+            return self.export_file('project', projects)
 
 
 class ALLProjectID(AllCompanyID):

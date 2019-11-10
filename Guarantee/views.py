@@ -180,7 +180,10 @@ class QueryGuarantee(GuaranteeBase):
                         INNER JOIN tb_area as t5 on t1.CID = t5.id
                         INNER JOIN tb_area as t6 on t1.DID = t6.id"""
         if int(args.get('ID', 0)) == 0:
-            query_sql = self.main_query(query_sql, args, 1)
+            if int(args.get('export', '0')) == 0:
+                query_sql = self.main_query(query_sql, args, 1)
+            else:
+                query_sql = self.main_query(query_sql, args, 0)
             total_query_sql = self.main_query(total_query_sql, args, 0)
         else:
             query_sql += r""" where t1.ID = {} """.format(args.get('ID'))
@@ -208,9 +211,13 @@ class QueryGuarantee(GuaranteeBase):
             # print(total_result)
             success['amount_total'] = total_result[0]['amount_total']
             success['realac_total'] = total_result[0]['realac_total']
-        success['result'] = temp_result
-        success['total'] = total[0]['total_row']
-        return jsonify(success)
+        if int(args.get('export', '0')) == 0:
+            success['result'] = temp_result
+            success['total'] = total[0]['total_row']
+            return jsonify(success)
+        else:
+            return self.export_file('guarantee', temp_result)
+
 
 
 class UpdateGuarantee(GuaranteeBase):
