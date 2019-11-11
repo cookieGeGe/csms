@@ -566,12 +566,14 @@ class ADDProgressProject(BaseView):
                 args[i] = 1
             else:
                 args[i] = 0
+        if int(args.get('Punches', '0')) == 0:
+            args['Punches'] = 0
         insert_sql = r"""insert into tb_progress(ProjectID, Status, UploadTime, Person, Remark,Rtype,Contract,Content,
             RealName,Attend,Lwage, LAB, PAB, LPayCert, Percent,year,month,Connect,Workers, 
-            ShouldIssues, RealIssues, Payment, Overdraft, TotalSalary) value ({ProjectID},
+            ShouldIssues, RealIssues, Payment, Overdraft, TotalSalary, Punches) value ({ProjectID},
             {Status}, '{UploadTime}', '{Person}','{Remark}',{Rtype},{Contract},'{Content}',{RealName},{Attend},
             {Lwage},{LAB},{PAB},{LPayCert}, '{Percent}', '{year}', '{month}','{Connect}','{Workers}',
-             '{ShouldIssues}', '{RealIssues}', '{Payment}', '{Overdraft}', '{TotalSalary}');"""
+             '{ShouldIssues}', '{RealIssues}', '{Payment}', '{Overdraft}', '{TotalSalary}', {Punches});"""
         args['UploadTime'] = datetime.datetime.now()
         progress_id = self._db.insert(insert_sql.format(**args))
         if self.args.get('ImgGroupID', []):
@@ -657,14 +659,15 @@ class UpdateProgressProject(BaseView):
 
         # old_data_sql = r"""select PPay,LPay,Total from tb_progress where id={}""".format(self.args.get('ID'))
         # old_data = self._db.query(old_data_sql)
-
+        if int(args.get('Punches', '0')) == 0:
+            args['Punches'] = 0
         update_progress_sql = r"""update tb_progress set ProjectID={ProjectID}, Status={Status},
                     Person='{Person}',Remark='{Remark}',Rtype={Rtype},Contract={Contract},Content='{Content}',RealName={RealName},
                     Attend={Attend}, Lwage={Lwage},LAB={LAB},PAB={PAB},
                     LPayCert={LPayCert},Percent='{Percent}',year='{year}',
                     month='{month}', Connect='{Connect}',Workers='{Workers}', ShouldIssues='{ShouldIssues}',
                     RealIssues= '{RealIssues}', Payment='{Payment}', Overdraft='{Overdraft}', 
-                    TotalSalary = '{TotalSalary}' where id ={ID};"""
+                    TotalSalary = '{TotalSalary}', Punches='{Punches}' where id ={ID};"""
         args['UploadTime'] = datetime.datetime.now()
         self._db.update(update_progress_sql.format(**args))
         if self.args.get('ImgGroupID', []):

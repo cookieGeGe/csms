@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="修改项目和企业导入功能">
+    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="完成列表页面导出功能">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Company/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Company/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Export/ExportExcel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Export/ExportExcel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Export/exportexcel_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Export/exportexcel_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Export/exportexcelbase.py" beforeDir="false" afterPath="$PROJECT_DIR$/Export/exportexcelbase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Guarantee/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Guarantee/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Labor/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Labor/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Export/exportword_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Export/exportword_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csms.sql" beforeDir="false" afterPath="$PROJECT_DIR$/csms.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/text.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/text.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/BaseView.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/BaseView.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,8 +20,8 @@
     <SUITE FILE_PATH="coverage/CSMS$manager.coverage" NAME="manager Coverage Results" MODIFIED="1553090335693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$112_74_77_158.coverage" NAME="112.74.77.158 Coverage Results" MODIFIED="1562248315631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$120_78_163_106.coverage" NAME="120.78.163.106 Coverage Results" MODIFIED="1568114265580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$manager_remote.coverage" NAME="manager_remote Coverage Results" MODIFIED="1573047925466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$manager_local.coverage" NAME="manager_local Coverage Results" MODIFIED="1573367716531" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager_remote.coverage" NAME="manager_remote Coverage Results" MODIFIED="1573472061668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager_local.coverage" NAME="manager_local Coverage Results" MODIFIED="1573396683333" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$get_company_url.coverage" NAME="get_company_url Coverage Results" MODIFIED="1565275779547" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/csmsspider" />
     <SUITE FILE_PATH="coverage/csms$manager.coverage" NAME="manager Coverage Results" MODIFIED="1555682613796" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$test.coverage" NAME="test Coverage Results" MODIFIED="1557232164485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -35,40 +32,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Export/ExportExcel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" column="38" lean-forward="true" selection-start-line="16" selection-start-column="38" selection-end-line="16" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="104" column="2" selection-start-line="104" selection-start-column="2" selection-end-line="104" selection-end-column="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Company/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-965">
-              <caret line="252" column="47" lean-forward="true" selection-start-line="252" selection-start-column="47" selection-end-line="252" selection-end-column="47" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Export/exportexcel_views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="193" selection-start-line="193" selection-end-line="193" />
-              <folding>
-                <element signature="e#125#138#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="153">
+              <caret line="9" column="40" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
             </state>
           </provider>
         </entry>
@@ -76,10 +43,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Export/exportexcelbase.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
-              <caret line="90" column="52" lean-forward="true" selection-start-line="90" selection-start-column="52" selection-end-line="90" selection-end-column="52" />
+            <state relative-caret-position="376">
+              <caret line="53" column="56" selection-start-line="53" selection-start-column="56" selection-end-line="53" selection-end-column="56" />
               <folding>
                 <element signature="e#123#162#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Export/exportword_views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="497">
+              <caret line="300" column="64" selection-start-line="300" selection-start-column="64" selection-end-line="300" selection-end-column="64" />
+              <folding>
+                <element signature="e#4251#4372#0" />
+                <element signature="e#4422#5048#0" />
+                <element signature="e#5090#5202#0" />
+                <element signature="e#5264#6207#0" />
+                <element signature="e#6266#6572#0" />
+                <element signature="e#6630#6969#0" />
+                <element signature="e#7018#7263#0" />
+                <element signature="e#7307#8236#0" />
               </folding>
             </state>
           </provider>
@@ -88,8 +74,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/text.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="98" column="7" lean-forward="true" selection-start-line="98" selection-start-column="7" selection-end-line="98" selection-end-column="7" />
+            <state relative-caret-position="1462">
+              <caret line="86" column="101" selection-start-line="86" selection-start-column="101" selection-end-line="86" selection-end-column="101" />
             </state>
           </provider>
         </entry>
@@ -98,16 +84,16 @@
         <entry file="file://$PROJECT_DIR$/Guarantee/urls.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="289">
-              <caret line="20" column="68" lean-forward="true" selection-start-line="20" selection-start-column="68" selection-end-line="20" selection-end-column="68" />
+              <caret line="20" column="68" selection-start-line="20" selection-start-column="68" selection-end-line="20" selection-end-column="68" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Guarantee/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="157">
-              <caret line="211" column="69" lean-forward="true" selection-start-line="211" selection-start-column="69" selection-end-line="211" selection-end-column="69" />
+            <state relative-caret-position="3485">
+              <caret line="217" column="13" selection-start-line="217" selection-start-column="13" selection-end-line="217" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -115,8 +101,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Labor/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="496">
-              <caret line="536" column="52" lean-forward="true" selection-start-line="536" selection-start-column="52" selection-end-line="536" selection-end-column="52" />
+            <state relative-caret-position="8432">
+              <caret line="507" column="51" selection-start-line="507" selection-start-column="51" selection-end-line="507" selection-end-column="51" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Project/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="10455">
+              <caret line="627" selection-start-line="627" selection-end-line="627" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/csms.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="65331">
+              <caret line="3843" column="79" selection-start-line="3843" selection-start-column="79" selection-end-line="3843" selection-end-column="79" />
             </state>
           </provider>
         </entry>
@@ -134,7 +138,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>GET_COMPANY_INFO_FAILD</find>
       <find>m</find>
       <find>TempColnames</find>
       <find>Duration</find>
@@ -164,10 +167,10 @@
       <find>ch</find>
       <find>Price</find>
       <find>value and</find>
+      <find>session</find>
     </findStrings>
     <replaceStrings>
       <replace>(self.list_to_str(self.company_ids))</replace>
-      <replace>value is not None and</replace>
       <replace>value is not None and</replace>
     </replaceStrings>
   </component>
@@ -217,8 +220,6 @@
         <option value="$PROJECT_DIR$/venv/Lib/site-packages/jinja2/environment.py" />
         <option value="$PROJECT_DIR$/Export/ExportDocx.py" />
         <option value="$PROJECT_DIR$/Export/exportwordbase.py" />
-        <option value="$PROJECT_DIR$/Export/exportword_views.py" />
-        <option value="$PROJECT_DIR$/csms.sql" />
         <option value="$PROJECT_DIR$/Project/urls.py" />
         <option value="$PROJECT_DIR$/User/views.py" />
         <option value="$PROJECT_DIR$/Labor/urls.py" />
@@ -229,14 +230,16 @@
         <option value="$PROJECT_DIR$/Project/ImportProject.py" />
         <option value="$PROJECT_DIR$/utils/ImportTemp.py" />
         <option value="$PROJECT_DIR$/Export/ExportExcel.py" />
-        <option value="$PROJECT_DIR$/Project/views.py" />
         <option value="$PROJECT_DIR$/Company/views.py" />
         <option value="$PROJECT_DIR$/Labor/views.py" />
         <option value="$PROJECT_DIR$/utils/BaseView.py" />
-        <option value="$PROJECT_DIR$/Export/exportexcelbase.py" />
-        <option value="$PROJECT_DIR$/templates/text.html" />
-        <option value="$PROJECT_DIR$/Export/exportexcel_views.py" />
         <option value="$PROJECT_DIR$/Guarantee/views.py" />
+        <option value="$PROJECT_DIR$/templates/text.html" />
+        <option value="$PROJECT_DIR$/csms.sql" />
+        <option value="$PROJECT_DIR$/Project/views.py" />
+        <option value="$PROJECT_DIR$/Export/exportexcel_views.py" />
+        <option value="$PROJECT_DIR$/Export/exportexcelbase.py" />
+        <option value="$PROJECT_DIR$/Export/exportword_views.py" />
       </list>
     </option>
   </component>
@@ -247,8 +250,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="349" />
-    <option name="y" value="49" />
+    <option name="x" value="12" />
+    <option name="y" value="66" />
     <option name="width" value="1971" />
     <option name="height" value="1245" />
   </component>
@@ -277,6 +280,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -284,51 +288,10 @@
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
               <item name="csms" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Company" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Export" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Guarantee" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Labor" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="Project" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="UserTemplate" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="csms" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -362,7 +325,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.manager_local">
+  <component name="RunManager" selected="Python.manager_remote">
     <configuration name="112.74.77.158" type="PythonConfigurationType" factoryName="Python">
       <module name="CSMS" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -825,7 +788,14 @@
       <option name="project" value="LOCAL" />
       <updated>1573134203263</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="完成列表页面导出功能">
+      <created>1573369736426</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1573369736426</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TodoView">
@@ -841,13 +811,13 @@
     <frame x="-7" y="-7" width="1455" height="935" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17108089" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17967072" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.2840617" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.29691517" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.4996421" visible="true" weight="0.40745503" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4996421" weight="0.37275064" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32838038" />
@@ -857,7 +827,7 @@
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.3881748" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.5003579" side_tool="true" weight="0.36503857" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32838038" />
-      <window_info anchor="bottom" id="File Transfer" order="13" sideWeight="0.4996421" visible="true" weight="0.26606685" />
+      <window_info anchor="bottom" id="File Transfer" order="13" sideWeight="0.4996421" weight="0.26606685" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -898,7 +868,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="第一次修改完成" />
     <MESSAGE value="第一次修改bug,不显示没有添加地区用户，项目进度添加问题" />
     <MESSAGE value="2019-8-13修改" />
     <MESSAGE value="2019-9-10修改" />
@@ -923,7 +892,8 @@
     <MESSAGE value="完成导出保函" />
     <MESSAGE value="基本完成所有事情" />
     <MESSAGE value="修改项目和企业导入功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改项目和企业导入功能" />
+    <MESSAGE value="完成列表页面导出功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成列表页面导出功能" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -949,13 +919,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/utils/RedisUtil.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="118" selection-start-line="118" selection-end-line="118" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APP/App.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1022,13 +985,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/csms.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="65212">
-          <caret line="3836" column="20" selection-start-line="3836" selection-start-column="12" selection-end-line="3836" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/User/permission_view.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1122">
@@ -1083,13 +1039,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/crud.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Export/exportword_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5749">
-          <caret line="413" selection-start-line="413" selection-end-line="413" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Export/ExportDocx.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1168,9 +1117,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="68" column="16" lean-forward="true" selection-start-line="68" selection-start-column="16" selection-end-line="68" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#22#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1178,9 +1124,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2176">
           <caret line="23" column="41" selection-start-line="23" selection-start-column="32" selection-end-line="23" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1212,13 +1155,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="32" column="68" lean-forward="true" selection-start-line="32" selection-start-column="68" selection-end-line="32" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Labor/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -1226,86 +1162,121 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project/views.py">
+    <entry file="file://$PROJECT_DIR$/Export/ExportExcel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="531">
-          <caret line="967" column="8" selection-start-line="967" selection-start-column="8" selection-end-line="967" selection-end-column="45" />
+        <state relative-caret-position="238">
+          <caret line="14" column="38" selection-start-line="14" selection-start-column="38" selection-end-line="14" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Labor/views.py">
+    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="496">
-          <caret line="536" column="52" lean-forward="true" selection-start-line="536" selection-start-column="52" selection-end-line="536" selection-end-column="52" />
+        <state relative-caret-position="1411">
+          <caret line="94" column="19" selection-start-line="94" selection-start-column="19" selection-end-line="94" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Project/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="19" column="78" selection-start-line="19" selection-start-column="78" selection-end-line="19" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/xlsxwriter/worksheet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="267" column="37" lean-forward="true" selection-start-line="267" selection-start-column="37" selection-end-line="267" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Company/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5202">
+          <caret line="320" selection-start-line="320" selection-end-line="320" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Export/exportexcel_views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="40" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/text.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1462">
+          <caret line="86" column="101" selection-start-line="86" selection-start-column="101" selection-end-line="86" selection-end-column="101" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Guarantee/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
-          <caret line="20" column="68" lean-forward="true" selection-start-line="20" selection-start-column="68" selection-end-line="20" selection-end-column="68" />
+          <caret line="20" column="68" selection-start-line="20" selection-start-column="68" selection-end-line="20" selection-end-column="68" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Export/ExportExcel.py">
+    <entry file="file://$PROJECT_DIR$/Guarantee/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="38" lean-forward="true" selection-start-line="16" selection-start-column="38" selection-end-line="16" selection-end-column="38" />
+        <state relative-caret-position="3485">
+          <caret line="217" column="13" selection-start-line="217" selection-start-column="13" selection-end-line="217" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
+    <entry file="file://$PROJECT_DIR$/Labor/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="104" column="2" selection-start-line="104" selection-start-column="2" selection-end-line="104" selection-end-column="2" />
+        <state relative-caret-position="8432">
+          <caret line="507" column="51" selection-start-line="507" selection-start-column="51" selection-end-line="507" selection-end-column="51" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Company/views.py">
+    <entry file="file://$PROJECT_DIR$/Project/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-965">
-          <caret line="252" column="47" lean-forward="true" selection-start-line="252" selection-start-column="47" selection-end-line="252" selection-end-column="47" />
+        <state relative-caret-position="10455">
+          <caret line="627" selection-start-line="627" selection-end-line="627" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
+    <entry file="file://$PROJECT_DIR$/csms.sql">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="16" lean-forward="true" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="16" />
+        <state relative-caret-position="65331">
+          <caret line="3843" column="79" selection-start-line="3843" selection-start-column="79" selection-end-line="3843" selection-end-column="79" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Export/exportexcelbase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="90" column="52" lean-forward="true" selection-start-line="90" selection-start-column="52" selection-end-line="90" selection-end-column="52" />
+        <state relative-caret-position="376">
+          <caret line="53" column="56" selection-start-line="53" selection-start-column="56" selection-end-line="53" selection-end-column="56" />
           <folding>
             <element signature="e#123#162#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/text.html">
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="98" column="7" lean-forward="true" selection-start-line="98" selection-start-column="7" selection-end-line="98" selection-end-column="7" />
+        <state relative-caret-position="51">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Export/exportexcel_views.py">
+    <entry file="file://$PROJECT_DIR$/Export/exportword_views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="193" selection-start-line="193" selection-end-line="193" />
+        <state relative-caret-position="497">
+          <caret line="300" column="64" selection-start-line="300" selection-start-column="64" selection-end-line="300" selection-end-column="64" />
           <folding>
-            <element signature="e#125#138#0" expanded="true" />
+            <element signature="e#4251#4372#0" />
+            <element signature="e#4422#5048#0" />
+            <element signature="e#5090#5202#0" />
+            <element signature="e#5264#6207#0" />
+            <element signature="e#6266#6572#0" />
+            <element signature="e#6630#6969#0" />
+            <element signature="e#7018#7263#0" />
+            <element signature="e#7307#8236#0" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Guarantee/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="211" column="69" lean-forward="true" selection-start-line="211" selection-start-column="69" selection-end-line="211" selection-end-column="69" />
         </state>
       </provider>
     </entry>

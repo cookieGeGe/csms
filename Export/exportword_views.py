@@ -297,7 +297,10 @@ class ExportProgressWord(ExportDocxBase):
         return person_list
 
     def formatter(self):
-        self.export_name = '{}.docx'.format(self.data.get('Name', 'project'))
+        name = self.data.get('project_name', 'project') + '_' + str(
+            self.data.get('year', datetime.datetime.now().year)) + '_' + str(
+            self.data.get('month', datetime.datetime.now().month))
+        self.export_name = '{}.docx'.format(name)
         if not len(self.data.keys()):
             raise Exception('未找到数据')
         self.data.update(self.export_data)
@@ -347,7 +350,7 @@ class ExportLaborWord(ExportDocxBase):
         return result[0] if result else {}
 
     def formatter(self):
-        self.export_name = '{}.docx'.format(self.data.get('Name', 'project'))
+        self.export_name = '{}.docx'.format(self.data.get('Name', 'labor'))
         if not len(self.data.keys()):
             raise Exception('未找到数据')
         self.data.update(self.export_data)
@@ -396,7 +399,7 @@ class ExportGuaranteeWord(ExportDocxBase):
         return result
 
     def formatter(self):
-        self.export_name = '{}.docx'.format(self.data.get('Name', 'project'))
+        self.export_name = '{}.docx'.format(self.data.get('Name', 'guarantee'))
         if not len(self.data.keys()):
             raise Exception('未找到数据')
         self.data.update(self.export_data)

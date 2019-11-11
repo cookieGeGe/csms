@@ -54,6 +54,7 @@ class ExportExcelBase(metaclass=ABCMeta):
         style = self.excel.add_format(self.xlsx_style())
         # 插入数据
         sheet.write_row('A1', self.header, style)
+        # sheet.set_column(0, 10, 100)
         for i in range(len(self.data)):
             sheet.write_row('A{}'.format(i + 2), self.data[i], style)
         self.excel.close()

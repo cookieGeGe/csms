@@ -3839,4 +3839,8 @@ ADD COLUMN `TrainPic` varchar(4096) NULL COMMENT '培训图片' AFTER `UserID`;
 -- 已同步到阿里云
 
 
+--2019-11-10
+ALTER TABLE `csms`.`tb_progress`
+ADD COLUMN `Punches` int(255) NULL DEFAULT 0 COMMENT '打卡数' AFTER `TotalSalary`;
+
 SET FOREIGN_KEY_CHECKS = 1;
