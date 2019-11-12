@@ -17,3 +17,5 @@ if __name__ == '__main__':
     manager.run()
 
 # flask-sqlacodegen mysql+pymysql://root:admin123@127.0.0.1/csms --outfile "APP/models.py"  --flask
+# 启动异步任务
+# celery -A ReceivePush.pushtask.celery worker -l info -E -P eventlet -c 10

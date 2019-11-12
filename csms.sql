@@ -3843,4 +3843,12 @@ ADD COLUMN `TrainPic` varchar(4096) NULL COMMENT '培训图片' AFTER `UserID`;
 ALTER TABLE `csms`.`tb_progress`
 ADD COLUMN `Punches` int(255) NULL DEFAULT 0 COMMENT '打卡数' AFTER `TotalSalary`;
 
+
+-- 2019-11-12
+ALTER TABLE `csms`.`tb_attendance`
+ADD COLUMN `aminpos` varchar(255) NULL COMMENT '上午进场' AFTER `day`,
+ADD COLUMN `amoutpos` varchar(255) NULL COMMENT '上午出场' AFTER `aminpos`,
+ADD COLUMN `pminpos` varchar(255) NULL COMMENT '下午进场' AFTER `amoutpos`,
+ADD COLUMN `pmoutpos` varchar(255) NULL COMMENT '下午出场' AFTER `pminpos`;
+
 SET FOREIGN_KEY_CHECKS = 1;

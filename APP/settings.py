@@ -41,4 +41,5 @@ redisInfo = {
     'db': 0
 }
 
-
+CELERY_BROKER_URL = 'redis://:' + redisInfo['password'] + '@' + redisInfo['host'] + ':6379/' + str(redisInfo['db'])
+CELERY_RESULT_BACKEND = 'redis://:' + redisInfo['password'] + '@' + redisInfo['host'] + ':6379/' + str(redisInfo['db'])
