@@ -7,7 +7,7 @@ from flask.views import View
 from Export.exportcontext import ExportContext
 from Export.exportfile import ExportFile
 from utils import status_code
-from utils.pulic_utils import str_to_datetime
+from utils.pulic_utils import str_to_datetime, date_to_datetime
 from utils.sqlutils import coon_mysql
 from abc import ABCMeta, abstractmethod
 
@@ -47,6 +47,9 @@ class BaseView(View, metaclass=ABCMeta):
 
     def time_to_str(self, datetime_obj):
         return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+
+    def date_to_datetime(self, date_str):
+        return date_to_datetime(date_str)
 
     def set_ids(self, sql):
         """
@@ -102,7 +105,7 @@ class BaseView(View, metaclass=ABCMeta):
         """
         self.get_args()
         self._db = db
-        return self.administrator()
+        # return self.administrator()
         if request.path in self.whitelist:
             return self.administrator()
         try:

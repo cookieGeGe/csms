@@ -36,7 +36,7 @@ class ReceiveAttend(BaseView):
             left join tb_project as t2 on t1.ProjectID = t2.ID
             where t1.IDCard = '{}' and t2.Name='{}';
         """.format(args.get('identityNo'), args.get('departMentName'))
-        result = self.db.query(query_sql)
+        result = self._db.query(query_sql)
         if not result:
             return jsonify(self.push_error)
         args.update(result[0])

@@ -305,3 +305,50 @@ class GetOneSalary(AttendBase):
         success = deepcopy(status_code.SUCCESS)
         success['salary'] = temp
         return jsonify(success)
+
+
+class queryProjectAttend(AttendBase):
+
+    def __init__(self):
+        super(queryProjectAttend, self).__init__()
+
+    def views(self):
+        where_sql_list = []
+        # if self.args_is_null('page', 'pagesize'):
+        #     return jsonify(status_code.CONTENT_IS_NULL)
+        page = self.args.get('Page', '1')
+        pagesize = self.args.get('PageSize', '10')
+        if self.args.get('name', '') != '':
+            where_sql_list.append(r"""  CONCAT(IFNULL(t3.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
+        if self.args.get('date', '') != '':
+            date = self.date_to_datetime(self.args.get('date'))
+            where_sql_list.append(r""" t1.year='{}' """.format(date.year))
+            where_sql_list.append(r""" t1.month='{}' """.format(date.month))
+            where_sql_list.append(r""" t1.day='{}' """.format(date.day))
+
+        query_sql = r"""
+            select SQL_CALC_FOUND_ROWS t3.name,t2.total, t1.count as punches,t1.year,t1.month, t1.day  from (select *, count(id) as count from tb_attendance GROUP BY projectid, year, month, day ORDER BY year desc, month desc, day desc) as t1
+            left join (select count(id) as total, ProjectID from tb_laborinfo GROUP BY ProjectID) as t2 on t1.projectid = t2.ProjectID
+            left join tb_project as t3 on t1.ProjectID = t3.id
+        """
+        where_sql = ' '
+        if where_sql_list:
+            where_sql = ' where '
+            where_sql += ' and '.join(where_sql_list)
+        limit_sql = r""" limit {}, {}""".format((int(page) - 1) * int(pagesize), int(pagesize))
+        total_sql = query_sql + where_sql + limit_sql
+        result = self._db.query(total_sql)
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
+        data = []
+        if result:
+            for index, item in enumerate(result):
+                item['id'] = index
+                item['time'] = str(item['year']) + '-' + str(item['month']) + '-' + str(item['day'])
+                if item['total'] is None or item['total'] == '':
+                    item['total'] = 0
+                item['unpunches'] = int(item['total']) - int(item['punches'])
+                item['percent'] = int(item['punches']) / int(item['total']) * 100
+                data.append(deepcopy(item))
+        self.success['result'] = data
+        self.success['total'] = total[0]['total_row']
+        return jsonify(self.success)

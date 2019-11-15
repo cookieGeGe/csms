@@ -1,6 +1,7 @@
 from flask import Blueprint
 
-from Attend.views import ImportAttend, QueryAttendInfo, QueryAttend, ADDSalary, GetOneSalary, QuerySalary
+from Attend.views import ImportAttend, QueryAttendInfo, QueryAttend, ADDSalary, GetOneSalary, QuerySalary, \
+    queryProjectAttend
 
 attend = Blueprint('attend', __name__)
 
@@ -10,6 +11,7 @@ attend.add_url_rule('/import', methods=['post'], view_func=ImportAttend.as_view(
 attend.add_url_rule('/monthinfo', methods=['get'], view_func=QueryAttendInfo.as_view('attend_info'))
 # 考勤查询页面
 attend.add_url_rule('/query', methods=['get'], view_func=QueryAttend.as_view('query_attend'))
+attend.add_url_rule('/project/query', methods=['get'], view_func=queryProjectAttend.as_view('pro_query_attend'))
 
 # 查询薪资计算
 attend.add_url_rule('/salary/query', methods=['get'], view_func=QuerySalary.as_view('query_salary'))

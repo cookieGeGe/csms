@@ -57,13 +57,18 @@ class PushAttend:
              """.format(in_out, pos, **self.args)
             self.db.update(update_sql)
 
+    def str_to_datetime(self, str):
+        return datetime.datetime.strptime(str, "%Y-%m-%d %H:%M:%S")
+
     def need_deal_data(self, t_id, field, data):
         if data[field] is None or data[field] == '':
             return True
+        data_time = self.str_to_datetime(data[field])
         if t_id % 2:
-            if data[field] > self.args[field]:
+            if data_time > self.args['date_time']:
                 return True
         else:
-            if data[field] < self.args[field]:
+
+            if data_time < self.args['date_time']:
                 return True
         return False
