@@ -113,6 +113,7 @@ class BaseView(View, metaclass=ABCMeta):
         except:
             return jsonify(status_code.USER_NOT_LOGIN)
         self._uid = session['id']
+        self._permissions = session['Permission']
         if int(session['AdminType']) == 0:
             return self.administrator()
         elif int(session['AdminType']) == 1:

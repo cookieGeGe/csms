@@ -7,6 +7,7 @@ from Guarantee.urls import guarantee
 from Index.urls import index
 from Labor.urls import labor
 from Project.urls import project
+from Questions.urls import question
 from ReceivePush.urls import push
 from User.urls import user
 from UserTemplate.urls import user_template
@@ -25,3 +26,4 @@ def blue_regist(app):
     app.register_blueprint(index, url_prefix='/index/')
     app.register_blueprint(bankinfo, url_prefix='/bankinfo/')
     app.register_blueprint(push, url_prefix='/push/')
+    app.register_blueprint(question, url_prefix='/question/')

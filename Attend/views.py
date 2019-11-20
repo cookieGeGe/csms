@@ -85,7 +85,7 @@ class QueryAttend(AttendBase):
     def views(self):
         args = self.args
         query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.JobType,t1.IDCard,t1.Avatar,t1.ProjectID,t2.Name as CompanyName,t3.Name as ProjectName,
-                t4.Count,t4.year,t4.month,t5.ClassName,t1.CompanyID,t1.Avatar from tb_laborinfo as t1
+                t4.Count,t4.year,t4.month,t5.ClassName,t1.CompanyID,t1.Avatar, t1.DepartureDate from tb_laborinfo as t1
                 left join tb_company as t2 on t2.ID = t1.CompanyID
                 left JOIN tb_project as t3 on t3.ID = t1.ProjectID
 				left join tb_class as t5 on t5.id = t1.classid
@@ -119,6 +119,12 @@ class QueryAttend(AttendBase):
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql_main = query_sql + " " + temp + limit_sql
         result = self._db.query(query_sql_main)
+        for item in result:
+            if item['DepartureDate'] != '' and item['DepartureDate'] is not None:
+                if item['DepartureDate'] < datetime.datetime.now():
+                    item['isDeparture'] = True
+                    continue
+            item['isDeparture'] = False
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         success = deepcopy(status_code.SUCCESS)
         success['Attend'] = result

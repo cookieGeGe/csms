@@ -3851,4 +3851,25 @@ ADD COLUMN `amoutpos` varchar(255) NULL COMMENT '上午出场' AFTER `aminpos`,
 ADD COLUMN `pminpos` varchar(255) NULL COMMENT '下午进场' AFTER `amoutpos`,
 ADD COLUMN `pmoutpos` varchar(255) NULL COMMENT '下午出场' AFTER `pminpos`;
 
+-- 2019-11-19
+CREATE TABLE `csms`.`tb_question`  (
+  `id` int(0) NOT NULL AUTO_INCREMENT,
+  `question` varchar(255) NULL COMMENT '问题',
+  `answer` varchar(4096) NULL COMMENT '答案',
+  `type` int(255) NULL COMMENT '问题类型',
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `csms`.`tb_question`
+MODIFY COLUMN `type` int(255) NULL DEFAULT NULL COMMENT '问题类型(类型从1开始)' AFTER `answer`,
+ADD COLUMN `createtime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间' AFTER `type`,
+ADD COLUMN `updatetime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间' AFTER `createtime`,
+ADD COLUMN `updateuser` int(255) NULL COMMENT '修改用户' AFTER `updatetime`;
+
+ALTER TABLE `csms`.`tb_question`
+CHANGE COLUMN `question` `Name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '问题' AFTER `id`,
+CHANGE COLUMN `answer` `Answer` varchar(4096) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '答案' AFTER `Name`,
+CHANGE COLUMN `type` `Type` int(255) NULL DEFAULT NULL COMMENT '问题类型(类型从1开始)' AFTER `Answer`,
+CHANGE COLUMN `updateuser` `Creator` int(255) NULL DEFAULT NULL COMMENT '修改用户' AFTER `updatetime`;
+
 SET FOREIGN_KEY_CHECKS = 1;

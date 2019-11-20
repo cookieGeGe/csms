@@ -25,7 +25,7 @@ celery = make_celery()
 
 @celery.task
 def deal_push_attend(args):
-    print(args)
+    # print(args)
     pushattend = PushAttend(args)
     data = pushattend.check_has_data()
     t_id, field = pushattend.check_in_or_out()
