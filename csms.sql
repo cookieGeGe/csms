@@ -3872,4 +3872,14 @@ CHANGE COLUMN `answer` `Answer` varchar(4096) CHARACTER SET utf8 COLLATE utf8_ge
 CHANGE COLUMN `type` `Type` int(255) NULL DEFAULT NULL COMMENT '问题类型(类型从1开始)' AFTER `Answer`,
 CHANGE COLUMN `updateuser` `Creator` int(255) NULL DEFAULT NULL COMMENT '修改用户' AFTER `updatetime`;
 
+-- 2019-11-20
+ALTER TABLE `csms`.`tb_company`
+ADD COLUMN `CreateTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间' AFTER `OtherInfo`;
+
+ALTER TABLE `csms`.`tb_project`
+ADD COLUMN `CreateTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间' AFTER `Account`;
+
+ALTER TABLE `csms`.`tb_laborinfo`
+ADD COLUMN `Create` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间' AFTER `TrainPic`;
+
 SET FOREIGN_KEY_CHECKS = 1;

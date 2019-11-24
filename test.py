@@ -1,21 +1,41 @@
-user = [
-    {"username": "root", "password": "123"},
-    {"username": "admin", "password": "111"}
-]
+def dict_deal(dict_data):
+    temp = {}
+    for key, value in dict_data.items():
+        if isinstance(value, dict):
+            temp[key.lower()] = dict_deal(value)
+        elif isinstance(value, list):
+            temp[key.lower()] = deal_list(value)
+        else:
+            temp[key.lower()] = value
+    return temp
 
-i = 1
-while i <= 4:
-    name = input('请输入用户名：')
-    passwd = input('请输入密码：')
-    username_list = []
-    password_list = []
-    for item in user:
-        username_list.append(item['username'])
-        password_list.append(item['password'])
-    if name in username_list:
-        index = username_list.index(name)
-        # print('索引为：', index)
-        if passwd == password_list[index]:
-            # print('登录成功！')
-            break
-    i += 1
+
+def deal_list(data_list):
+    temp = []
+    for i, item in enumerate(data_list):
+        if isinstance(item, dict):
+            item = dict_deal(item)
+        elif isinstance(item, list):
+            item = deal_list(item)
+        else:
+            item = item
+        temp.append(item)
+    return temp
+
+
+if __name__ == '__main__':
+    dict_data = {
+        'A': 'a',
+        'B': ['a', {
+            'C': 12
+        }],
+        'D': {
+            "E": 'e',
+            "F": [1, 2,{
+                "G":123
+            }]
+        }
+    }
+    list_data = [dict_data] * 3
+    print(dict_deal(dict_data))
+    print(deal_list(list_data))

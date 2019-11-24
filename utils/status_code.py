@@ -38,3 +38,8 @@ CLASS_ID_NULL = {'code': 50028, 'msg': '请先创建班组长,或者选择班组
 SubcompanyID_ID_NULL = {'code': 50030, 'msg': '请选择分包公司'}
 SUPERIORS_ERROR = {'code': 50030, 'msg': '上级负责人不能为该组组员'}
 
+# token错误
+TOKEN_IS_NULL = {'code': 50031, 'msg': '没有找到token'}
+TOKEN_IS_EXPIRED = {'code': 50032, 'msg': '登录过期！'}
+ILLEGAL_TOKEN = {'code': 50033, 'msg': '非法的Token'}
+

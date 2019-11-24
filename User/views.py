@@ -2,8 +2,9 @@ from json import dumps
 
 from copy import deepcopy
 
-from flask import request, jsonify, session, make_response, Response
+from flask import request, jsonify, session, make_response, Response, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from User.util import save_image, get_all_area_id
 from utils import status_code
@@ -120,6 +121,24 @@ class UserLogin(BaseView):
         self._insert_sql = None
         self.uid = None
 
+    def create_token(self, uid, admintype, permission, c, pertype):
+        """
+            生成token，将用户的id，作用域，用户类型，过期时间写入token
+            :return:
+            """
+        serializer = Serializer(current_app.config['SECRET_KEY'],
+                                expires_in=3600 * 24 * 15)
+        token = serializer.dumps({"id": uid,
+                                  "AdminType": admintype,
+                                  'url': self.get_all_url(),
+                                  'Permission': permission,
+                                  'C': c,
+                                  'login': True,
+                                  'pertype': pertype,
+                                  'area_ids': self.get_area_ids() if admintype else [],
+                                  })
+        return token.decode('ascii')
+
     def dispatch_request(self, db):
         self.get_args()
         self._db = db
@@ -149,26 +168,37 @@ class UserLogin(BaseView):
         sql = r"""select id,UserName,LoginName,Password,AdminType,Status,permission from tb_user where loginname='{}';""".format(
             args['LoginName'])
         result = self._db.query(sql)
-        self.uid = result[0]['id']
         if not result:
             return jsonify(status_code.LOGINNAME_IS_NOT_EXISTS)
+        self.uid = result[0]['id']
         if result[0]['Status'] != 1:
             return jsonify(status_code.USER_IS_DISABLED)
         pwd = result[0]['Password']
         if pwd != args['Password']:
             return jsonify(status_code.PASSWORD_ERROR)
-        session['id'] = self.uid
-        session['AdminType'] = result[0]['AdminType']
-        session['url'] = self.get_all_url()
-        # print(result[0]['AdminType'])
-        if result[0]['AdminType']:
-            session['area_ids'] = self.get_area_ids()
-            # print(session['area_ids'])
-        success = deepcopy(status_code.SUCCESS)
-        success['Permission'], success['AllPermission'] = self.get_permissions(self.uid)
-        session['Permission'], session['C'] = success['Permission'], success['AllPermission']
-        session['login'] = True
-        session['pertype'] = result[0]['permission']
+        if self.args.get('logintype', 'pc') == 'pc':
+            session['id'] = self.uid
+            session['AdminType'] = result[0]['AdminType']
+            session['url'] = self.get_all_url()
+            # print(result[0]['AdminType'])
+            if result[0]['AdminType']:
+                session['area_ids'] = self.get_area_ids()
+                # print(session['area_ids'])
+            success = deepcopy(status_code.SUCCESS)
+            success['Permission'], success['AllPermission'] = self.get_permissions(self.uid)
+            session['Permission'], session['C'] = success['Permission'], success['AllPermission']
+            session['login'] = True
+            session['pertype'] = result[0]['permission']
+        else:
+            success = deepcopy(status_code.SUCCESS)
+            success['Permission'], success['AllPermission'] = self.get_permissions(self.uid)
+            token = self.create_token(
+                self.uid, result[0]['AdminType'], success['Permission'],
+                success['AllPermission'], result[0]['permission']
+            )
+            success['token'] = token
+            success['admintype'] = result[0]['AdminType']
+            success = self.response_lower(success)
         # a = jsonify(success)
         # a.set_cookie('session', session)
         return jsonify(success)

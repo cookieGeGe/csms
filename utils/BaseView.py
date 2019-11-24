@@ -1,7 +1,9 @@
+import re
 from copy import deepcopy
 from json import dumps, loads
 
-from flask import session, request, jsonify, make_response
+from flask import session, request, jsonify, make_response, current_app
+from itsdangerous import BadSignature, SignatureExpired, TimedJSONWebSignatureSerializer as Serializer
 from flask.views import View
 
 from Export.exportcontext import ExportContext
@@ -23,6 +25,8 @@ class BaseView(View, metaclass=ABCMeta):
         self._db = None  # 数据库连接对象
         self.args = None  # 前端传过来的参数字典
         self.ids = None  # 用户可以查看的权限范围ID列表
+        self.pertype = None
+        self.area_ids = None
         self.success = deepcopy(status_code.SUCCESS)
         self.get_total_row = """SELECT FOUND_ROWS() as total_row;"""
         self.whitelist = ['/template/export', '/push/attend']
@@ -93,9 +97,36 @@ class BaseView(View, metaclass=ABCMeta):
         :return:
         """
         if self.api_permission is not None:
-            if self.api_permission not in session['Permission']:
+            if self.api_permission not in self._permissions:
                 return False
         return True
+
+    def app_verify_token(self):
+        request_token = request.headers.get('token')
+        if request_token is None:
+            return jsonify(status_code.TOKEN_IS_NULL)
+        serializer = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            token = serializer.loads(request_token.encode('ascii'))
+        except BadSignature:
+            return jsonify(status_code.ILLEGAL_TOKEN)
+        except SignatureExpired:
+            return jsonify(status_code.TOKEN_IS_EXPIRED)
+        except Exception as e:
+            raise e
+        return token
+
+    def deal_request(self, admintype):
+        if int(admintype) == 0:
+            return self.administrator()
+        elif int(admintype) == 1:
+            if not self.check_permission():
+                return jsonify(status_code.PERMISSION_NOT_EXISTS)
+            return self.admin()
+        else:
+            if not self.check_permission():
+                return jsonify(status_code.PERMISSION_NOT_EXISTS)
+            return self.guest()
 
     def dispatch_request(self, db):
         """
@@ -108,22 +139,48 @@ class BaseView(View, metaclass=ABCMeta):
         # return self.administrator()
         if request.path in self.whitelist:
             return self.administrator()
-        try:
-            tempint = session['AdminType']
-        except:
-            return jsonify(status_code.USER_NOT_LOGIN)
-        self._uid = session['id']
-        self._permissions = session['Permission']
-        if int(session['AdminType']) == 0:
-            return self.administrator()
-        elif int(session['AdminType']) == 1:
-            if not self.check_permission():
-                return jsonify(status_code.PERMISSION_NOT_EXISTS)
-            return self.admin()
+
+        # 手机和PC判断
+        pattern = re.compile('\/wechat')
+        result = pattern.match(request.path)
+        if result is None:
+            # PC访问
+            try:
+                tempint = session['AdminType']
+            except:
+                return jsonify(status_code.USER_NOT_LOGIN)
+            self._uid = session['id']
+            self._permissions = session['Permission']
+            self.pertype = session['pertype']
+            if session['AdminType'] == '1':
+                self.area_ids = session['area_ids']
+            return self.deal_request(session['AdminType'])
         else:
-            if not self.check_permission():
-                return jsonify(status_code.PERMISSION_NOT_EXISTS)
-            return self.guest()
+            # 微信公众号
+            token = self.app_verify_token()
+            self._uid = token['id']
+            self._permissions = token['Permission']
+            self.pertype = token['pertype']
+            if token['AdminType'] == '1':
+                self.area_ids = token['area_ids']
+            return self.deal_request(token['AdminType'])
+
+        # try:
+        #     tempint = session['AdminType']
+        # except:
+        #     return jsonify(status_code.USER_NOT_LOGIN)
+        # self._uid = session['id']
+        # self._permissions = session['Permission']
+        # if int(session['AdminType']) == 0:
+        #     return self.administrator()
+        # elif int(session['AdminType']) == 1:
+        #     if not self.check_permission():
+        #         return jsonify(status_code.PERMISSION_NOT_EXISTS)
+        #     return self.admin()
+        # else:
+        #     if not self.check_permission():
+        #         return jsonify(status_code.PERMISSION_NOT_EXISTS)
+        #     return self.guest()
 
     def args_is_null(self, *args):
         """
@@ -181,9 +238,9 @@ class BaseView(View, metaclass=ABCMeta):
         :return:
         """
         temp = ''
-        for index, area_id in enumerate(session['area_ids']):
+        for index, area_id in enumerate(self.area_ids):
             temp += str(area_id)
-            if index < len(session['area_ids']) - 1:
+            if index < len(self.area_ids) - 1:
                 temp += ','
         return temp
 
@@ -199,36 +256,36 @@ class BaseView(View, metaclass=ABCMeta):
 
     def get_project_ids(self):
         """根据权限类型获取用户可以管理的项目ID列表"""
-        if session['pertype'] == 1:
+        if self.pertype == 1:
             project_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
             # self.project_ids = self.set_ids(project_sql)
         else:
             project_sql = r"""select t2.ID from tb_user_pro as t1
                                 left join tb_project as t2 on t1.pid=t2.ID
-                                where t1.uid={}""".format(session['id'])
+                                where t1.uid={}""".format(self._uid)
         return self.set_ids(project_sql)
 
     def get_labor_ids(self):
         """根据权限获取用户可以管理的劳工列表"""
-        if session['pertype'] == 1:
+        if self.pertype == 1:
             labor_sql = r"""select t2.ID from tb_project as t1 
                             left join tb_laborinfo as t2 on t1.id = t2.projectid
                             where t1.did in ({})""".format(self.get_session_ids())
         else:
             labor_sql = r"""select t2.ID from tb_user_pro as t1
                             left join tb_laborinfo as t2 on t2.projectid = t1.pid
-                            where t1.uid={};""".format(session['id'])
+                            where t1.uid={};""".format(self._uid)
         return self.set_ids(labor_sql)
 
     def get_company_ids(self):
         """根据权限类型获取用户可以管理的企业列表"""
-        if session['pertype'] == 1:
+        if self.pertype == 1:
             company_sql = r"""select Build,Cons,subcompany from tb_project where DID in ({});""".format(
                 self.get_session_ids())
         else:
             company_sql = r"""select t2.Build,t2.Cons,t2.subcompany from tb_user_pro as t1
                                 left join tb_project as t2 on t1.pid=t2.ID
-                                where t1.uid={}""".format(session['id'])
+                                where t1.uid={}""".format(self._uid)
         self.company_ids = []
         result = self._db.query(company_sql)
         if result:
@@ -258,6 +315,39 @@ class BaseView(View, metaclass=ABCMeta):
             'utf8')
         resp.headers['Content-Type'] = '{}'.format(export_context.content_type)
         return resp
+
+    def dict_lower_formatter(self, dict_data):
+        temp = {}
+        for key, value in dict_data.items():
+            if isinstance(value, dict):
+                temp[key.lower()] = self.dict_lower_formatter(value)
+            elif isinstance(value, list):
+                temp[key.lower()] = self.list_lower_formatter(value)
+            else:
+                temp[key.lower()] = value
+        return temp
+
+    def list_lower_formatter(self, data_list):
+        temp = []
+        for i, item in enumerate(data_list):
+            if isinstance(item, dict):
+                item = self.dict_lower_formatter(item)
+            elif isinstance(item, list):
+                item = self.list_lower_formatter(item)
+            else:
+                item = item
+            temp.append(item)
+        return temp
+
+    def response_lower(self, data=None):
+        if data is None:
+            data = self.success
+        if isinstance(data, dict):
+            return self.dict_lower_formatter(data)
+        elif isinstance(data, list):
+            return self.list_lower_formatter(data)
+        else:
+            return data
 
 
 class DelteBase(BaseView):

@@ -11,6 +11,7 @@ from Questions.urls import question
 from ReceivePush.urls import push
 from User.urls import user
 from UserTemplate.urls import user_template
+from WeChat.urls import wechat
 
 
 def blue_regist(app):
@@ -27,3 +28,4 @@ def blue_regist(app):
     app.register_blueprint(bankinfo, url_prefix='/bankinfo/')
     app.register_blueprint(push, url_prefix='/push/')
     app.register_blueprint(question, url_prefix='/question/')
+    app.register_blueprint(wechat, url_prefix='/wechat/')
