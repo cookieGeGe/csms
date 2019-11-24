@@ -28,6 +28,7 @@ class BaseView(View, metaclass=ABCMeta):
         self.pertype = None
         self.area_ids = None
         self.success = deepcopy(status_code.SUCCESS)
+
         self.get_total_row = """SELECT FOUND_ROWS() as total_row;"""
         self.whitelist = ['/template/export', '/push/attend']
         # self.get_args()
@@ -348,6 +349,12 @@ class BaseView(View, metaclass=ABCMeta):
             return self.list_lower_formatter(data)
         else:
             return data
+
+    def make_response(self, success):
+        if isinstance(success, dict):
+            return jsonify(self.response_lower(success))
+        else:
+            return success
 
 
 class DelteBase(BaseView):

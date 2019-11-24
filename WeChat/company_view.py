@@ -11,6 +11,7 @@
 # @Site :
 # @File : project_view.py
 # @Software: PyCharm
+from copy import deepcopy
 from json import loads
 
 from flask import jsonify
@@ -125,7 +126,24 @@ class WechatComQuery(WechatComBase):
         if result['OtherInfo'] is None:
             result['OtherInfo'] = ''
         self.success['company'] = result
+        self.group_info()
         return self.response_lower(self.success)
+
+    def group_info(self):
+        ID = self.args.get('id')
+        if ID is None:
+            return jsonify(status_code.ID_ERROR)
+        query_sql = r"""select * from tb_pic_group where CID={} and Ptype = 0""".format(ID)
+        result_list = self._db.query(query_sql)
+        Lgroup_list = []
+        group_list = []
+        for item in result_list:
+            if item['Type']:
+                Lgroup_list.append(item)
+            else:
+                group_list.append(item)
+        self.success['license_photo_list'] = Lgroup_list
+        self.success['company_photo_list'] = group_list
 
     def views(self):
         if int(self.args.get('id', '0')) == 0:
@@ -133,7 +151,7 @@ class WechatComQuery(WechatComBase):
         else:
             success = self.one_company_query()
 
-        return jsonify(success)
+        return self.make_response(success)
 
 
 class WechatComQueryPro(WechatComBase):
@@ -141,8 +159,8 @@ class WechatComQueryPro(WechatComBase):
     def __init__(self):
         super(WechatComQueryPro, self).__init__()
 
-    def company_projects(self):
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.name, t1.address, t1.`status`, t1.type, t1.gamount, t1.starttime, t1.endtime, t1.guarantype,t1.wagepercent, t2.name as bank, t1.createtime  from tb_project as t1
+    def views(self):
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.id, t1.name, t1.address, t1.`status`, t1.type, t1.gamount, t1.starttime, t1.endtime, t1.guarantype,t1.wagepercent, t2.name as bank, t1.createtime  from tb_project as t1
                         left join tb_bank as t2 on t1.bank = t2.id
                         LEFT JOIN tb_company as t3 on t1.Build = t3.ID or t1.Cons =t3.ID
                         where (t3.ID = {}  or CONCAT(IFNULL(t1.SubCompany,'')) LIKE '%"ID":"{}"%')
@@ -163,6 +181,11 @@ class WechatComQueryPro(WechatComBase):
         query_sql = query_sql + " " + limit_sql
         result = self._db.query(query_sql)
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
+        for item in result:
+            if item['starttime'] is not None and item['starttime'] != '':
+                item['starttime'] = self.time_to_str(item['starttime'])
+            if item['endtime'] is not None and item['endtime'] != '':
+                item['endtime'] = self.time_to_str(item['endtime'])
         self.success['data'] = result
         self.success['total'] = total[0]['total_row']
         return jsonify(self.success)

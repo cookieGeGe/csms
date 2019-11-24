@@ -65,6 +65,21 @@ export function queryCompany(params) {
     })
 }
 
+// 企业中获取项目信息
+export function queryCompanyProject(params) {
+    /*
+    params = {
+        id: 'int		企业ID',
+        page: 'int		页码',
+    }
+    */
+    return request({
+        url: '/user/login',
+        method: 'post',
+        data: params
+    })
+}
+
 // 首页和列表页面劳工查询
 export function queryLabor(params) {
 /*

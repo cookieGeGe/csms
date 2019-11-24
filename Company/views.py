@@ -293,7 +293,7 @@ class UploadPic(BaseView):
                                                                                one_file.filename[:-4],
                                                                                self.ptype, r_type)
                 pid = self._db.insert(insert_sql)
-                temp = {'id': pid, 'name': one_file.filename[:-4], 'url': iamge_url}
+                temp = {'id': pid, 'name': one_file.filename[:-4], 'url': iamge_url, 'Purl': iamge_url}
                 result_file_list.append(deepcopy(temp))
             except:
                 continue
@@ -616,8 +616,8 @@ class QueryCompanyProject(BaseView):
         # self.ids = []
         # if self.get_session_ids() != '':
         #     self.ids = self.get_project_ids()
-            # query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
-            # self.ids = self.set_ids(query_sql)
+        # query_sql = r"""select ID from tb_project where DID in ({});""".format(self.get_session_ids())
+        # self.ids = self.set_ids(query_sql)
         self.ids = self.get_project_ids()
         return self.views()
 
