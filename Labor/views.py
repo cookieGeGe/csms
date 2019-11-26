@@ -609,7 +609,7 @@ class UploadLaborImg(LaborBase):
                                                                                one_file.filename[:-4],
                                                                                ptype, r_type)
                 pid = self._db.insert(insert_sql)
-                temp = {'id': pid, 'name': one_file.filename[:-4], 'url': iamge_url}
+                temp = {'id': pid, 'name': one_file.filename[:-4], 'url': iamge_url, 'Purl': iamge_url}
                 result_file_list.append(deepcopy(temp))
             except:
                 continue

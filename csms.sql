@@ -3882,4 +3882,8 @@ ADD COLUMN `CreateTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '�
 ALTER TABLE `csms`.`tb_laborinfo`
 ADD COLUMN `Create` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间' AFTER `TrainPic`;
 
+-- 2019-11-24
+ALTER TABLE `csms`.`tb_area`
+ADD COLUMN `Code` varchar(255) NULL COMMENT '区域代码' AFTER `HasChild`;
+
 SET FOREIGN_KEY_CHECKS = 1;

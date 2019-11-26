@@ -45,7 +45,7 @@ class BaseView(View, metaclass=ABCMeta):
             args = request.json
             if args is None:
                 args = {}
-        self.args = args
+        self.args = args.to_dict()
 
     def time_format(self, time_str):
         return str_to_datetime(time_str)
@@ -164,6 +164,7 @@ class BaseView(View, metaclass=ABCMeta):
             self.pertype = token['pertype']
             if token['AdminType'] == '1':
                 self.area_ids = token['area_ids']
+            self.formatter_area_args()
             return self.deal_request(token['AdminType'])
 
         # try:
@@ -355,6 +356,25 @@ class BaseView(View, metaclass=ABCMeta):
             return jsonify(self.response_lower(success))
         else:
             return success
+
+    def formatter_area_args(self):
+        if 'area' in self.args.keys():
+            area_list = self.args.get('area')
+            if len(area_list) != 3:
+                self.args['pid'] = '513'
+                self.args['cid'] = '1757'
+                return
+            keys = ('pid', 'cid', 'did')
+            for index, key in enumerate(keys):
+                query_sql = r"""select id from tb_area where code='{}';""".format(area_list[index]['code'])
+                result = self._db.query(query_sql)
+                self.args[key] = '0'
+                if result:
+                    self.args[key] = str(result[0]['id'])
+    def get_total_query(self, query_sql):
+        result = self._db.query(query_sql)
+        total = self._db.query(self.get_total_row)
+        return result, total
 
 
 class DelteBase(BaseView):

@@ -15,7 +15,7 @@ export function login(params) {
 export function indexCount() {
     return request({
         url: '/wechat/count',
-        method: 'post',
+        method: 'get',
         data: {}
     })
 }
@@ -29,16 +29,14 @@ export function queryProject(params) {
         name: 'str	搜索关键字',
         type: 'int	企业类型',
         status: 'int		企业状态',
-        pid: 'int		省',
-        cid: 'int		市',
-        did: 'int		区',
+        area: 'list        区域对象列表',
         time: 'str		查询起始时间',
         page: 'int		页码',
     }
     */
     return request({
         url: '/user/login',
-        method: 'post',
+        method: 'get',
         data: params
     })
 }
@@ -51,16 +49,14 @@ export function queryCompany(params) {
         name: 'str	搜索关键字',
         type: 'int	企业类型',
         status: 'int		企业状态',
-        pid: 'int		省',
-        cid: 'int		市',
-        did: 'int		区',
+        area: 'list        区域对象列表',
         time: 'str		查询起始时间',
         page: 'int		页码',
     }
     */
     return request({
         url: '/user/login',
-        method: 'post',
+        method: 'get',
         data: params
     })
 }
@@ -75,7 +71,7 @@ export function queryCompanyProject(params) {
     */
     return request({
         url: '/user/login',
-        method: 'post',
+        method: 'get',
         data: params
     })
 }
@@ -92,19 +88,51 @@ export function queryLabor(params) {
         age: '0-6 年龄段，默认为7全部年龄段',
         type: 'int	企业类型',
         status: 'int		企业状态',
-        pid: 'int		省',
-        cid: 'int		市',
-        did: 'int		区',
+        area: 'list        区域对象列表',
         time: 'str		查询起始时间',
         page: 'int		页码',
     }
 */
     return request({
         url: '/user/login',
-        method: 'post',
+        method: 'get',
         data: params
     })
 }
 
+// 考勤查询
+export function queryAttend(params) {
+/*
+    params = {
+        name: 'str	搜索关键字',
+        type: 'str	company或者project或者labor',
+        area: 'list        区域对象列表',
+        days: 'int		最低打卡天数（type为labor时有效）',
+        month: 'str		查询考勤年月格式为：xxxx-xx（type为labor时有效）',
+        page: 'int		页码',
+    }
+*/
+    return request({
+        url: '/user/login',
+        method: 'get',
+        data: params
+    })
+}
+
+// 考勤查询
+export function queryAttendInfo(params) {
+/*
+    params = {
+        id: 'int	劳工ID',
+        year: 'int		年',
+        month: 'int		月',
+    }
+*/
+    return request({
+        url: '/user/login',
+        method: 'get',
+        data: params
+    })
+}
 
 
