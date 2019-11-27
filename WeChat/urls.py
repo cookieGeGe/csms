@@ -10,6 +10,8 @@ from . import company_view
 from . import project_view
 from . import labor_view
 from . import attend_view
+from . import salary_view
+from . import bank_view
 
 from flask import Blueprint
 
@@ -31,3 +33,10 @@ wechat.add_url_rule('/query/labor', methods=['get'], view_func=labor_view.Wechat
 wechat.add_url_rule('/query/attend', methods=['get'], view_func=attend_view.QueryAttend.as_view('wechat_query_attend'))
 wechat.add_url_rule('/query/attend/info', methods=['get'],
                     view_func=attend_view.QueryAttendLaborInfo.as_view('wechat_query_attend_info'))
+
+# 工资计算
+wechat.add_url_rule('/query/salary', methods=['get'], view_func=salary_view.WechatQuerySalary.as_view('wechat_salary'))
+
+# 银行管理
+wechat.add_url_rule('/query/bank', methods=['get'], view_func=bank_view.WechatBankQuery.as_view('wechat_bank'))
+wechat.add_url_rule('/query/bank/info', methods=['get'], view_func=bank_view.WechatBankInfo.as_view('wechat_bank_info'))

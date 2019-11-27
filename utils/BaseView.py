@@ -40,12 +40,12 @@ class BaseView(View, metaclass=ABCMeta):
         """
         args = dict(request.form.items())
         if dict(args) == {}:
-            args = request.args
+            args = request.args.to_dict()
         if dict(args) == {}:
             args = request.json
             if args is None:
                 args = {}
-        self.args = args.to_dict()
+        self.args = args
 
     def time_format(self, time_str):
         return str_to_datetime(time_str)
@@ -250,10 +250,11 @@ class BaseView(View, metaclass=ABCMeta):
         temp = ''
         if where_sql_list:
             temp = ' where '
-            for index, i in enumerate(where_sql_list):
-                temp += i
-                if index < len(where_sql_list) - 1:
-                    temp += ' and '
+            temp += ' and '.join(where_sql_list)
+            # for index, i in enumerate(where_sql_list):
+            #     temp += i
+            #     if index < len(where_sql_list) - 1:
+            #         temp += ' and '
         return temp
 
     def get_project_ids(self):

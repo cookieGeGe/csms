@@ -67,8 +67,11 @@ class WechatComQuery(WechatComBase):
             where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
         if int(self.args.get('type', '0')) != 0:
             where_sql_list.append(r""" t1.type={} """.format(self.args.get('type')))
-        if int(self.args.get('status', '0')) != 0:
-            where_sql_list.append(r""" t1.status={} """.format(self.args.get('status')))
+        if self.args.get('status') != '' and self.args.get('status') == 'false':
+            where_sql_list.append(r""" t1.status>1 """)
+        else:
+            if int(self.args.get('status', '0')) != 0:
+                where_sql_list.append(r""" t1.status={} """.format(self.args.get('status')))
         if int(self.args.get('pid', '0')) != 0:
             where_sql_list.append(r""" t1.provinceid={} """.format(self.args.get('pid')))
         if int(self.args.get('cid', '0')) != 0:

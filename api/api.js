@@ -16,7 +16,7 @@ export function indexCount() {
     return request({
         url: '/wechat/count',
         method: 'get',
-        data: {}
+        params: {}
     })
 }
 
@@ -27,17 +27,17 @@ export function queryProject(params) {
     params = {
         id: 'int		为0时表示首页和列表页面查询,否则为查询某一个具体的项目信息（id为0时后面的参数无效）',
         name: 'str	搜索关键字',
-        type: 'int	企业类型',
-        status: 'int		企业状态',
+        type: 'int	类型',
+        status: 'int		状态',
         area: 'list        区域对象列表',
         time: 'str		查询起始时间',
         page: 'int		页码',
     }
     */
     return request({
-        url: '/user/login',
+        url: '/wechat/query/project',
         method: 'get',
-        data: params
+        params: params
     })
 }
 
@@ -45,19 +45,19 @@ export function queryProject(params) {
 export function queryCompany(params) {
     /*
     params = {
-        id: 'int		为0时表示首页和列表页面查询,否则为查询某一个具体的企业信息（id为0时后面的参数无效）',
+        id: 'int		为0时表示首页和列表页面查询,否则为查询某一个具体的信息（id为0时后面的参数无效）',
         name: 'str	搜索关键字',
-        type: 'int	企业类型',
-        status: 'int		企业状态',
+        type: 'int	类型',
+        status: 'int		状态',
         area: 'list        区域对象列表',
         time: 'str		查询起始时间',
         page: 'int		页码',
     }
     */
     return request({
-        url: '/user/login',
+        url: '/wechat/query/company',
         method: 'get',
-        data: params
+        params: params
     })
 }
 
@@ -70,9 +70,9 @@ export function queryCompanyProject(params) {
     }
     */
     return request({
-        url: '/user/login',
+        url: '/wechat/query/company/project',
         method: 'get',
-        data: params
+        params: params
     })
 }
 
@@ -94,9 +94,9 @@ export function queryLabor(params) {
     }
 */
     return request({
-        url: '/user/login',
+        url: '/wechat/query/labor',
         method: 'get',
-        data: params
+        params: params
     })
 }
 
@@ -113,9 +113,9 @@ export function queryAttend(params) {
     }
 */
     return request({
-        url: '/user/login',
+        url: '/wechat/query/attend',
         method: 'get',
-        data: params
+        params: params
     })
 }
 
@@ -129,9 +129,47 @@ export function queryAttendInfo(params) {
     }
 */
     return request({
-        url: '/user/login',
+        url: '/wechat/query/attend/info',
         method: 'get',
-        data: params
+        params: params
+    })
+}
+
+// 考勤查询
+export function querySalary(params) {
+/*
+    params = {
+        id: 'int    是搜索还是获取某一个id的详情，id为0时参数：name,type,area，page才会生效
+        name: 'str	搜索关键字',
+        type: 'str	company或者project或者labor',
+        area: 'list        区域对象列表',
+        month: 'str		查询考勤年月格式为：xxxx-xx（type为labor时有效）',
+        page: 'int		页码',
+    }
+*/
+    return request({
+        url: '/wechat/query/salary',
+        method: 'get',
+        params: params
+    })
+}
+
+// 工资查询
+export function queryBank(params) {
+/*
+    params = {
+        id:    'int   默认为0,  为0时是主页搜索',
+        bank: 'int    银行ID，默认为0',
+        name: 'str    搜索关键字',
+        time: 'str    时间字符串',
+        area: 'list   区域对象列表',
+        page: 'int    页码',
+    }
+*/
+    return request({
+        url: '/wechat/query/bank',
+        method: 'get',
+        params: params
     })
 }
 

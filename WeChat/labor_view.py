@@ -64,8 +64,11 @@ class WechatLaborQuery(WechatLaborBase):
             where_sql_list.append(r""" t1.projectid in ({}) """.format(self.to_sql_where_id()))
         if self.args.get('name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
-        if int(self.args.get('status', '3')) != 3:
-            where_sql_list.append(r""" t1.isbadrecord={} """.format(self.args.get('status')))
+        if self.args.get('status') != '' and self.args.get('status') == 'false':
+            where_sql_list.append(r""" t1.isbadrecord>0 """)
+        else:
+            if int(self.args.get('status', '3')) != 3:
+                where_sql_list.append(r""" t1.isbadrecord={} """.format(self.args.get('status')))
         if int(self.args.get('sex', 2)) != 2:
             where_sql_list.append(r""" t1.sex={} """.format(self.args.get('sex')))
         if int(self.args.get('jobtype', 5)) != 5:
