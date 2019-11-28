@@ -167,5 +167,6 @@ class WechatBankInfo(WechatBankBase):
         bankinfo = {}
         if result:
             bankinfo = result[0]
+            bankinfo['WTime'] = bankinfo['WTime'].strftime("%Y-%m-%d %H:%M:%S")
         self.success['bankinfo'] = bankinfo
         return self.make_response(self.success)

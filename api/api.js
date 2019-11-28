@@ -154,7 +154,7 @@ export function querySalary(params) {
     })
 }
 
-// 工资查询
+// 银行查询
 export function queryBank(params) {
 /*
     params = {
@@ -168,6 +168,53 @@ export function queryBank(params) {
 */
     return request({
         url: '/wechat/query/bank',
+        method: 'get',
+        params: params
+    })
+}
+
+// 工资查询
+export function queryBankInfo(params) {
+/*
+    params = {
+        id:    'int   月份对应的ID',
+    }
+*/
+    return request({
+        url: '/wechat/query/bank/info',
+        method: 'get',
+        params: params
+    })
+}
+
+// 保函查询
+export function queryGuarantee(params) {
+/*
+    params = {
+        id:    'int   默认为0,  为0时是列表搜索',
+        name: 'str    搜索关键字',
+        type: 'int    保函类型',
+        area: 'list   区域对象列表',
+        page: 'int    页码',
+    }
+*/
+    return request({
+        url: '/wechat/query/guarantee',
+        method: 'get',
+        params: params
+    })
+}
+
+// 保函查询
+export function queryQuestion(params) {
+/*
+    params = {
+        id:    'int   默认为0,  为0时是列表搜索, 不为0时为问题详情搜索',
+        name: 'str    搜索关键字',
+    }
+*/
+    return request({
+        url: '/wechat/query/question',
         method: 'get',
         params: params
     })

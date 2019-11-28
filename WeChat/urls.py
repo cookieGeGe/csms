@@ -12,6 +12,8 @@ from . import labor_view
 from . import attend_view
 from . import salary_view
 from . import bank_view
+from . import guarantee_view
+from . import question_view
 
 from flask import Blueprint
 
@@ -40,3 +42,11 @@ wechat.add_url_rule('/query/salary', methods=['get'], view_func=salary_view.Wech
 # 银行管理
 wechat.add_url_rule('/query/bank', methods=['get'], view_func=bank_view.WechatBankQuery.as_view('wechat_bank'))
 wechat.add_url_rule('/query/bank/info', methods=['get'], view_func=bank_view.WechatBankInfo.as_view('wechat_bank_info'))
+
+# 保函查询
+wechat.add_url_rule('/query/guarantee', methods=['get'],
+                    view_func=guarantee_view.GuaranteeQuery.as_view('wechat_guarant'))
+
+# 问答平台
+wechat.add_url_rule('/query/question', methods=['get'],
+                    view_func=question_view.WechatQuestion.as_view('wechat_question'))
