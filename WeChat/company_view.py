@@ -56,7 +56,7 @@ class WechatComQuery(WechatComBase):
         :return:
         """
         query_sql = r"""
-            select t1.id,t1.legal,t1.name,t1.type, t1.address,t1.hasbadrecord, t1.createtime from tb_company as t1
+            select SQL_CALC_FOUND_ROWS t1.id,t1.legal,t1.name,t1.type, t1.address,t1.hasbadrecord, t1.createtime from tb_company as t1
         """
         where_sql_list = []
         if self.ids != None:

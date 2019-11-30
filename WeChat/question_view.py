@@ -33,7 +33,7 @@ class WechatQuestion(WechatQuestionBase):
         super(WechatQuestion, self).__init__()
 
     def main_query(self):
-        query_sql = r"""select id, name from tb_question """
+        query_sql = r"""select SQL_CALC_FOUND_ROWS id, name from tb_question """
         where_sql_list = []
         if self.args.get('name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))

@@ -110,7 +110,7 @@ class WechatLaborQuery(WechatLaborBase):
                 item['createtime'] = self.time_to_str(item['createtime'])
             if item['isbadrecord'] > 0:
                 alarm += 1
-        self.success['project'] = result
+        self.success['labor'] = result
         self.success['total'] = total[0]['total_row']
         self.success['alarm'] = alarm
         return self.success

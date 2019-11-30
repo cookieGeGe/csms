@@ -85,9 +85,9 @@ class WechatProQuery(WechatProBase):
         alarm = 0
         for item in result:
             if item['starttime'] is not None and item['starttime'] != '':
-                item['starttime'] = self.time_to_str(item['starttime'])
+                item['starttime'] = item['starttime'].strftime("%Y-%m-%d")
             if item['endtime'] is not None and item['endtime'] != '':
-                item['endtime'] = self.time_to_str(item['endtime'])
+                item['endtime'] = item['endtime'].strftime("%Y-%m-%d")
             if item['status'] > 1:
                 alarm += 1
         self.success['project'] = result
