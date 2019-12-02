@@ -74,7 +74,7 @@ class QueryBankInfo(BankInfoBase):
             return jsonify(status_code.CONTENT_IS_NULL)
         query_sql = r"""select SQL_CALC_FOUND_ROWS * from tb_bank """
         if self.args.get('name', '') != '':
-            query_sql += r""" where CONCAT(IFNULL(t3.Name,'')) LIKE '%{}%' """.format(self.args.get('Name', ''))
+            query_sql += r""" where CONCAT(IFNULL(Name,'')) LIKE '%{}%' """.format(self.args.get('name', ''))
         start = (int(self.args.get('Page', 1)) - 1) * int(self.args.get('PageSize', 10))
         end = int(self.args.get('Page', 1)) * int(self.args.get('PageSize', 10))
         limit_sql = r""" limit {},{}; """.format(start, end)

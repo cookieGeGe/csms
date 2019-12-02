@@ -92,7 +92,7 @@ class UserRegist(BaseView):
             int(self._form.get('CompanyID', 0)),
             img_url, self._form.get('permission', 1)
         )
-        if self._form.get('permission', 1) == 1:
+        if self._form.get('permission', 1) == '1':
             if not self.insert_permission('tb_user_area', ['userid', 'areaid'], self._form.get('AreaID')):
                 return jsonify(status_code.DB_ERROR)
             # try:

@@ -299,7 +299,7 @@ class QueryProject(BaseView):
         now_time = datetime.datetime.now()
         success['project'] = result
         success['all_year'] = list(All_year_month.keys())
-        success['progress'] = []
+        success['progress'] = {}
         if progress_result:
             total = len(progress_result)
             for pindex, gress in enumerate(progress_result):
@@ -915,7 +915,7 @@ class ProjectMainQuery(BaseView):
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':
-            where_sql_list.append(r""" CONCAT(IFNULL(t2.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
+            where_sql_list.append(r""" CONCAT(IFNULL(t2.Name,''),IFNULL(t7.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
         if int(args.get('DID', 0)) != 0:
             where_sql_list.append(r""" t1.DID={} """.format(int(args.get('DID'))))
         if int(args.get('CID', 0)) != 0:

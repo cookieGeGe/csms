@@ -305,7 +305,7 @@ class ExportProgressWord(ExportDocxBase):
             raise Exception('未找到数据')
         self.data.update(self.export_data)
         # self.data['Status'] = '是' if self.data['Status'] else '否'
-        self.data['Connect'] = self.data['Connect'].replace('&nbsp;', '')
+        self.data['Connect'] = '' if self.data['Connect'] is None else self.data['Connect'].replace('&nbsp;', '')
         self.data['RType'] = self.progress_type_list[self.data['RType']]
         self.data['Bank'] = self.query_bank_info()
         self.data['Difference'] = eval(self.data['TotalSalary']) - eval(self.data['RealIssues'])
@@ -376,7 +376,7 @@ class ExportGuaranteeWord(ExportDocxBase):
 
     def get_default_guarantee(self):
         query_sql = r"""
-            select SQL_CALC_FOUND_ROWS t1.*, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
+            select SQL_CALC_FOUND_ROWS t1.*, t4.name as PName,t5.name as CName, t6.name as DName from tb_guarantee as t1
             INNER JOIN tb_area as t4 on t1.PID = t4.id
             INNER JOIN tb_area as t5 on t1.CID = t5.id
             INNER JOIN tb_area as t6 on t1.DID = t6.id

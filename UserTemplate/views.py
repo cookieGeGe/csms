@@ -19,7 +19,7 @@ from utils import status_code
 from utils.BaseView import BaseView
 from utils.ImportTemp import TempColnames
 from Export.exportfile import ExportFile
-from utils.pulic_utils import str_to_datetime
+from utils.pulic_utils import str_to_datetime, str_to_date
 
 
 class TemplateBase(BaseView):
@@ -112,7 +112,8 @@ class QueryTemplate(TemplateBase):
         if int(args.get('Type', 3)) != 3:
             where_sql_list.append(r""" Type={} """.format(int(args.get('Type'))))
         if args.get('Time', '') != '':
-            where_sql_list.append(r""" Time>'{}' """.format(str_to_datetime(args.get('Time'))))
+            starttime = str_to_date(args['Time'])
+            where_sql_list.append(r""" Time>'{}' """.format(starttime))
         where_sql = ' '
         for index, item in enumerate(where_sql_list):
             where_sql += ' where '
@@ -161,22 +162,35 @@ class ImportComProLaTemp(TemplateBase):
         files = request.files.get('file', '')
         if files == '':
             return jsonify(status_code.TEMPLATE_ERROR)
-        if args.get('Name') == 'Company':
-            import_temp = FileImportCompany(files, TempColnames.COMPANY, self._db)
-        elif args.get('Name') == 'Project':
-            import_temp = FileImportProject(files, TempColnames.PROJECT, self._db)
-        elif args.get('Name') == 'Guarantee':
-            import_temp = FileImportGuarantee(files, TempColnames.GUARANTEE, self._db)
-        else:
-            import_temp = FileImportLabor(files, TempColnames.LABOR, self._db)
-        import_temp.save()
+        if files.filename.split('.')[-1][0:3] != 'xls':
+            return jsonify({
+                'code': 50035,
+                'msg': '导入失败, 文件类型错误！'
+            })
+        try:
+            if args.get('Name') == 'Company':
+                import_temp = FileImportCompany(files, TempColnames.COMPANY, self._db)
+            elif args.get('Name') == 'Project':
+                import_temp = FileImportProject(files, TempColnames.PROJECT, self._db)
+            elif args.get('Name') == 'Guarantee':
+                import_temp = FileImportGuarantee(files, TempColnames.GUARANTEE, self._db)
+            else:
+                import_temp = FileImportLabor(files, TempColnames.LABOR, self._db)
+            import_temp.save()
+        except Exception as e:
+            return jsonify({
+                'code': 50034,
+                'msg': '导入失败！'
+            })
         result = import_temp.bad_info
         success = deepcopy(status_code.SUCCESS)
         success['data'] = []
         success['msg'] = '导入成功！'
-        if result:
-            success['msg'] = '导入失败！'
+        new_result = [item if item is not None else '存在未知数据' for item in result]
+        if new_result:
+            success['msg'] = ','.join(new_result) + '，导入失败！'
             success['data'] = result
+            success['code'] = 50035
         return jsonify(success)
 
 
@@ -196,6 +210,7 @@ class ExportFileView(TemplateBase):
         export_context.render()
         value = export_context.get_stream()
         resp = make_response(value)
-        resp.headers["Content-Disposition"] = "attachment; filename={}".format(export_context.export_name).encode('utf8')
+        resp.headers["Content-Disposition"] = "attachment; filename={}".format(export_context.export_name).encode(
+            'gbk')
         resp.headers['Content-Type'] = '{}'.format(export_context.content_type)
         return resp

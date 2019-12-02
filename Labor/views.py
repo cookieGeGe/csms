@@ -129,9 +129,10 @@ class CreateLabor(LaborBase):
             class_id = self._db.insert(create_class)
             args['ClassID'] = class_id
         else:
-            query_class = r"""select ClassID from tb_laborinfo where id={};""".format(args.get('SuperiorsID'))
-            class_result = self._db.query(query_class)
-            args['ClassID'] = class_result[0]['ClassID']
+            # query_class = r"""select ClassID from tb_laborinfo where id={};""".format(args.get('SuperiorsID'))
+            # class_result = self._db.query(query_class)
+            # args['ClassID'] = class_result[0]['ClassID']
+            args['ClassID'] = args.get('ClassID')
         args['Identity'] = 0
         # print(args)
         # if args.get('DepartureDate', '') == '':
@@ -260,10 +261,10 @@ class UpdateLabor(LaborBase):
         isnull = self.args_is_null('ProjectID', 'Name', 'PID', 'CID', 'DID', 'IDCard', 'Nationality', 'Sex', 'IsPM',
                                    'IssueAuth', 'CompanyId', 'Birthday', 'Address', 'EntryDate', 'isFeeStand',
                                    'SubCompany')
-        if args.get('isPM') == 'false':
-            args['isPM'] = 0
-        else:
-            args['isPM'] = 1
+        # if args.get('IsPM') == 'false':
+        #     args['IsPM'] = 0
+        # else:
+        #     args['IsPM'] = 1
         if isnull:
             return jsonify(status_code.CONTENT_IS_NULL)
         if args.get('SubCompany') == '0' or args.get('CompanyId') == '0':

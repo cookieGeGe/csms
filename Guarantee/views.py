@@ -142,10 +142,10 @@ class QueryGuarantee(GuaranteeBase):
             where_list.append(r""" t1.PID={} """.format(args.get('PID')))
         if args.get('StartTime', '') != '':
             starttime = str_to_date(args['StartTime'])
-            where_list.append(r""" t1.SignTime > '{}' """.format(starttime))
+            where_list.append(r""" t1.SignTime >= '{}' """.format(starttime))
         if args.get('EndTime', '') != '':
             endtime = str_to_date(args['EndTime'])
-            where_list.append(r""" t1.Expiretime < '{}' """.format(endtime))
+            where_list.append(r""" t1.SignTime <= '{}' """.format(endtime))
         if int(args.get('Category', 9)) != 9:
             where_list.append(r""" t1.Category = {} """.format(args.get('Category')))
         temp = ''

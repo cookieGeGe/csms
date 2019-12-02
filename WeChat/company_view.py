@@ -65,7 +65,7 @@ class WechatComQuery(WechatComBase):
             where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if self.args.get('name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
-        if int(self.args.get('type', '0')) != 0:
+        if int(self.args.get('type', '8')) != 8:
             where_sql_list.append(r""" t1.type={} """.format(self.args.get('type')))
         if self.args.get('status') != '' and self.args.get('status') == 'false':
             where_sql_list.append(r""" t1.HasBadRecord>1 """)
