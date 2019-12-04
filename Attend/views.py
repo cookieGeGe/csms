@@ -42,34 +42,41 @@ class ImportAttend(AttendBase):
 
     def views(self):
         attend_file = request.files.get('file', '')
-        error_info = []
-        if attend_file != '':
-            f = attend_file.read()  # 文件内容
-            f_name = attend_file.filename.split('.')[-1]
-            if f_name not in ('xlsx', 'csv', 'xls'):
-                return jsonify(TEMPLATE_ERROR)
-            excel = Data_Excel(f, TempColnames.ATTEND)
-            excel_data = excel.excel_data()
-            for item in excel_data:
-                laborinfo = self.get_labor_id(item['idcard'])
-                # laborinfo = {'id': 1, 'projectid': 2}
-                if laborinfo is not None:
-                    insert_sql = r"""insert into tb_attendance(laborid, projectid, amin,amout,pmin,pmout, year,month,day) value 
-                                    ({},{},'{}','{}','{}','{}','{}','{}','{}');""".format(laborinfo['id'],
-                                                                                          laborinfo['projectid'],
-                                                                                          item['amin'],
-                                                                                          item['amout'],
-                                                                                          item['pmin'],
-                                                                                          item['pmout'],
-                                                                                          item['atime'].year,
-                                                                                          item['atime'].month,
-                                                                                          item['atime'].day, )
-                    self._db.insert(insert_sql)
-                else:
-                    error_info.append('{}-{}'.format(item['name'], item['idcard']))
-        success = deepcopy(status_code.SUCCESS)
-        success['error'] = error_info
-        return jsonify(success)
+        try:
+            error_info = []
+            if attend_file != '':
+                f = attend_file.read()  # 文件内容
+                f_name = attend_file.filename.split('.')[-1]
+                if f_name not in ('xlsx', 'csv', 'xls'):
+                    return jsonify(TEMPLATE_ERROR)
+                excel = Data_Excel(f, TempColnames.ATTEND)
+                excel_data = excel.excel_data()
+                for item in excel_data:
+                    laborinfo = self.get_labor_id(item['idcard'])
+                    # laborinfo = {'id': 1, 'projectid': 2}
+                    if laborinfo is not None:
+                        insert_sql = r"""insert into tb_attendance(laborid, projectid, amin,amout,pmin,pmout, year,month,day) value 
+                                        ({},{},'{}','{}','{}','{}','{}','{}','{}');""".format(laborinfo['id'],
+                                                                                              laborinfo['projectid'],
+                                                                                              item['amin'],
+                                                                                              item['amout'],
+                                                                                              item['pmin'],
+                                                                                              item['pmout'],
+                                                                                              item['atime'].year,
+                                                                                              item['atime'].month,
+                                                                                              item['atime'].day, )
+                        self._db.insert(insert_sql)
+                    else:
+                        error_info.append('{}-{}'.format(item['name'], item['idcard']))
+            success = deepcopy(status_code.SUCCESS)
+            success['error'] = error_info
+            return jsonify(success)
+        except Exception as e:
+            success = {
+                'code': 50019,
+                'msg': '导入考勤失败！'
+            }
+            return jsonify(success)
 
 
 class QueryAttend(AttendBase):

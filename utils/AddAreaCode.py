@@ -70,5 +70,5 @@ class addAreaCode:
 
 if __name__ == '__main__':
     add_code = addAreaCode()
-    # add_code.formatter()
-    add_code.get_export_js()
+    add_code.formatter()
+    # add_code.get_export_js()

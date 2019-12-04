@@ -359,23 +359,25 @@ class BaseView(View, metaclass=ABCMeta):
             return success
 
     def formatter_area_args(self):
-        if 'area' in self.args.keys():
-            area_list = self.args.get('area')
+        if 'area[]' in self.args.keys():
+            area_list = request.args.getlist('area[]')
             if len(area_list) != 3:
                 self.args['pid'] = '513'
                 self.args['cid'] = '1757'
                 return
             keys = ('pid', 'cid', 'did')
             for index, key in enumerate(keys):
-                query_sql = r"""select id from tb_area where code='{}';""".format(area_list[index]['code'])
+                query_sql = r"""select id from tb_area where code='{}';""".format(loads(area_list[index])['code'])
                 result = self._db.query(query_sql)
                 self.args[key] = '0'
                 if result:
                     self.args[key] = str(result[0]['id'])
-    def get_total_query(self, query_sql):
-        result = self._db.query(query_sql)
-        total = self._db.query(self.get_total_row)
-        return result, total
+
+
+def get_total_query(self, query_sql):
+    result = self._db.query(query_sql)
+    total = self._db.query(self.get_total_row)
+    return result, total
 
 
 class DelteBase(BaseView):

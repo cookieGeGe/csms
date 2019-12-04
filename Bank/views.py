@@ -139,7 +139,10 @@ class QueryBank(BankBase):
             year, month, args['ID']
         )
         temp_result = self._db.query(query_sql)
-        args['MonthPay'] = eval(args['Price']) * eval(args['WagePercent']) / 100 / args['TotalMonth']
+        if args['TotalMonth'] ==0:
+            args['MonthPay'] = 0
+        else:
+            args['MonthPay'] = eval(args['Price']) * eval(args['WagePercent']) / 100 / args['TotalMonth']
         args['ID'] = 0
         args['Date'] = str(year) + '-' + str(month)
         args['Status'] = 2
@@ -226,7 +229,7 @@ class QueryBank(BankBase):
             if int(args.get('Status', 2)) != 2:
                 where_sql_list.append(r""" t2.Status = {}  """.format(args.get('Status')))
             else:
-                where_sql_list.append(r""" t2.Status = {} or t2.Status is null """.format(args.get('Status')))
+                where_sql_list.append(r""" (t2.Status = {} or t2.Status is null) """.format(args.get('Status')))
         where_sql = ''
         if where_sql_list:
             where_sql += ' where '
