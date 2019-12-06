@@ -2,13 +2,6 @@
 # @Time : 2019/11/20
 # @Author : zhang
 # @Site :
-# @File : company_view.py
-# @Software: PyCharm
-
-# -*- coding: utf-8 -*-
-# @Time : 2019/11/20
-# @Author : zhang
-# @Site :
 # @File : project_view.py
 # @Software: PyCharm
 from copy import deepcopy
@@ -80,23 +73,13 @@ class WechatComQuery(WechatComBase):
             where_sql_list.append(r""" t1.districtid={} """.format(self.args.get('did')))
         if self.args.get('time', '') != '':
             where_sql_list.append(r""" t1.createtime > '{}' """.format(self.args.get('time')))
-        where_sql = ''
-        if where_sql_list:
-            where_sql += ' where '
-            where_sql += ' and '.join(where_sql_list)
-        page = int(self.args.get('page', '1'))
-        limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
-        total_query_sql = query_sql + where_sql + limit_sql
-        result, total = self.get_total_query(total_query_sql)
-        alarm = 0
+        result, total, alarm = self.get_main_query_result(where_sql_list, query_sql, r""" t1.HasBadRecord in (2,3) """)
         for item in result:
             if item['createtime'] is not None and item['createtime'] != '':
                 item['createtime'] = self.time_to_str(item['createtime'])
-            if item['hasbadrecord'] > 1:
-                alarm += 1
         self.success['company'] = result
-        self.success['total'] = total[0]['total_row']
-        self.success['alarm'] = alarm
+        self.success['totals'] = self.get_total_rate(total[0]['total_row'], alarm[0]['total_row'])
+        # self.success['alarm'] = alarm
         return self.success
 
     def get_all_file(self, companyid, ptype):

@@ -69,11 +69,11 @@ class WechatLaborQuery(WechatLaborBase):
         else:
             if int(self.args.get('status', '3')) != 3:
                 where_sql_list.append(r""" t1.isbadrecord={} """.format(self.args.get('status')))
-        if int(self.args.get('sex', 2)) != 2:
+        if int(self.args.get('sex', '2')) != 2:
             where_sql_list.append(r""" t1.sex={} """.format(self.args.get('sex')))
-        if int(self.args.get('jobtype', 5)) != 5:
+        if int(self.args.get('jobtype', '5')) != 5:
             where_sql_list.append(r""" t1.jobtype='{}' """.format(int(self.args.get('jobtype'))))
-        if int(self.args.get('education', 7)) != 7:
+        if int(self.args.get('education', '7')) != 7:
             where_sql_list.append(r""" t1.education='{}' """.format(int(self.args.get('education'))))
         if int(self.args.get('pid', '0')) != 0:
             where_sql_list.append(r""" t1.pid={} """.format(self.args.get('pid')))
@@ -81,7 +81,7 @@ class WechatLaborQuery(WechatLaborBase):
             where_sql_list.append(r""" t1.cid={} """.format(self.args.get('cid')))
         if int(self.args.get('did', '0')) != 0:
             where_sql_list.append(r""" t1.did={} """.format(self.args.get('did')))
-        if int(self.args.get('age', 6)) != 6:
+        if int(self.args.get('age', '6')) != 6:
             if int(self.args.get('age', 0)) == 0:
                 where_sql_list.append(r""" t1.Age<18 """)
             if int(self.args.get('age', 0)) == 1:
@@ -96,23 +96,13 @@ class WechatLaborQuery(WechatLaborBase):
                 where_sql_list.append(r""" t1.Age>=55 """)
         if self.args.get('time', '') != '':
             where_sql_list.append(r""" t1.createtime > '{}' """.format(self.args.get('time')))
-        where_sql = ''
-        if where_sql_list:
-            where_sql += ' where '
-            where_sql += ' and '.join(where_sql_list)
-        page = int(self.args.get('page', '1'))
-        limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
-        total_query_sql = query_sql + where_sql + limit_sql
-        result, total = self.get_total_query(total_query_sql)
-        alarm = 0
+        result, total, alarm = self.get_main_query_result(where_sql_list, query_sql, r""" t1.isbadrecord in (1,2) """)
         for item in result:
             if item['createtime'] is not None and item['createtime'] != '':
                 item['createtime'] = self.time_to_str(item['createtime'])
-            if item['isbadrecord'] > 0:
-                alarm += 1
         self.success['labor'] = result
-        self.success['total'] = total[0]['total_row']
-        self.success['alarm'] = alarm
+        # total = total[0]['total_row']
+        self.success['totals'] = self.get_total_rate(total[0]['total_row'], alarm[0]['total_row'])
         return self.success
 
     def get_all_class_labor(self):

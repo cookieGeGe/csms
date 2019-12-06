@@ -373,6 +373,48 @@ class BaseView(View, metaclass=ABCMeta):
                 if result:
                     self.args[key] = str(result[0]['id'])
 
+    def get_total_rate(self, total, alarm):
+        """
+        获取企业，劳工项目百分比
+        :param total:
+        :param alarm:
+        :return:
+        """
+        if isinstance(total, str):
+            total = int(total)
+        if isinstance(alarm, str):
+            alarm = int(alarm)
+        return {
+            "total": total,
+            "normal": total - alarm,
+            "abnormal": alarm,
+            "currentrate": int(alarm / total * 100) if total != 0 else 0
+        }
+
+    def get_main_query_result(self, where_sql_list, query_sql, alarm_sql):
+        """
+        微信公众号列表页面获取所有数据，总数和告警总数
+        :param where_sql_list: where子句列表
+        :param query_sql: 主query_sql
+        :return:
+        """
+        where_sql = ''
+        if where_sql_list:
+            where_sql += ' where '
+            where_sql += ' and '.join(where_sql_list)
+        where_sql_list.append(alarm_sql)
+        alarm_where_sql = ''
+        if where_sql_list:
+            alarm_where_sql += ' where '
+            alarm_where_sql += ' and '.join(where_sql_list)
+        page = int(self.args.get('page', '1'))
+        limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
+        total_query_sql = query_sql + where_sql + limit_sql
+        result, total = self.get_total_query(total_query_sql)
+        alarm_query_sql = query_sql + alarm_where_sql + limit_sql
+        alarm_result, alarm = self.get_total_query(alarm_query_sql)
+        return result, total, alarm
+
 
 def get_total_query(self, query_sql):
     result = self._db.query(query_sql)

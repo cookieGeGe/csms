@@ -39,6 +39,11 @@ class WechatProQuery(WechatProBase):
         return self.views()
 
     def get_total_query(self, query_sql):
+        """
+        获取查询数据和总数
+        :param query_sql:
+        :return:
+        """
         result = self._db.query(query_sql)
         total = self._db.query(self.get_total_row)
         return result, total
@@ -59,12 +64,12 @@ class WechatProQuery(WechatProBase):
             where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if self.args.get('name', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
-        if int(self.args.get('type', '0')) != 0:
+        if int(self.args.get('type', '4')) != 4:
             where_sql_list.append(r""" t1.type={} """.format(self.args.get('type')))
         if self.args.get('status') != '' and self.args.get('status') == 'false':
             where_sql_list.append(r""" t1.status>1 """)
         else:
-            if int(self.args.get('status', '0')) != 0:
+            if int(self.args.get('status', '4')) != 4:
                 where_sql_list.append(r""" t1.status={} """.format(self.args.get('status')))
         if int(self.args.get('pid', '0')) != 0:
             where_sql_list.append(r""" t1.pid={} """.format(self.args.get('pid')))
@@ -74,25 +79,15 @@ class WechatProQuery(WechatProBase):
             where_sql_list.append(r""" t1.did={} """.format(self.args.get('did')))
         if self.args.get('time', '') != '':
             where_sql_list.append(r""" t1.starttime > '{}' """.format(self.args.get('time')))
-        where_sql = ''
-        if where_sql_list:
-            where_sql += ' where '
-            where_sql += ' and '.join(where_sql_list)
-        page = int(self.args.get('page', '1'))
-        limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
-        total_query_sql = query_sql + where_sql + limit_sql
-        result, total = self.get_total_query(total_query_sql)
-        alarm = 0
+        result, total, alarm = self.get_main_query_result(where_sql_list, query_sql, r""" t1.status in (2,3) """)
         for item in result:
             if item['starttime'] is not None and item['starttime'] != '':
                 item['starttime'] = item['starttime'].strftime("%Y-%m-%d")
             if item['endtime'] is not None and item['endtime'] != '':
                 item['endtime'] = item['endtime'].strftime("%Y-%m-%d")
-            if item['status'] > 1:
-                alarm += 1
         self.success['project'] = result
-        self.success['total'] = total[0]['total_row']
-        self.success['alarm'] = alarm
+        self.success['totals'] = self.get_total_rate(total[0]['total_row'], alarm[0]['total_row'])
+        # self.success['alarm'] = alarm
         return self.success
 
     def calc_month(self, nowtime, oldtime):
