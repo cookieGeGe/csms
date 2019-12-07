@@ -14,6 +14,7 @@ from . import salary_view
 from . import bank_view
 from . import guarantee_view
 from . import question_view
+from . import public_view
 
 from flask import Blueprint
 
@@ -29,6 +30,8 @@ wechat.add_url_rule('/query/company/project', methods=['get'],
                     view_func=company_view.WechatComQueryPro.as_view('wechat_query_com_pro'))
 wechat.add_url_rule('/query/project', methods=['get'],
                     view_func=project_view.WechatProQuery.as_view('wechat_query_pro'))
+wechat.add_url_rule('/query/progress', methods=['get'],
+                    view_func=project_view.WechatProgressQuery.as_view('wechat_query_progress'))
 wechat.add_url_rule('/query/labor', methods=['get'], view_func=labor_view.WechatLaborQuery.as_view('wechat_query_lab'))
 
 # 考勤
@@ -50,3 +53,7 @@ wechat.add_url_rule('/query/guarantee', methods=['get'],
 # 问答平台
 wechat.add_url_rule('/query/question', methods=['get'],
                     view_func=question_view.WechatQuestion.as_view('wechat_question'))
+
+# 公共部分
+wechat.add_url_rule('/query/pics', methods=['get'],
+                    view_func=public_view.wechatPics.as_view('wechat_pics'))

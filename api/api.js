@@ -11,6 +11,20 @@ export function login(params) {
     })
 }
 
+// 企业中获取项目信息
+export function queryGroupPics(params) {
+    /*
+    params = {
+        id: 'int	    分组ID'
+    }
+    */
+    return request({
+        url: '/wechat/query/pics',
+        method: 'get',
+        params: params
+    })
+}
+
 //首页统计接口
 export function indexCount() {
     return request({
@@ -36,6 +50,21 @@ export function queryProject(params) {
     */
     return request({
         url: '/wechat/query/project',
+        method: 'get',
+        params: params
+    })
+}
+
+// 首页和列表页面项目查询
+export function queryProgress(params) {
+
+    /*
+    params = {
+        id: 'int	进度ID',
+    }
+    */
+    return request({
+        url: '/wechat/query/progress',
         method: 'get',
         params: params
     })

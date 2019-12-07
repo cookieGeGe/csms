@@ -130,11 +130,11 @@ class WechatLaborQuery(WechatLaborBase):
         if not result:
             return jsonify(status_code.LABOR_IS_NOT_EXISTS)
         labor_info = result[0]
-        query_pic_group = r"""select * from tb_pic_group where cid={} and ptype=2;""".format(labor_id)
+        query_pic_group = r"""select id, name, Type from tb_pic_group where cid={} and ptype=2;""".format(labor_id)
         pic_group = self._db.query(query_pic_group)
         pic_group_dict = {
             'bad_list': [],
-            'info': []
+            'info_list': []
         }
         for item in pic_group:
             if int(item['Type']) == 0:
@@ -148,7 +148,7 @@ class WechatLaborQuery(WechatLaborBase):
                     labor_info['isDeparture'] = True
                 labor_info[i] = labor_info[i].strftime("%Y-%m-%d")
         self.success['labor'] = labor_info
-        self.success['labor']['pic_group'] = pic_group_dict
+        self.success['pic_groups'] = pic_group_dict
         self.success['class_labors'] = self.get_all_class_labor()
         return self.success
 

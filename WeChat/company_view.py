@@ -119,7 +119,7 @@ class WechatComQuery(WechatComBase):
         ID = self.args.get('id')
         if ID is None:
             return jsonify(status_code.ID_ERROR)
-        query_sql = r"""select * from tb_pic_group where CID={} and Ptype = 0""".format(ID)
+        query_sql = r"""select id, name, Type from tb_pic_group where CID={} and Ptype = 0""".format(ID)
         result_list = self._db.query(query_sql)
         Lgroup_list = []
         group_list = []
@@ -128,8 +128,10 @@ class WechatComQuery(WechatComBase):
                 Lgroup_list.append(item)
             else:
                 group_list.append(item)
-        self.success['license_photo_list'] = Lgroup_list
-        self.success['company_photo_list'] = group_list
+        self.success['pic_groups'] = {
+            'license_photo_list': Lgroup_list,
+            'company_photo_list': group_list
+        }
 
     def views(self):
         if int(self.args.get('id', '0')) == 0:

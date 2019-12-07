@@ -28,6 +28,58 @@ class WechatProBase(BaseView):
     def views(self):
         pass
 
+    def formatter_person(self, persons):
+        back_data = []
+        for person in persons:
+            labor_id = None
+            if 'ID' in person.keys():
+                labor_id = person['ID']
+            if 'id' in person.keys():
+                labor_id = person['id']
+            if labor_id == None:
+                continue
+            else:
+                query_sql = r"""select t1.id, t1.name, t1.avatar, t1.entrydate as time, t1.phone, t2.ClassName as class from tb_laborinfo as t1 
+                                left join tb_class as t2 on t2.ID = t1.ClassID
+                                where t1.id = {};""".format(labor_id)
+                result = self._db.query(query_sql)
+                if not result:
+                    continue
+                if result[0]['name'] == '' or result[0]['name'] is None:
+                    continue
+                if result[0]['time'] is not None and result[0]['time'] != '':
+                    person['time'] = self.time_to_str(result[0]['time'])
+                for key in ('avatar', 'name', 'phone', 'class'):
+                    person[key] = result[0].get(key, '')
+            back_data.append(deepcopy(person))
+        return back_data
+
+    def get_default_progress(self, progressid):
+        query_sql = r"""select * from tb_progress where id = {}""".format(progressid)
+        result = self._db.query(query_sql)[0]
+        result['Person'] = self.formatter_person(loads(result['Person']))
+        result['pics'] = self.get_progress_group_pics(progressid)
+        result['UploadTime'] = result['UploadTime'].strftime("%Y-%m-%d")
+        return result
+
+    def get_progress_group_pics(self, progressid):
+        query_all_pics = r"""select name,purl,Type from tb_pics where progressid={} and ptype=1 
+                                and type in (1,2,3,4,7,8,9,11);""".format(progressid)
+        pics_result = self._db.query(query_all_pics)
+        group_list = ['progress', 'contract', 'realname', 'attend', 'wage', 'rights',
+                      'lwages', 'lab', 'pab', 'arrears', 'lpaycert']
+        pics = {}
+        for i in group_list:
+            temp = i + '_list'
+            pics[temp] = []
+        for item in pics_result:
+            temp_key = group_list[int(item['Type']) - 1] + '_list'
+            pics[temp_key].append(item)
+        del pics['wage_list']
+        del pics['rights_list']
+        del pics['arrears_list']
+        return pics
+
 
 class WechatProQuery(WechatProBase):
 
@@ -135,7 +187,6 @@ class WechatProQuery(WechatProBase):
         result['SubCompany'] = subcompany_list
         result['BuildStatus'] = 1 if int(result['BuildStatus']) > 1 else 0
         result['ConsStatus'] = 1 if int(result['ConsStatus']) > 1 else 0
-
         if result.get('PrinPical', 'null') != 'null':
             result['PrinPical'] = loads(result['PrinPical'])
         # for i in ('ConsManager', 'OwnerManager'):
@@ -159,8 +210,9 @@ class WechatProQuery(WechatProBase):
         #     result['Duration'] = result['Duration'].strftime("%Y-%m-%d")
         now_time = datetime.datetime.now()
         self.success['project'] = result
+        self.success['pic_groups'] = self.get_project_pic_groups(self.args.get('id'))
         self.success['all_year'] = list(All_year_month.keys())
-        self.success['progress'] = []
+        self.success['progress'] = {}
         if progress_result:
             total = len(progress_result)
             for pindex, gress in enumerate(progress_result):
@@ -180,6 +232,34 @@ class WechatProQuery(WechatProBase):
             self.success['progress'] = self.get_default_progress(progress_result[-1]['ID'])
         self.success['year_month_info'] = All_year_month
         return self.success
+
+    def get_project_pic_groups(self, project_id):
+        """
+        获取项目中的分组情况
+        :param project_id: 项目ID
+        :return:
+        """
+        query_sql = r"""
+            select id, name, type from tb_pic_group where cid={} and ptype = 1 and type in (0,5,6,10)
+        """.format(project_id)
+        result = self._db.query(query_sql)
+        pic_groups = {
+            "project_list": [],  # 项目分组---0
+            "wage_list": [],  # 工资专户---5
+            "rights_list": [],  # 维权公示牌---6
+            "arrears_list": [],  # 欠薪预案---10
+        }
+        for item in result:
+            temp_type = int(item['type'])
+            if temp_type == 0:
+                pic_groups['project_list'].append(item)
+            elif temp_type == 5:
+                pic_groups['wage_list'].append(item)
+            elif temp_type == 6:
+                pic_groups['rights_list'].append(item)
+            else:
+                pic_groups['arrears_list'].append(item)
+        return pic_groups
 
     def get_temp(self, i):
         return {
@@ -216,50 +296,6 @@ class WechatProQuery(WechatProBase):
                         all_month[str(temp_year)].append(temp)
         return all_month
 
-    def formatter_person(self, persons):
-        back_data = []
-        for person in persons:
-            labor_id = None
-            if 'ID' in person.keys():
-                labor_id = person['ID']
-            if 'id' in person.keys():
-                labor_id = person['id']
-            if labor_id == None:
-                continue
-            else:
-                query_sql = r"""select t1.id, t1.name, t1.avatar, t1.entrydate as time, t1.phone, t2.ClassName as class from tb_laborinfo as t1 
-                                left join tb_class as t2 on t2.ID = t1.ClassID
-                                where t1.id = {};""".format(labor_id)
-                result = self._db.query(query_sql)
-                if not result:
-                    continue
-                if result[0]['name'] == '' or result[0]['name'] is None:
-                    continue
-                if result[0]['time'] is not None and result[0]['time'] != '':
-                    person['time'] = self.time_to_str(result[0]['time'])
-                for key in ('avatar', 'name', 'phone', 'class'):
-                    person[key] = result[0].get(key, '')
-            back_data.append(deepcopy(person))
-        return back_data
-
-    def get_default_progress(self, progressid):
-        query_sql = r"""select * from tb_progress where id = {}""".format(progressid)
-        result = self._db.query(query_sql)[0]
-        result['Person'] = self.formatter_person(loads(result['Person']))
-        query_all_pics = r"""select * from tb_pics where progressid={} and ptype=1 
-                        and type>0;""".format(progressid)
-        pics_result = self._db.query(query_all_pics)
-        group_list = ['Progress', 'Contract', 'RealName', 'Attend', 'Wage', 'Rights',
-                      'Lwages', 'LAB', 'PAB', 'Arrears', 'LPayCert']
-        for i in group_list:
-            temp = i + '_list'
-            result[temp] = []
-        for item in pics_result:
-            temp_key = group_list[int(item['Type']) - 1] + '_list'
-            result[temp_key].append(item)
-        result['UploadTime'] = result['UploadTime'].strftime("%Y-%m-%d")
-        return result
-
     def views(self):
         if int(self.args.get('id', '0')) == 0:
             success = self.main_list_query()
@@ -267,3 +303,15 @@ class WechatProQuery(WechatProBase):
             success = self.one_project_query()
 
         return self.make_response(success)
+
+
+class WechatProgressQuery(WechatProBase):
+
+    def __init__(self):
+        super(WechatProgressQuery, self).__init__()
+
+    def views(self):
+        if self.args_is_null('id'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        self.success['progress'] = self.get_default_progress(self.args.get('id'))
+        return self.make_response(self.success)
