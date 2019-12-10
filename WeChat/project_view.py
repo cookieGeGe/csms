@@ -63,7 +63,7 @@ class WechatProBase(BaseView):
         return result
 
     def get_progress_group_pics(self, progressid):
-        query_all_pics = r"""select name,purl,Type from tb_pics where progressid={} and ptype=1 
+        query_all_pics = r"""select id, name,purl,Type, id as value from tb_pics where progressid={} and ptype=1 
                                 and type in (1,2,3,4,7,8,9,11);""".format(progressid)
         pics_result = self._db.query(query_all_pics)
         group_list = ['progress', 'contract', 'realname', 'attend', 'wage', 'rights',
@@ -74,11 +74,28 @@ class WechatProBase(BaseView):
             pics[temp] = []
         for item in pics_result:
             temp_key = group_list[int(item['Type']) - 1] + '_list'
+            # item['value'] = len(pics[temp_key])
             pics[temp_key].append(item)
-        del pics['wage_list']
-        del pics['rights_list']
-        del pics['arrears_list']
-        return pics
+        temp = {
+            "progress_list": '进度分组',
+            "contract_list": '合同分组',
+            "realname_list": '实名制分组',
+            "attend_list": '考勤分组',
+            "lwages_list": '工资公示牌',
+            "lab_list": '劳务专员分组',
+            "pab_list": '项目经理分组',
+            "lpaycert_list": '工资支付分组',
+        }
+        back_pics = []
+        for key, value in temp.items():
+            back_pics.append({
+                "name": value,
+                "list": pics[key]
+            })
+        # del pics['wage_list']
+        # del pics['rights_list']
+        # del pics['arrears_list']
+        return back_pics
 
 
 class WechatProQuery(WechatProBase):
@@ -240,7 +257,7 @@ class WechatProQuery(WechatProBase):
         :return:
         """
         query_sql = r"""
-            select id, name, type from tb_pic_group where cid={} and ptype = 1 and type in (0,5,6,10)
+            select id, name as text, type, id as value from tb_pic_group where cid={} and ptype = 1 and type in (0,5,6,10)
         """.format(project_id)
         result = self._db.query(query_sql)
         pic_groups = {
@@ -252,14 +269,30 @@ class WechatProQuery(WechatProBase):
         for item in result:
             temp_type = int(item['type'])
             if temp_type == 0:
+                # item['value'] = len(pic_groups['project_list'])
                 pic_groups['project_list'].append(item)
             elif temp_type == 5:
+                # item['value'] = len(pic_groups['wage_list'])
                 pic_groups['wage_list'].append(item)
             elif temp_type == 6:
+                # item['value'] = len(pic_groups['rights_list'])
                 pic_groups['rights_list'].append(item)
             else:
+                # item['value'] = len(pic_groups['arrears_list'])
                 pic_groups['arrears_list'].append(item)
-        return pic_groups
+        temp = {
+            'project_list': '项目分组',
+            'wage_list': '工资专户',
+            'rights_list': '维权公示牌',
+            'arrears_list': '欠薪预案',
+        }
+        back_pic_groups = []
+        for key, value in temp.items():
+            back_pic_groups.append({
+                "name": value,
+                "list": pic_groups[key],
+            })
+        return back_pic_groups
 
     def get_temp(self, i):
         return {

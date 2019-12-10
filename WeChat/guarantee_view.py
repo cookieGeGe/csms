@@ -71,6 +71,18 @@ class GuaranteeQuery(GuaranteeBase):
         self.success['total'] = total[0]['total_row']
         return self.success
 
+    def get_pic_groups(self):
+        query_sql = r"""select id, name as text, Type, id as value from tb_pic_group where CID={} and Ptype = 0""".format(
+            self.args.get('id')
+        )
+        result_list = self._db.query(query_sql)
+        for index, item in enumerate(result_list):
+            item['value'] = index
+        return [{
+            "name": "保函照片",
+            "list": result_list
+        }]
+
     def get_one_guarantee(self):
         query_sql = r"""
             select t1.*, t2.name as pname, t3.name as cname, t4.name as dname from tb_guarantee as t1
@@ -97,6 +109,7 @@ class GuaranteeQuery(GuaranteeBase):
         c_result = self._db.query(query_cguarantee_sql)
         self.success['guarantee'] = result[0]
         self.success['cguarantee'] = c_result
+        self.success['pic_groups'] = self.get_pic_groups()
         return self.success
 
     def views(self):
