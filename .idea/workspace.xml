@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="1.企业，劳工，项目，进度，增加图片分组信息&#10;2.添加获取分组下所有图片&#10;3.添加微信端进度查询接口">
+    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="调整返回分组数据结构">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Company/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Company/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Export/exportword_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Export/exportword_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WeChat/company_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/company_view.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WeChat/guarantee_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/guarantee_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat/labor_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/labor_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat/project_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/project_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WeChat/question_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/question_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csms.sql" beforeDir="false" afterPath="$PROJECT_DIR$/csms.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/BaseView.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/BaseView.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,8 +21,8 @@
     <SUITE FILE_PATH="coverage/CSMS$manager.coverage" NAME="manager Coverage Results" MODIFIED="1553090335693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$112_74_77_158.coverage" NAME="112.74.77.158 Coverage Results" MODIFIED="1562248315631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$120_78_163_106.coverage" NAME="120.78.163.106 Coverage Results" MODIFIED="1568114265580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$manager_remote.coverage" NAME="manager_remote Coverage Results" MODIFIED="1575990829468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$manager_local.coverage" NAME="manager_local Coverage Results" MODIFIED="1575992797347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager_remote.coverage" NAME="manager_remote Coverage Results" MODIFIED="1576312756574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager_local.coverage" NAME="manager_local Coverage Results" MODIFIED="1576316259460" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$get_company_url.coverage" NAME="get_company_url Coverage Results" MODIFIED="1565275779547" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/csmsspider" />
     <SUITE FILE_PATH="coverage/csms$manager.coverage" NAME="manager Coverage Results" MODIFIED="1555682613796" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$ImageCompress.coverage" NAME="ImageCompress Coverage Results" MODIFIED="1574173261515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
@@ -30,11 +33,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WeChat/project_view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="222">
-              <caret line="63" lean-forward="true" selection-start-line="63" selection-end-line="63" />
+            <state relative-caret-position="205">
+              <caret line="232" column="27" lean-forward="true" selection-start-line="232" selection-start-column="27" selection-end-line="232" selection-end-column="27" />
               <folding>
                 <element signature="e#120#135#0" expanded="true" />
               </folding>
@@ -43,22 +46,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/public_view.py">
+        <entry file="file://$PROJECT_DIR$/WeChat/company_view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
-              <folding>
-                <element signature="e#118#143#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="218">
+              <caret line="144" column="46" lean-forward="true" selection-start-line="144" selection-start-column="46" selection-end-line="144" selection-end-column="46" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/api/api.js">
+        <entry file="file://$PROJECT_DIR$/WeChat/question_view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="244">
-              <caret line="33" column="6" lean-forward="true" selection-start-line="33" selection-start-column="6" selection-end-line="34" selection-end-column="1" />
+            <state relative-caret-position="28">
+              <caret line="32" column="46" lean-forward="true" selection-start-line="32" selection-start-column="46" selection-end-line="32" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -66,8 +66,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Project/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6630">
-              <caret line="402" column="6" selection-start-line="402" selection-start-column="6" selection-end-line="402" selection-end-column="6" />
+            <state relative-caret-position="198">
+              <caret line="181" column="50" selection-start-line="181" selection-start-column="50" selection-end-line="181" selection-end-column="50" />
             </state>
           </provider>
         </entry>
@@ -75,20 +75,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Project/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="17" column="76" selection-start-line="17" selection-start-column="76" selection-end-line="17" selection-end-column="76" />
+            <state relative-caret-position="119">
+              <caret line="11" column="66" selection-start-line="11" selection-start-column="66" selection-end-line="11" selection-end-column="66" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/urls.py">
+        <entry file="file://$PROJECT_DIR$/Export/exportword_views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="663">
-              <caret line="50" column="52" selection-start-line="50" selection-start-column="52" selection-end-line="50" selection-end-column="52" />
-              <folding>
-                <element signature="e#113#137#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="45">
+              <caret line="90" column="30" lean-forward="true" selection-start-line="90" selection-start-column="30" selection-end-line="90" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -96,35 +93,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WeChat/guarantee_view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-369">
-              <caret line="74" column="66" selection-start-line="74" selection-start-column="66" selection-end-line="74" selection-end-column="66" />
+            <state relative-caret-position="126">
+              <caret line="61" column="59" lean-forward="true" selection-start-line="61" selection-start-column="59" selection-end-line="61" selection-end-column="59" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/company_view.py">
+        <entry file="file://$PROJECT_DIR$/Company/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="121" column="66" selection-start-line="121" selection-start-column="53" selection-end-line="121" selection-end-column="66" />
+            <state relative-caret-position="119">
+              <caret line="615" column="23" lean-forward="true" selection-start-line="615" selection-start-column="23" selection-end-line="615" selection-end-column="23" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/labor_view.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="135" column="27" lean-forward="true" selection-start-line="135" selection-start-column="27" selection-end-line="135" selection-end-column="27" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Export/ExportDocx.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="14" column="24" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="24" />
+            <state relative-caret-position="246">
+              <caret line="424" column="26" lean-forward="true" selection-start-line="424" selection-start-column="26" selection-end-line="424" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -143,7 +134,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>self.list_to_str(self.company_ids)</find>
       <find>has_data</find>
       <find>LABOR_IS_EXISTS</find>
       <find>save_image</find>
@@ -173,6 +163,7 @@
       <find>成都</find>
       <find>OPMysql</find>
       <find>四川省</find>
+      <find>get_total_query</find>
     </findStrings>
     <replaceStrings>
       <replace>(self.list_to_str(self.company_ids))</replace>
@@ -218,14 +209,11 @@
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/APP/url_regist.py" />
         <option value="$PROJECT_DIR$/WeChat/index_view.py" />
-        <option value="$PROJECT_DIR$/Company/views.py" />
-        <option value="$PROJECT_DIR$/csms.sql" />
         <option value="$PROJECT_DIR$/api/area.js" />
         <option value="$PROJECT_DIR$/WeChat/attend_view.py" />
         <option value="$PROJECT_DIR$/api/login.js" />
         <option value="$PROJECT_DIR$/WeChat/salary_view.py" />
         <option value="$PROJECT_DIR$/WeChat/bank_view.py" />
-        <option value="$PROJECT_DIR$/WeChat/question_view.py" />
         <option value="$PROJECT_DIR$/utils/status_code.py" />
         <option value="$PROJECT_DIR$/utils/pulic_utils.py" />
         <option value="$PROJECT_DIR$/Guarantee/views.py" />
@@ -233,19 +221,22 @@
         <option value="$PROJECT_DIR$/User/views.py" />
         <option value="$PROJECT_DIR$/Labor/views.py" />
         <option value="$PROJECT_DIR$/Project/views.py" />
-        <option value="$PROJECT_DIR$/Export/exportword_views.py" />
         <option value="$PROJECT_DIR$/UserTemplate/views.py" />
         <option value="$PROJECT_DIR$/Bank/views.py" />
         <option value="$PROJECT_DIR$/Attend/views.py" />
         <option value="$PROJECT_DIR$/utils/AddAreaCode.py" />
-        <option value="$PROJECT_DIR$/utils/BaseView.py" />
         <option value="$PROJECT_DIR$/WeChat/urls.py" />
         <option value="$PROJECT_DIR$/api/api.js" />
         <option value="$PROJECT_DIR$/WeChat/public_view.py" />
-        <option value="$PROJECT_DIR$/WeChat/company_view.py" />
         <option value="$PROJECT_DIR$/WeChat/labor_view.py" />
-        <option value="$PROJECT_DIR$/WeChat/guarantee_view.py" />
         <option value="$PROJECT_DIR$/WeChat/project_view.py" />
+        <option value="$PROJECT_DIR$/WeChat/company_view.py" />
+        <option value="$PROJECT_DIR$/Company/views.py" />
+        <option value="$PROJECT_DIR$/WeChat/question_view.py" />
+        <option value="$PROJECT_DIR$/Export/exportword_views.py" />
+        <option value="$PROJECT_DIR$/utils/BaseView.py" />
+        <option value="$PROJECT_DIR$/csms.sql" />
+        <option value="$PROJECT_DIR$/WeChat/guarantee_view.py" />
       </list>
     </option>
   </component>
@@ -256,8 +247,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="868" />
-    <option name="y" value="118" />
+    <option name="x" value="867" />
+    <option name="y" value="117" />
     <option name="width" value="1971" />
     <option name="height" value="1245" />
   </component>
@@ -286,6 +277,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -297,6 +289,21 @@
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
               <item name="csms" type="462c0819:PsiDirectoryNode" />
               <item name="api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="csms" type="462c0819:PsiDirectoryNode" />
+              <item name="Company" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="csms" type="462c0819:PsiDirectoryNode" />
+              <item name="Export" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="csms" type="462c0819:PsiDirectoryNode" />
+              <item name="Project" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
@@ -337,7 +344,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -578,13 +584,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1553088058879</updated>
-    </task>
-    <task id="LOCAL-00009" summary="验证部分简单接口，修改部分接口不足之处，完成企业项目劳工模块">
-      <created>1557328017850</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1557328017850</updated>
     </task>
     <task id="LOCAL-00010" summary="完成保函模块">
       <created>1557415806427</created>
@@ -922,7 +921,14 @@
       <option name="project" value="LOCAL" />
       <updated>1575698546936</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="调整返回分组数据结构">
+      <created>1575992939895</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1575992939895</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TodoView">
@@ -935,16 +941,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1455" height="935" extended-state="6" />
+    <frame x="-7" y="-7" width="1455" height="935" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16105941" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16535433" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.2840617" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.29691517" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.4996421" visible="true" weight="0.27377892" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4996421" visible="true" weight="0.34061697" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32838038" />
@@ -995,7 +1001,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1.修改完项目&#10;2.去掉svp，evp之前" />
     <MESSAGE value="完成企业导出" />
     <MESSAGE value="添加企业导出模板，以及其他模板文件" />
     <MESSAGE value="完成项目导出模块" />
@@ -1020,7 +1025,8 @@
     <MESSAGE value="改完bug第二版以及修改微信公众号地区BUG" />
     <MESSAGE value="修复列表页面查询结果数据错误" />
     <MESSAGE value="1.企业，劳工，项目，进度，增加图片分组信息&#10;2.添加获取分组下所有图片&#10;3.添加微信端进度查询接口" />
-    <option name="LAST_COMMIT_MESSAGE" value="1.企业，劳工，项目，进度，增加图片分组信息&#10;2.添加获取分组下所有图片&#10;3.添加微信端进度查询接口" />
+    <MESSAGE value="调整返回分组数据结构" />
+    <option name="LAST_COMMIT_MESSAGE" value="调整返回分组数据结构" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1058,20 +1064,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Company/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="14" column="74" selection-start-line="14" selection-start-column="74" selection-end-line="14" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/csms.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="65977">
-          <caret line="3881" column="33" selection-start-line="3881" selection-start-column="33" selection-end-line="3881" selection-end-column="33" />
         </state>
       </provider>
     </entry>
@@ -1121,13 +1113,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="799">
           <caret line="49" column="34" selection-start-line="49" selection-start-column="29" selection-end-line="49" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/question_view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="35" column="50" selection-start-line="35" selection-start-column="50" selection-end-line="35" selection-end-column="50" />
         </state>
       </provider>
     </entry>
@@ -1253,13 +1238,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Export/exportword_views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5287">
-          <caret line="318" column="35" selection-start-line="318" selection-start-column="35" selection-end-line="318" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/ImportTemp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1156">
@@ -1316,16 +1294,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6341">
-          <caret line="386" column="16" lean-forward="true" selection-start-line="386" selection-start-column="16" selection-end-line="386" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Export/exportfile.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -1333,24 +1301,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Company/views.py">
+    <entry file="file://$PROJECT_DIR$/WeChat/public_view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-782">
-          <caret line="61" column="31" lean-forward="true" selection-start-line="61" selection-start-column="31" selection-end-line="61" selection-end-column="31" />
+        <state relative-caret-position="170">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+          <folding>
+            <element signature="e#118#143#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Project/views.py">
+    <entry file="file://$PROJECT_DIR$/api/api.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6630">
-          <caret line="402" column="6" selection-start-line="402" selection-start-column="6" selection-end-line="402" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Project/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="17" column="76" selection-start-line="17" selection-start-column="76" selection-end-line="17" selection-end-column="76" />
+        <state relative-caret-position="561">
+          <caret line="33" column="6" selection-start-line="33" selection-start-column="6" selection-end-line="34" selection-end-column="1" />
         </state>
       </provider>
     </entry>
@@ -1364,6 +1328,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/WeChat/labor_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2210">
+          <caret line="135" column="27" lean-forward="true" selection-start-line="135" selection-start-column="27" selection-end-line="135" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Export/ExportDocx.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -1371,50 +1342,85 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/api/api.js">
+    <entry file="file://$PROJECT_DIR$/Company/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="33" column="6" lean-forward="true" selection-start-line="33" selection-start-column="6" selection-end-line="34" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/public_view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
-          <folding>
-            <element signature="e#118#143#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/labor_view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="135" column="27" lean-forward="true" selection-start-line="135" selection-start-column="27" selection-end-line="135" selection-end-column="27" />
+        <state relative-caret-position="310">
+          <caret line="34" column="72" lean-forward="true" selection-start-line="34" selection-start-column="72" selection-end-line="34" selection-end-column="72" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WeChat/company_view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="121" column="66" selection-start-line="121" selection-start-column="53" selection-end-line="121" selection-end-column="66" />
+        <state relative-caret-position="218">
+          <caret line="144" column="46" lean-forward="true" selection-start-line="144" selection-start-column="46" selection-end-line="144" selection-end-column="46" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/guarantee_view.py">
+    <entry file="file://$PROJECT_DIR$/Export/exportword_views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-369">
-          <caret line="74" column="66" selection-start-line="74" selection-start-column="66" selection-end-line="74" selection-end-column="66" />
+        <state relative-caret-position="45">
+          <caret line="90" column="30" lean-forward="true" selection-start-line="90" selection-start-column="30" selection-end-line="90" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WeChat/question_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="28">
+          <caret line="32" column="46" lean-forward="true" selection-start-line="32" selection-start-column="46" selection-end-line="32" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Project/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="11" column="66" selection-start-line="11" selection-start-column="66" selection-end-line="11" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Project/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="181" column="50" selection-start-line="181" selection-start-column="50" selection-end-line="181" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WeChat/project_view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="63" lean-forward="true" selection-start-line="63" selection-end-line="63" />
+        <state relative-caret-position="205">
+          <caret line="232" column="27" lean-forward="true" selection-start-line="232" selection-start-column="27" selection-end-line="232" selection-end-column="27" />
           <folding>
             <element signature="e#120#135#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Company/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="615" column="23" lean-forward="true" selection-start-line="615" selection-start-column="23" selection-end-line="615" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/csms.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="3881" column="33" lean-forward="true" selection-start-line="3881" selection-start-column="33" selection-end-line="3881" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WeChat/guarantee_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="61" column="59" lean-forward="true" selection-start-line="61" selection-start-column="59" selection-end-line="61" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="424" column="26" lean-forward="true" selection-start-line="424" selection-start-column="26" selection-end-line="424" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>

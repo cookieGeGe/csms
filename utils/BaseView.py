@@ -416,10 +416,10 @@ class BaseView(View, metaclass=ABCMeta):
         return result, total, alarm
 
 
-def get_total_query(self, query_sql):
-    result = self._db.query(query_sql)
-    total = self._db.query(self.get_total_row)
-    return result, total
+    def get_total_query(self, query_sql):
+        result = self._db.query(query_sql)
+        total = self._db.query(self.get_total_row)
+        return result, total
 
 
 class DelteBase(BaseView):

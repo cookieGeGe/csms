@@ -36,7 +36,7 @@ class WechatQuestion(WechatQuestionBase):
         query_sql = r"""select SQL_CALC_FOUND_ROWS id, name from tb_question """
         where_sql_list = []
         if self.args.get('name', '') != '':
-            where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
+            where_sql_list.append(r""" CONCAT(IFNULL(name,'')) LIKE '%{}%' """.format(self.args.get('name')))
         if 'question_all_show' not in self._permissions:
             where_sql_list.append(r""" t1.type = 2 """)
         where_sql = self.get_where_sql(where_sql_list)

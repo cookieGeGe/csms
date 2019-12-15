@@ -74,7 +74,7 @@ class ExportCompanyWord(ExportDocxBase):
                         LEFT JOIN tb_area as t4 on t1.DistrictID = t4.ID
                         where t1.id = {};""".format(company_id)
         resutl = view._db.query(query_sql)
-        all_projects = r"""select t1.ID,t1.Name,t1.Status,t1.Address,t3.Name as PID, t4.Name as CID, t5.Name as DID 
+        all_projects = r"""select distinct(t1.ID),t1.Name,t1.Status,t1.Address,t3.Name as PID, t4.Name as CID, t5.Name as DID 
                         from tb_project as t1
                         LEFT JOIN tb_company as t2 on t1.Build = t2.ID or t1.Cons =t2.ID
 						LEFT JOIN tb_area as t3 on t1.PID = t3.ID

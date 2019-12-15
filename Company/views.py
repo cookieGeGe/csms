@@ -623,7 +623,7 @@ class QueryCompanyProject(BaseView):
 
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.Status from tb_project as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS distinct(t1.ID),t1.Name,t1.Status from tb_project as t1
                         LEFT JOIN tb_company as t2 on t1.Build = t2.ID or t1.Cons =t2.ID
                         where (t2.ID = {}  or CONCAT(IFNULL(t1.SubCompany,'')) LIKE '%"ID":"{}"%')
                         """.format(int(args.get('id')), int(args.get('id')))

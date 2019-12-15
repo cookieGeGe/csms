@@ -43,7 +43,7 @@ class GuaranteeQuery(GuaranteeBase):
         if self.args.get('name', '') != '':
             where_sql_list.append(
                 r""" CONCAT(IFNULL(t1.number,''),IFNULL(t1.projectid,''),IFNULL(t1.companyid,'')) LIKE '%{}%' """)
-        if int(self.args.get('type', '0')) != 0:
+        if int(self.args.get('type', '9')) != 9:
             where_sql_list.append(r""" t1.category={} """.format(self.args.get('type')))
         if int(self.args.get('pid', '0')) != 0:
             where_sql_list.append(r""" t1.pid={} """.format(self.args.get('pid')))
@@ -51,6 +51,11 @@ class GuaranteeQuery(GuaranteeBase):
             where_sql_list.append(r""" t1.cid={} """.format(self.args.get('cid')))
         if int(self.args.get('did', '0')) != 0:
             where_sql_list.append(r""" t1.did={} """.format(self.args.get('did')))
+        if self.args.get('time', '') != '':
+            # print(self.args.get('time'))
+            where_sql_list.append(
+                r""" t1.createtime>='{}' """.format(self.args.get('time').replace('T', ' ').replace('Z', '')))
+            print(self.args.get('time'))
         where_sql = self.get_where_sql(where_sql_list)
         page = int(self.args.get('page', '1'))
         limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)

@@ -153,7 +153,7 @@ class WechatComQueryPro(WechatComBase):
         super(WechatComQueryPro, self).__init__()
 
     def views(self):
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.id, t1.name, t1.address, t1.`status`, t1.type, t1.gamount, t1.starttime, t1.endtime, t1.guarantype,t1.wagepercent, t2.name as bank, t1.createtime  from tb_project as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS distinct(t1.id), t1.name, t1.address, t1.`status`, t1.type, t1.gamount, t1.starttime, t1.endtime, t1.guarantype,t1.wagepercent, t2.name as bank, t1.createtime  from tb_project as t1
                         left join tb_bank as t2 on t1.bank = t2.id
                         LEFT JOIN tb_company as t3 on t1.Build = t3.ID or t1.Cons =t3.ID
                         where (t3.ID = {}  or CONCAT(IFNULL(t1.SubCompany,'')) LIKE '%"ID":"{}"%')
@@ -176,9 +176,9 @@ class WechatComQueryPro(WechatComBase):
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         for item in result:
             if item['starttime'] is not None and item['starttime'] != '':
-                item['starttime'] = self.time_to_str(item['starttime'])
+                item['starttime'] = item['starttime'].strftime("%Y-%m-%d")
             if item['endtime'] is not None and item['endtime'] != '':
-                item['endtime'] = self.time_to_str(item['endtime'])
+                item['endtime'] = item['endtime'].strftime("%Y-%m-%d")
         self.success['data'] = result
         self.success['total'] = total[0]['total_row']
         return jsonify(self.success)
