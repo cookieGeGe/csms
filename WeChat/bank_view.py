@@ -81,16 +81,18 @@ class WechatBankQuery(WechatBankBase):
         result = self._db.query(query_sql)
         result = result[0]
         query_bank_info = r"""
-            select t1.* from tb_wage as t1
+            select t1.*, t2.workers from tb_wage as t1
             left join tb_progress as t2 on t1.ProjectID = t2.ProjectID and t1.year=t2.year and t1.month =t2.month
-            where t1.ProjectID = {} order by year, month desc
+            where t1.ProjectID = {} order by t1.year+0, t1.month+0
         """.format(self.args.get('id'))
-        allYearMonth = self.create_all_month(result['starttiem'], result['endtime'])
+        allYearMonth = self.create_all_month(result['starttime'], result['endtime'])
+        if result['starttime'] is not None and result['starttime'] != '':
+            result['starttime'] = result['starttime'].strftime("%Y-%m-%d")
         bank_info = self._db.query(query_bank_info)
         now_time = datetime.datetime.now()
         bankinfo = {}
         if bank_info:
-            for index, bank in enumerate(bank_info):
+            for mindex, bank in enumerate(bank_info):
                 temp_year = int(bank['year'])
                 temp_month = int(bank['month'])
                 for index, item in enumerate(allYearMonth[str(temp_year)]):
@@ -99,9 +101,11 @@ class WechatBankQuery(WechatBankBase):
                         allYearMonth[str(temp_year)][index]['id'] = bank['ID']
                     if temp_year == now_time.year and item['month'] == now_time.month:
                         allYearMonth[str(temp_year)][index]['is_now_month'] = 1
-                    if index == len(bank_info) - 1 and item['month'] == temp_month:
+                    if mindex == (len(bank_info) - 1) and item['month'] == temp_month:
                         allYearMonth[str(temp_year)][index]['is_current'] = 1
             bankinfo = bank_info[-1]
+            if bankinfo['Receipt'] != '':
+                bankinfo['recTime'] = bankinfo['recTime'].strftime("%Y-%m-%d %H:%M:%S")
         self.success['bankinfo'] = bankinfo
         self.success['project'] = result
         self.success['allmonth'] = allYearMonth
@@ -129,14 +133,18 @@ class WechatBankQuery(WechatBankBase):
         if int(self.args.get('did', '0')) != 0:
             where_sql_list.append(r""" t1.did={} """.format(self.args.get('did')))
         if self.args.get('time', '') != '':
-            where_sql_list.append(r""" t1.starttime > '{}' """.format(self.args.get('time')))
+            timestr = self.args.get('time').replace('T', ' ').replace('Z', '').split('.')[0]
+            querytime = datetime.datetime.strptime(timestr, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(hours=8)
+            where_sql_list.append(
+                r""" t1.starttime > '{}' """.format(querytime))
         where_sql = self.get_where_sql(where_sql_list)
         page = int(self.args.get('page', '1'))
         limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
         total_query_sql = query_sql + where_sql + ' group by id ' + limit_sql
         result, total = self._db.query(total_query_sql), self._db.query(self.get_total_row)
         for item in result:
-            item['starttime'] = item['starttime'].strftime("%Y-%m-%d")
+            if item['starttime'] is not None and item['starttime'] != '':
+                item['starttime'] = item['starttime'].strftime("%Y-%m-%d")
             item['totalpay'] = 0 if item['totalpay'] is None or item['totalpay'] == '' else item['totalpay']
             item['bank'] = '' if item['bank'] is None or item['bank'] == '' else item['bank']
             item['account'] = '' if item['account'] is None or item['account'] == '' else item['account']
@@ -145,7 +153,7 @@ class WechatBankQuery(WechatBankBase):
         return self.success
 
     def views(self):
-        if int(self.get('id', '0')) == 0:
+        if int(self.args.get('id', '0')) == 0:
             success = self.main_query()
         else:
             success = self.project_wage_info()
@@ -159,14 +167,34 @@ class WechatBankInfo(WechatBankBase):
 
     def views(self):
         query_bank_info = r"""
-                    select t1.* from tb_wage as t1
+                    select t1.*, t2.workers from tb_wage as t1
                     left join tb_progress as t2 on t1.ProjectID = t2.ProjectID and t1.year=t2.year and t1.month =t2.month
-                    where t1.id = {} order by year, month desc
+                    where t1.id = {} order by t1.year+0, t1.month+0
                 """.format(self.args.get('id'))
         result = self._db.query(query_bank_info)
         bankinfo = {}
         if result:
             bankinfo = result[0]
-            bankinfo['WTime'] = bankinfo['WTime'].strftime("%Y-%m-%d %H:%M:%S")
+            if bankinfo['Receipt'] != '':
+                bankinfo['recTime'] = bankinfo['recTime'].strftime("%Y-%m-%d %H:%M:%S")
         self.success['bankinfo'] = bankinfo
+        return self.make_response(self.success)
+
+
+class WechatAllBank(WechatBankBase):
+
+    def __init__(self):
+        super(WechatAllBank, self).__init__()
+
+    def views(self):
+        query_sql = r"""select id as value, name as text from tb_bank;"""
+        result = self._db.query(query_sql)
+        temp = [
+            {
+                "text": '全部',
+                "value": 0
+            }
+        ]
+        temp.extend(result)
+        self.success['banks'] = temp
         return self.make_response(self.success)

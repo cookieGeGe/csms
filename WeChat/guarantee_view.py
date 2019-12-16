@@ -81,8 +81,8 @@ class GuaranteeQuery(GuaranteeBase):
             self.args.get('id')
         )
         result_list = self._db.query(query_sql)
-        for index, item in enumerate(result_list):
-            item['value'] = index
+        # for index, item in enumerate(result_list):
+        #     item['value'] = index
         return [{
             "name": "保函照片",
             "list": result_list

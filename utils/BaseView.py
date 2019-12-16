@@ -53,6 +53,9 @@ class BaseView(View, metaclass=ABCMeta):
     def time_to_str(self, datetime_obj):
         return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
 
+    def time_to_date(self, datetime_obj):
+        return datetime_obj.strftime("%Y-%m-%d")
+
     def date_to_datetime(self, date_str):
         return date_to_datetime(date_str)
 

@@ -45,6 +45,7 @@ wechat.add_url_rule('/query/salary', methods=['get'], view_func=salary_view.Wech
 # 银行管理
 wechat.add_url_rule('/query/bank', methods=['get'], view_func=bank_view.WechatBankQuery.as_view('wechat_bank'))
 wechat.add_url_rule('/query/bank/info', methods=['get'], view_func=bank_view.WechatBankInfo.as_view('wechat_bank_info'))
+wechat.add_url_rule('/query/bank/all', methods=['get'], view_func=bank_view.WechatAllBank.as_view('wechat_all_info'))
 
 # 保函查询
 wechat.add_url_rule('/query/guarantee', methods=['get'],

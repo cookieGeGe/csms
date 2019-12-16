@@ -267,8 +267,8 @@ class AddBankReceipt(BankBase):
         if not os.path.exists(img_dir):
             os.makedirs(img_dir)
         img_url = save_image(files[0], 'static/media/bankreceipt')
-        update_sql = r"""update tb_wage set receipt='{}' where id={};""".format(
-            img_url, self.args.get('ID')
+        update_sql = r"""update tb_wage set receipt='{}', rectime='{}' where id={};""".format(
+            img_url, datetime.datetime.now(), self.args.get('ID')
         )
         self._db.update(update_sql)
         return jsonify(self.success)

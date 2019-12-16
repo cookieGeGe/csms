@@ -3885,6 +3885,9 @@ ADD COLUMN `Create` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创�
 ALTER TABLE `csms`.`tb_guarantee`
 ADD COLUMN `CreateTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间' AFTER `GuaCompany`;
 
+ALTER TABLE `csms`.`tb_wage`
+ADD COLUMN `recTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '银行回单时间' AFTER `Receipt`;
+
 -- 2019-11-24
 ALTER TABLE `csms`.`tb_area`
 ADD COLUMN `Code` varchar(255) NULL COMMENT '区域代码' AFTER `HasChild`;

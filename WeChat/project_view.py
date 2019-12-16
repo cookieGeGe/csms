@@ -48,7 +48,7 @@ class WechatProBase(BaseView):
                 if result[0]['name'] == '' or result[0]['name'] is None:
                     continue
                 if result[0]['time'] is not None and result[0]['time'] != '':
-                    person['time'] = self.time_to_str(result[0]['time'])
+                    person['time'] = self.time_to_date(result[0]['time'])
                 for key in ('avatar', 'name', 'phone', 'class'):
                     person[key] = result[0].get(key, '')
             back_data.append(deepcopy(person))
@@ -63,7 +63,7 @@ class WechatProBase(BaseView):
         return result
 
     def get_progress_group_pics(self, progressid):
-        query_all_pics = r"""select id, name,purl,Type, id as value from tb_pics where progressid={} and ptype=1 
+        query_all_pics = r"""select id, name as text,purl,Type, id as value from tb_pics where progressid={} and ptype=1 
                                 and type in (1,2,3,4,7,8,9,11);""".format(progressid)
         pics_result = self._db.query(query_all_pics)
         group_list = ['progress', 'contract', 'realname', 'attend', 'wage', 'rights',
