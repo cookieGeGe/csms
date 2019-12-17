@@ -48,8 +48,8 @@ class WechatLaborQuery(WechatLaborBase):
         :return:
         """
         query_sql = r"""
-            select t1.id, t1.name, t1.avatar, t1.age, t1.sex, t1.jobtype, t1.nationality, t1.createtime, t4.name as pid,
-             t5.name as cid, t6.name as did, t2.name as project, t3.name as company,
+            select t1.id, t1.name, t1.avatar, t1.age, t1.sex, t1.jobtype, t1.nationality, t1.createtime, t4.name as pname,
+             t5.name as cname, t6.name as dname, t2.name as projectname, t3.name as companyname,
               t1.isbadrecord from tb_laborinfo as t1
             left join tb_project as t2 on t1.ProjectID = t2.id
             left join tb_company as t3 on t1.CompanyID = t3.id
@@ -130,7 +130,7 @@ class WechatLaborQuery(WechatLaborBase):
         if not result:
             return jsonify(status_code.LABOR_IS_NOT_EXISTS)
         labor_info = result[0]
-        query_pic_group = r"""select id, name, Type, id as value from tb_pic_group where cid={} and ptype=2;""".format(labor_id)
+        query_pic_group = r"""select id, name as text, Type, id as value from tb_pic_group where cid={} and ptype=2;""".format(labor_id)
         pic_group = self._db.query(query_pic_group)
         pic_group_dict = {
             'bad_list': [],

@@ -101,6 +101,11 @@ class WechatQuerySalary(SalaryBase):
                 where_sql_list = self.get_project_where()
             else:
                 where_sql_list = self.get_labor_where()
+            if self.args.get('time', '') != '':
+                timestr = self.args.get('time').replace('T', ' ').replace('Z', '').split('.')[0]
+                querytime = datetime.datetime.strptime(timestr, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(hours=8)
+                where_sql_list.append(
+                    r""" (t1.year='{}' and t1.month='{}') """.format(querytime.year, querytime.month))
             page = int(self.args.get('page', '1'))
             limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
         else:
@@ -115,4 +120,3 @@ class WechatQuerySalary(SalaryBase):
         self.success['data'] = result
         self.success['total'] = total[0]['total_row']
         return self.make_response(self.success)
-
