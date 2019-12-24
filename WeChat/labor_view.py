@@ -49,12 +49,12 @@ class WechatLaborQuery(WechatLaborBase):
         """
         query_sql = r"""
             select t1.id, t1.name, t1.avatar, t1.age, t1.sex, t1.jobtype, t1.nationality, t1.createtime, t4.name as pname,
-             t5.name as cname, t6.name as dname, t2.name as projectname, t3.name as companyname,
+             t5.name as dname, t6.name as cname, t2.name as projectname, t3.name as companyname,
               t1.isbadrecord from tb_laborinfo as t1
             left join tb_project as t2 on t1.ProjectID = t2.id
             left join tb_company as t3 on t1.CompanyID = t3.id
             INNER JOIN tb_area as t4 on t1.PID = t4.id
-            INNER JOIN tb_area as t5 on t1.CID = t5.id
+            INNER JOIN tb_area as t5 on t1.DID = t5.id
             INNER JOIN tb_area as t6 on t1.CID = t6.id
         """
         where_sql_list = []

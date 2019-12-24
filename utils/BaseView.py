@@ -165,7 +165,7 @@ class BaseView(View, metaclass=ABCMeta):
             self._uid = token['id']
             self._permissions = token['Permission']
             self.pertype = token['pertype']
-            if token['AdminType'] == '1':
+            if str(token['AdminType']) == '1':
                 self.area_ids = token['area_ids']
             self.formatter_area_args()
             return self.deal_request(token['AdminType'])
@@ -370,6 +370,8 @@ class BaseView(View, metaclass=ABCMeta):
                 return
             keys = ('pid', 'cid', 'did')
             for index, key in enumerate(keys):
+                if area_list[index] == 'undefined' or loads(area_list[index])['code'] == '':
+                    continue
                 query_sql = r"""select id from tb_area where code='{}';""".format(loads(area_list[index])['code'])
                 result = self._db.query(query_sql)
                 self.args[key] = '0'
@@ -417,7 +419,6 @@ class BaseView(View, metaclass=ABCMeta):
         alarm_query_sql = query_sql + alarm_where_sql + limit_sql
         alarm_result, alarm = self.get_total_query(alarm_query_sql)
         return result, total, alarm
-
 
     def get_total_query(self, query_sql):
         result = self._db.query(query_sql)

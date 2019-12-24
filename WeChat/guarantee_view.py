@@ -42,7 +42,10 @@ class GuaranteeQuery(GuaranteeBase):
         where_sql_list = []
         if self.args.get('name', '') != '':
             where_sql_list.append(
-                r""" CONCAT(IFNULL(t1.number,''),IFNULL(t1.projectid,''),IFNULL(t1.companyid,'')) LIKE '%{}%' """)
+                r""" CONCAT(IFNULL(t1.number,''),IFNULL(t1.projectid,''),IFNULL(t1.companyid,'')) LIKE '%{}%' """.format(
+                    self.args.get('name')
+                )
+            )
         if int(self.args.get('type', '9')) != 9:
             where_sql_list.append(r""" t1.category={} """.format(self.args.get('type')))
         if int(self.args.get('pid', '0')) != 0:
@@ -60,6 +63,7 @@ class GuaranteeQuery(GuaranteeBase):
         page = int(self.args.get('page', '1'))
         limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
         total_query_sql = query_sql + where_sql + limit_sql
+        print(total_query_sql)
         result, total = self.get_total_query(total_query_sql)
         for item in result:
             item['signtime'] = '' if item['signtime'] is None or item['signtime'] == '' else item['signtime'].strftime(

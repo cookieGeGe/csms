@@ -38,9 +38,13 @@ wechat.add_url_rule('/query/labor', methods=['get'], view_func=labor_view.Wechat
 wechat.add_url_rule('/query/attend', methods=['get'], view_func=attend_view.QueryAttend.as_view('wechat_query_attend'))
 wechat.add_url_rule('/query/attend/info', methods=['get'],
                     view_func=attend_view.QueryAttendLaborInfo.as_view('wechat_query_attend_info'))
+wechat.add_url_rule('/query/attend/otherinfo', methods=['get'],
+                    view_func=attend_view.QueryProComInfo.as_view('wechat_query_other'))
 
 # 工资计算
 wechat.add_url_rule('/query/salary', methods=['get'], view_func=salary_view.WechatQuerySalary.as_view('wechat_salary'))
+wechat.add_url_rule('/query/salary/next', methods=['get'],
+                    view_func=salary_view.QueryNextSalary.as_view('wechat_salary_next'))
 
 # 银行管理
 wechat.add_url_rule('/query/bank', methods=['get'], view_func=bank_view.WechatBankQuery.as_view('wechat_bank'))
