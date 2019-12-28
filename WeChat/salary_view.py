@@ -46,7 +46,7 @@ class WechatQuerySalary(SalaryBase):
                 self.ids = [0, ]
             where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if self.args.get('name', '') != '':
-            where_sql_list.append(r""" CONCAT(IFNULL(t1.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
+            where_sql_list.append(r""" CONCAT(IFNULL(t4.name,'')) LIKE '%{}%' """.format(self.args.get('name')))
         if int(self.args.get('pid', '0')) != 0:
             where_sql_list.append(r""" t4.provinceid={} """.format(self.args.get('pid')))
         if int(self.args.get('cid', '0')) != 0:

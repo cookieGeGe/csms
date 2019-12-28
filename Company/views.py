@@ -642,8 +642,8 @@ class QueryCompanyProject(BaseView):
             query_sql += i
             if index < len(where_list) - 1:
                 query_sql += ' and '
-        page = int(args.get('page', 1))
-        psize = int(args.get('pagesize', 10))
+        page = int(args.get('Page', 1))
+        psize = int(args.get('PageSize', 10))
         limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
         query_sql = query_sql + " " + limit_sql
         result = self._db.query(query_sql.format(**args))

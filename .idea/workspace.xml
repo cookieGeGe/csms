@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="修改工资查询接口">
+    <list default="true" id="88040ea2-5221-48d9-be67-9519d09a8318" name="Default" comment="修改微信公众号BUG">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat/attend_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/attend_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat/guarantee_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/guarantee_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat/labor_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/labor_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Company/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Company/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ReceivePush/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/ReceivePush/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WeChat/salary_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/salary_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeChat/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeChat/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/BaseView.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/BaseView.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,26 +14,45 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/CSMS$manager.coverage" NAME="manager Coverage Results" MODIFIED="1553090335693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$112_74_77_158.coverage" NAME="112.74.77.158 Coverage Results" MODIFIED="1562248315631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$120_78_163_106.coverage" NAME="120.78.163.106 Coverage Results" MODIFIED="1568114265580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$manager_remote.coverage" NAME="manager_remote Coverage Results" MODIFIED="1576916561963" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/csms$manager_local.coverage" NAME="manager_local Coverage Results" MODIFIED="1577187598829" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager_remote.coverage" NAME="manager_remote Coverage Results" MODIFIED="1577508714475" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$get_company_url.coverage" NAME="get_company_url Coverage Results" MODIFIED="1565275779547" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/csmsspider" />
-    <SUITE FILE_PATH="coverage/csms$manager.coverage" NAME="manager Coverage Results" MODIFIED="1555682613796" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$start_celery.coverage" NAME="start_celery Coverage Results" MODIFIED="1577449414815" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ReceivePush" />
     <SUITE FILE_PATH="coverage/csms$ImageCompress.coverage" NAME="ImageCompress Coverage Results" MODIFIED="1574173261515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/csms$test.coverage" NAME="test Coverage Results" MODIFIED="1574250038682" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$AddAreaCode.coverage" NAME="AddAreaCode Coverage Results" MODIFIED="1575468250782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
     <SUITE FILE_PATH="coverage/CSMS$CSMS.coverage" NAME="CSMS Coverage Results" MODIFIED="1553090150919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/csms$47_92_138_95.coverage" NAME="47.92.138.95 Coverage Results" MODIFIED="1570621830703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
+    <SUITE FILE_PATH="coverage/CSMS$manager.coverage" NAME="manager Coverage Results" MODIFIED="1553090335693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$112_74_77_158.coverage" NAME="112.74.77.158 Coverage Results" MODIFIED="1562248315631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$120_78_163_106.coverage" NAME="120.78.163.106 Coverage Results" MODIFIED="1568114265580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager_local.coverage" NAME="manager_local Coverage Results" MODIFIED="1577509393087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/csms$manager.coverage" NAME="manager Coverage Results" MODIFIED="1555682613796" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/labor_view.py">
+        <entry file="file://$PROJECT_DIR$/ReceivePush/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="40" column="42" lean-forward="true" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
+            <state relative-caret-position="72">
+              <caret line="28" column="20" lean-forward="true" selection-start-line="28" selection-start-column="20" selection-end-line="28" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Company/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="385">
+              <caret line="34" column="70" lean-forward="true" selection-start-line="34" selection-start-column="70" selection-end-line="34" selection-end-column="70" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Company/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="113">
+              <caret line="640" column="46" lean-forward="true" selection-start-line="640" selection-start-column="46" selection-end-line="640" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -44,49 +60,31 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WeChat/salary_view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="100" column="52" lean-forward="true" selection-start-line="100" selection-start-column="52" selection-end-line="100" selection-end-column="52" />
+            <state relative-caret-position="-220">
+              <caret line="43" column="28" lean-forward="true" selection-start-line="43" selection-start-column="28" selection-end-line="43" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/bank_view.py">
+        <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-6">
-              <caret line="134" column="8" selection-start-line="134" selection-start-column="8" selection-end-line="138" selection-end-column="63" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="493">
-              <caret line="40" column="63" selection-start-line="40" selection-start-column="63" selection-end-line="40" selection-end-column="63" />
+            <state relative-caret-position="3230">
+              <caret line="203" column="24" selection-start-line="203" selection-start-column="24" selection-end-line="203" selection-end-column="24" />
               <folding>
-                <element signature="e#113#137#0" expanded="true" />
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WeChat/attend_view.py">
+        <entry file="file://$PROJECT_DIR$/manager.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-561">
-              <caret line="10" column="35" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="344">
-              <caret line="216" lean-forward="true" selection-start-line="216" selection-end-line="216" />
+            <state relative-caret-position="170">
+              <caret line="13" selection-start-line="13" selection-end-line="13" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#0#25#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -208,7 +206,6 @@
         <option value="$PROJECT_DIR$/utils/sqlutils.py" />
         <option value="$PROJECT_DIR$/Attend/urls.py" />
         <option value="$PROJECT_DIR$/APP/settings.py" />
-        <option value="$PROJECT_DIR$/ReceivePush/views.py" />
         <option value="$PROJECT_DIR$/ReceivePush/push_attend.py" />
         <option value="$PROJECT_DIR$/ReceivePush/pushtask.py" />
         <option value="$PROJECT_DIR$/utils/ImageCompress.py" />
@@ -232,7 +229,6 @@
         <option value="$PROJECT_DIR$/api/api.js" />
         <option value="$PROJECT_DIR$/WeChat/public_view.py" />
         <option value="$PROJECT_DIR$/WeChat/company_view.py" />
-        <option value="$PROJECT_DIR$/Company/views.py" />
         <option value="$PROJECT_DIR$/WeChat/question_view.py" />
         <option value="$PROJECT_DIR$/Export/exportword_views.py" />
         <option value="$PROJECT_DIR$/csms.sql" />
@@ -244,7 +240,9 @@
         <option value="$PROJECT_DIR$/WeChat/guarantee_view.py" />
         <option value="$PROJECT_DIR$/utils/BaseView.py" />
         <option value="$PROJECT_DIR$/WeChat/labor_view.py" />
+        <option value="$PROJECT_DIR$/ReceivePush/views.py" />
         <option value="$PROJECT_DIR$/WeChat/salary_view.py" />
+        <option value="$PROJECT_DIR$/Company/views.py" />
       </list>
     </option>
   </component>
@@ -325,6 +323,11 @@
             <path>
               <item name="csms" type="b2602c69:ProjectViewProjectNode" />
               <item name="csms" type="462c0819:PsiDirectoryNode" />
+              <item name="ReceivePush" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="csms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="csms" type="462c0819:PsiDirectoryNode" />
               <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -367,7 +370,7 @@
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../zhyd" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/ReceivePush/pushtask.py" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="kite.configurable" />
@@ -602,13 +605,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1553088058879</updated>
-    </task>
-    <task id="LOCAL-00013" summary="完成考勤和薪资计算">
-      <created>1558177656149</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1558177656149</updated>
     </task>
     <task id="LOCAL-00014" summary="完成考勤和薪资计算,还有主页待完成">
       <created>1558177797885</created>
@@ -946,7 +942,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576597369130</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="修改微信公众号BUG">
+      <created>1577189328278</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1577189328278</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TodoView">
@@ -962,7 +965,7 @@
     <frame x="-7" y="-7" width="1455" height="935" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16607015" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17036507" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -1019,7 +1022,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="完成项目进度导出模块" />
     <MESSAGE value="完成劳工导出模块" />
     <MESSAGE value="完成导出保函" />
     <MESSAGE value="基本完成所有事情" />
@@ -1044,7 +1046,8 @@
     <MESSAGE value="修改保函相关信息" />
     <MESSAGE value="完成微信公众号银行查询" />
     <MESSAGE value="修改工资查询接口" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改工资查询接口" />
+    <MESSAGE value="修改微信公众号BUG" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改微信公众号BUG" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1073,27 +1076,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/area.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="24" selection-start-line="16" selection-start-column="24" selection-end-line="16" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Attend/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="12" column="62" selection-start-line="12" selection-start-column="62" selection-end-line="12" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/sqlutils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
@@ -1279,13 +1261,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Company/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="34" column="72" lean-forward="true" selection-start-line="34" selection-start-column="72" selection-end-line="34" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Project/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2873">
@@ -1311,13 +1286,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Company/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10217">
-          <caret line="615" column="23" selection-start-line="615" selection-start-column="23" selection-end-line="615" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -1360,9 +1328,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3893">
           <caret line="236" column="16" selection-start-line="236" selection-start-column="16" selection-end-line="244" selection-end-column="79" />
-          <folding>
-            <element signature="e#120#135#0" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WeChat/labor_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="595">
+          <caret line="40" column="42" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WeChat/bank_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2210">
+          <caret line="134" column="8" selection-start-line="134" selection-start-column="8" selection-end-line="138" selection-end-column="63" />
         </state>
       </provider>
     </entry>
@@ -1376,10 +1355,51 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/WeChat/attend_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="10" column="35" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ReceivePush/push_attend.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="884">
+          <caret line="54" column="89" selection-start-line="54" selection-start-column="79" selection-end-line="54" selection-end-column="89" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3230">
+          <caret line="203" column="24" selection-start-line="203" selection-start-column="24" selection-end-line="203" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/APP/url_regist.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="28" column="30" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ReceivePush/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
@@ -1397,48 +1417,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ReceivePush/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/labor_view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="40" column="42" lean-forward="true" selection-start-line="40" selection-start-column="42" selection-end-line="40" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/bank_view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6">
-          <caret line="134" column="8" selection-start-line="134" selection-start-column="8" selection-end-line="138" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WeChat/attend_view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-561">
-          <caret line="10" column="35" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/WeChat/salary_view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="100" column="52" lean-forward="true" selection-start-line="100" selection-start-column="52" selection-end-line="100" selection-end-column="52" />
+        <state relative-caret-position="-220">
+          <caret line="43" column="28" lean-forward="true" selection-start-line="43" selection-start-column="28" selection-end-line="43" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/BaseView.py">
+    <entry file="file://$PROJECT_DIR$/ReceivePush/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="216" lean-forward="true" selection-start-line="216" selection-end-line="216" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="72">
+          <caret line="28" column="20" lean-forward="true" selection-start-line="28" selection-start-column="20" selection-end-line="28" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Company/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="385">
+          <caret line="34" column="70" lean-forward="true" selection-start-line="34" selection-start-column="70" selection-end-line="34" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Company/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="113">
+          <caret line="640" column="46" lean-forward="true" selection-start-line="640" selection-start-column="46" selection-end-line="640" selection-end-column="46" />
         </state>
       </provider>
     </entry>
