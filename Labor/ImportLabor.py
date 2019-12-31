@@ -94,7 +94,7 @@ class FileImportLabor(ImportFileBase):
         self.item['CreateTime'] = datetime.datetime.now()
         self.item['Identity'] = 0
         self.item['Badrecord'] = 1 if self.item.get('Badrecord', '') != '' else 0
-        self.item['isBadRecord'] = self.item['Badrecord']
+        # self.item['isBadRecord'] = self.item['Badrecord']
         self.item['Sex'] = 1 if self.item.get('Sex', '男') == '男' else 0
         self.item['IsPM'] = 1 if self.item.get('IsPM', '否') != '否' else 0
         self.item['isFeeStand'] = 1 if self.item.get('isFeeStand', '否') != '否' else 0

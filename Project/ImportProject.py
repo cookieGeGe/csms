@@ -20,13 +20,18 @@ class FileImportProject(ImportFileBase):
     def formatter_type(self):
         type_list = ['政府投资', '民营开发', '国企分包', '其他']
         guarantype_list = ['投标', '履约', '预付款', '农民工工资支付', '业主支付', '质量', '资本金', '房屋质量', '其他']
+        type_back = True
+        g_back = True
         if self.item.get('Type', '') in type_list:
             self.item['Type'] = type_list.index(self.item.get('Type'))
-            return False
+            type_back = False
         if self.item.get('GuaranType', '') in guarantype_list:
             self.item['GuaranType'] = guarantype_list.index(self.item.get('GuaranType'))
+            g_back = False
+        if type_back or g_back:
+            return True
+        else:
             return False
-        return True
 
     def formatter_area(self):
         for key in ('PID', 'CID', 'DID'):

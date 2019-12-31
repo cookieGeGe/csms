@@ -29,13 +29,14 @@ class ReceiveAttend(BaseView):
     def views(self):
         # 数据预处理
         args = self.args
-        if self.args_is_null('user_id', 'identityNo', 'departMentName', 'date_time', 'pass_type'):
+        print(args)
+        if self.args_is_null('user_id', 'IdentityNo', 'date_time', 'pass_type', 'device_pos'):
             return jsonify(self.push_error)
         query_sql = r"""
             select t1.id as laborid, t2.id as projectid from tb_laborinfo as t1
             left join tb_project as t2 on t1.ProjectID = t2.ID
             where t1.IDCard = '{}' and t2.Name='{}';
-        """.format(args.get('identityNo'), args.get('departMentName'))
+        """.format(args.get('IdentityNo'), args.get('device_pos'))
         result = self._db.query(query_sql)
         if not result:
             return jsonify(self.push_error)

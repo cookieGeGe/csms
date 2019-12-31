@@ -46,7 +46,7 @@ class AddUpdateBankInfo(BankInfoBase):
         else:
             # 编辑
             if result:
-                if result[0]['id'] != self.args.get('id'):
+                if result[0]['id'] != int(self.args.get('id')):
                     return jsonify(status_code.DATA_HAS_EXISTS)
             update_sql = r"""update tb_bank 
                             set name='{}', description='{}' 

@@ -526,6 +526,8 @@ class QueryLabor(LaborBase):
                     if (i == 'DepartureDate') and (item[i] < datetime.datetime.now()):
                         item['isDeparture'] = True
                     item[i] = item[i].strftime("%Y-%m-%d")
+            if item['Avatar'] is None:
+                item['Avatar'] = ''
             # item['BadRecord'] = loads(item['BadRecord'])
             # print(item['BadRecord'])
             labors.append(deepcopy(item))

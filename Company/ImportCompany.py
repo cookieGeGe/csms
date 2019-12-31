@@ -66,12 +66,12 @@ class FileImportCompany(ImportFileBase):
                 return True
             self.formatter_area()
             if self.item.get('HasBadRecord', '') != '':
-                badrecord_list = ['正常', '风险', '黑名单']
+                badrecord_list = ['', '正常', '风险', '黑名单']
                 self.item['HasBadRecord'] = badrecord_list.index(self.item.get('HasBadRecord', '正常'))
                 if self.item['HasBadRecord'] == -1:
-                    self.item['HasBadRecord'] = 0
+                    self.item['HasBadRecord'] = 1
             else:
-                self.item['HasBadRecord'] = 0
+                self.item['HasBadRecord'] = 1
             self.item['BadRecord'] = self.item['HasBadRecord']
             self.formatter_connection()
             return False
