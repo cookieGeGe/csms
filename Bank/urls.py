@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from Bank.views import CreateBank, QueryBank, QueryOneBank, AddBankReceipt
+from Bank.views import CreateBank, QueryBank, QueryOneBank, AddBankReceipt, DeleteBankOneInfo
 
 bank = Blueprint('bank', __name__)
 
@@ -12,3 +12,4 @@ bank.add_url_rule('/query', methods=['GET', ], view_func=QueryBank.as_view('quer
 bank.add_url_rule('/info', methods=['GET', ], view_func=QueryOneBank.as_view('info_bank'))
 # 添加银行回单
 bank.add_url_rule('/receipt', methods=['post', ], view_func=AddBankReceipt.as_view('add_bank_receipt'))
+bank.add_url_rule('/delete', methods=['delete', ], view_func=DeleteBankOneInfo.as_view('del_bank_one_info'))

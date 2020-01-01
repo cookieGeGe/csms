@@ -100,6 +100,8 @@ class WechatLaborQuery(WechatLaborBase):
         for item in result:
             if item['createtime'] is not None and item['createtime'] != '':
                 item['createtime'] = self.time_to_str(item['createtime'])
+            if item['avatar'] is None:
+                item['avatar'] = ''
         self.success['labor'] = result
         # total = total[0]['total_row']
         self.success['totals'] = self.get_total_rate(total[0]['total_row'], alarm[0]['total_row'])

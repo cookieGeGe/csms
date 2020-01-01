@@ -139,7 +139,7 @@ class QueryBank(BankBase):
             year, month, args['ID']
         )
         temp_result = self._db.query(query_sql)
-        if args['TotalMonth'] ==0:
+        if args['TotalMonth'] == 0:
             args['MonthPay'] = 0
         else:
             args['MonthPay'] = eval(args['Price']) * eval(args['WagePercent']) / 100 / args['TotalMonth']
@@ -272,3 +272,22 @@ class AddBankReceipt(BankBase):
         )
         self._db.update(update_sql)
         return jsonify(self.success)
+
+
+class DeleteBankOneInfo(BankBase):
+
+    def __init__(self):
+        super(DeleteBankOneInfo, self).__init__()
+
+    def views(self):
+        if self.args_is_null('id'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        print(self.args)
+        delete_sql = r"""
+            delete from alarm where id={}
+        """.format(self.args.get('id'))
+        try:
+            self._db.delete(delete_sql)
+            return jsonify(self.success)
+        except:
+            return jsonify(status_code.DB_ERROR)

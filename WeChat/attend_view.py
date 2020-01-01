@@ -155,6 +155,12 @@ class QueryAttend(AttendBase):
                     self.args.get('name')))
         if self.args.get('days', '') != '' and int(self.args.get('days', 0)) != 0:
             where_sql_list.append(r""" t4.Count > {} """.format(int(self.args.get('days'))))
+        if int(self.args.get('pid', '0')) != 0:
+            where_sql_list.append(r""" t1.pid={} """.format(self.args.get('pid')))
+        if int(self.args.get('cid', '0')) != 0:
+            where_sql_list.append(r""" t1.cid={} """.format(self.args.get('cid')))
+        if int(self.args.get('did', '0')) != 0:
+            where_sql_list.append(r""" t1.did={} """.format(self.args.get('did')))
         if self.args.get('month', '') != '':
             query_time = datetime.datetime.strptime(self.args.get('month'), "%Y-%m")
             where_sql_list.append(r""" t4.year = {} and t4.month = {}""".format(query_time.year, query_time.month))
