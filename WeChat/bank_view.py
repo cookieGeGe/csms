@@ -75,10 +75,12 @@ class WechatBankQuery(WechatBankBase):
     def project_wage_info(self):
         query_sql = r"""
                     select t1.id, t1.name, t3.name as bank, t1.starttime, t1.endtime, t1.WagePercent, t1.TotalMonth, t1.account,t1.price, sum(t2.ActualPay+0) as totalpay from tb_project as t1
-                    right join tb_wage as t2 on t2.ProjectID = t1.id
+                    left join tb_wage as t2 on t2.ProjectID = t1.id
                     left join tb_bank as t3 on t1.Bank = t3.id where t1.id = {} group by id
                 """.format(self.args.get('id'))
         result = self._db.query(query_sql)
+        if not result:
+            return self.success
         result = result[0]
         query_bank_info = r"""
             select t1.*, t2.workers from tb_wage as t1
@@ -114,7 +116,7 @@ class WechatBankQuery(WechatBankBase):
     def main_query(self):
         query_sql = r"""
             select SQL_CALC_FOUND_ROWS t1.id, t1.name, t3.name as bank, t1.starttime, t1.WagePercent, t1.TotalMonth, t1.account,t1.price, sum(t2.ActualPay+0) as totalpay from tb_project as t1
-            right join tb_wage as t2 on t2.ProjectID = t1.id
+            left join tb_wage as t2 on t2.ProjectID = t1.id
             left join tb_bank as t3 on t1.Bank = t3.id
         """
         where_sql_list = []
