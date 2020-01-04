@@ -4,6 +4,7 @@ from copy import deepcopy
 
 from flask import request, jsonify
 
+from Project.twoMonthPro import getTwoMonth
 from utils import status_code
 from utils.BaseView import BaseView
 
@@ -195,13 +196,14 @@ left join (select id,ProjectID from tb_progress where year={} and month ={}  gro
         return jsonify(success)
 
 
-class MessageTotal(IndexBase):
+class MessageTotal(IndexBase, getTwoMonth):
     """
     消息统计
     """
 
     def __init__(self):
         super(MessageTotal, self).__init__()
+        super(getTwoMonth, self).__init__()
         self.company_ids = []
         self.project_ids = []
 
@@ -296,6 +298,7 @@ left join (select id,ProjectID from tb_progress where year={} and month ={}  gro
         success['project_list'], pro_total = self.get_project()
         success['labor_list'], labor_total = self.get_labor()
         success['number_list'] = [com_total, pro_total, labor_total]
+        success['not_write_progress'] = len(self.get_uninput_project_ids(self.project_ids))
         return jsonify(success)
 
 
@@ -378,7 +381,8 @@ class IndexNumberPic(IndexBase):
             'name': '正常劳工',
             'value': self._db.query(query_no_bad_sql + self.create_where_sql(self.labor_where(0)))[0]['total']
         }
-        return [bad_data, data], self._db.query(total + self.create_where_sql(self.labor_where(2)))[0]['total'], bad_data['value']
+        return [bad_data, data], self._db.query(total + self.create_where_sql(self.labor_where(2)))[0]['total'], \
+               bad_data['value']
 
     def get_pie_company(self):
         total = r"""select count(id) as total from tb_company"""
@@ -392,7 +396,8 @@ class IndexNumberPic(IndexBase):
             'name': '正常企业',
             'value': self._db.query(query_no_bad_sql + self.create_where_sql(self.company_where(0)))[0]['total']
         }
-        return [bad_data, data], self._db.query(total + self.create_where_sql(self.company_where(2)))[0]['total'], bad_data['value']
+        return [bad_data, data], self._db.query(total + self.create_where_sql(self.company_where(2)))[0]['total'], \
+               bad_data['value']
 
     def get_pie_project(self):
         total = r"""select count(id) as total from tb_project """
@@ -406,7 +411,8 @@ class IndexNumberPic(IndexBase):
             'name': '正常项目',
             'value': self._db.query(query_no_bad_sql + self.create_where_sql(self.project_where(0)))[0]['total']
         }
-        return [bad_data, data], self._db.query(total + self.create_where_sql(self.project_where(2)))[0]['total'], bad_data['value']
+        return [bad_data, data], self._db.query(total + self.create_where_sql(self.project_where(2)))[0]['total'], \
+               bad_data['value']
 
     def views(self):
         pie_labor, total_labor, bad_labor = self.get_pie_labor()

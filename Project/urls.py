@@ -2,7 +2,8 @@ from flask import Blueprint
 
 from Project.views import CreateProject, UpdateProject, DeleteProject, QueryProject, ProgressProject, \
     ADDProgressProject, CreateProPicGroup, GetComAndPer, GetProgressGicList, UploadProjectIMG, ProjectMainQuery, \
-    ALLProjectID, GetProjectCompany, UpdateProgressProject, GetAllProjectConnect, GetAddProgressPicList, GetALLProjectID
+    ALLProjectID, GetProjectCompany, UpdateProgressProject, GetAllProjectConnect, GetAddProgressPicList, \
+    GetALLProjectID, unInputProgressQuery
 
 project = Blueprint('project', __name__)
 
@@ -47,3 +48,6 @@ project.add_url_rule(
 )
 
 project.add_url_rule('/search/all', methods=['get'], view_func=GetALLProjectID.as_view('all_project_id'))
+
+# 获取未填写项目进度的项目
+project.add_url_rule('/unprogress', methods=['get'], view_func=unInputProgressQuery.as_view('unInputProgressQuery'))

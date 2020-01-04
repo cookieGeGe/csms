@@ -7,6 +7,7 @@ from flask import request, jsonify, sessions
 
 from Company.utils import update_pic_and_group, update_progress_pic
 from Company.views import CreatePicGroup, AllCompanyID
+from Project.twoMonthPro import getTwoMonth
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -915,7 +916,8 @@ class ProjectMainQuery(BaseView):
         if args.get('ProjectName', '') != '':
             where_sql_list.append(r""" CONCAT(IFNULL(t1.Name,'')) LIKE '%{}%' """.format(args.get('ProjectName')))
         if args.get('CompanyName', '') != '':
-            where_sql_list.append(r""" CONCAT(IFNULL(t2.Name,''),IFNULL(t7.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
+            where_sql_list.append(
+                r""" CONCAT(IFNULL(t2.Name,''),IFNULL(t7.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
         if int(args.get('DID', 0)) != 0:
             where_sql_list.append(r""" t1.DID={} """.format(int(args.get('DID'))))
         if int(args.get('CID', 0)) != 0:
@@ -1163,3 +1165,75 @@ class GetALLProjectID(BaseView):
         result = self._db.query(query_sql)
         self.success['data'] = result
         return jsonify(self.success)
+
+
+class unInputProgressQuery(BaseView, getTwoMonth):
+    """
+    项目没有填写项目进度查询
+    """
+
+    def __init__(self):
+        super(unInputProgressQuery, self).__init__()
+        super(getTwoMonth, self).__init__()
+        self.api_permission = 'project_show'
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        self.ids = self.get_project_ids()
+        return self.views()
+
+    def views(self):
+        args = self.args
+        query_sql_base = r"""select SQL_CALC_FOUND_ROWS t1.*,t1.Issue as oldissue, t2.Name as ConsName,t7.Name as BuildName, t4.Status as WStatus, t6.rapy as Issue from tb_project as t1
+            left join tb_company as t2 on t2.id = t1.cons
+            left join tb_company as t7 on t7.id = t1.build
+            left join (select sum(t5.rpay) as rapy,t5.ProjectID from tb_wage as t5 GROUP BY ProjectID) as t6 on t6.ProjectID = t1.id 
+            {left} join (select id,projectID,Status from tb_wage {WStatus} group by projectID) as t4 on t4.ProjectID = t1.id  
+            """
+        wstatus = {}
+        if int(args.get('WStatus', 3)) != 3:
+            wstatus['left'] = 'right'
+            wstatus['WStatus'] = ' where status={} '.format(args.get('WStatus'))
+        else:
+            wstatus['left'] = 'left'
+            wstatus['WStatus'] = ''
+        where_sql_list = []
+        if self.ids != None:
+            if self.ids == []:
+                self.ids = [0, ]
+            where_sql_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
+        uninput_progress_list = self.get_uninput_project_ids(self.ids)
+        if uninput_progress_list:
+            where_sql_list.append(r""" t1.id in ({}) """.format(
+                ','.join(uninput_progress_list)
+            ))
+        temp = ''
+        if where_sql_list:
+            temp = ' where '
+            for index, i in enumerate(where_sql_list):
+                temp += i
+                if index < len(where_sql_list) - 1:
+                    temp += 'and'
+        page = int(args.get('Page', 1))
+        psize = int(args.get('PageSize', 10))
+        limit_sql = r""" limit {},{};""".format((page - 1) * psize, psize)
+        query_sql = query_sql_base + " " + temp + limit_sql
+        result = self._db.query(query_sql.format(**wstatus))
+        total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
+        projects = []
+        if result:
+            for item in result:
+                item['EndTime'] = item['EndTime'].strftime("%Y-%m-%d")
+                item['StartTime'] = item['StartTime'].strftime("%Y-%m-%d")
+                query_sql = r"""select count(id) as persons from tb_laborinfo where ProjectID = {}""".format(item['ID'])
+                persons = self._db.query(query_sql)[0]
+                item['Persons'] = persons['persons']
+                if item['Issue'] is None:
+                    item['Issue'] = 0
+                projects.append(item)
+        success = deepcopy(status_code.SUCCESS)
+        success['project'] = projects
+        success['total'] = total[0]['total_row']
+        return jsonify(success)

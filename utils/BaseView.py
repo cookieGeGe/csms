@@ -156,7 +156,7 @@ class BaseView(View, metaclass=ABCMeta):
             self._uid = session['id']
             self._permissions = session['Permission']
             self.pertype = session['pertype']
-            if session['AdminType'] == '1':
+            if str(session['AdminType']) == '1':
                 self.area_ids = session['area_ids']
             return self.deal_request(session['AdminType'])
         else:

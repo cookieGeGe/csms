@@ -284,7 +284,7 @@ class DeleteBankOneInfo(BankBase):
             return jsonify(status_code.CONTENT_IS_NULL)
         print(self.args)
         delete_sql = r"""
-            delete from alarm where id={}
+            delete from tb_wage where id={}
         """.format(self.args.get('id'))
         try:
             self._db.delete(delete_sql)
