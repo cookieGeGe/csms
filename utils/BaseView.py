@@ -30,7 +30,7 @@ class BaseView(View, metaclass=ABCMeta):
         self.success = deepcopy(status_code.SUCCESS)
 
         self.get_total_row = """SELECT FOUND_ROWS() as total_row;"""
-        self.whitelist = ['/template/export', '/push/attend']
+        self.whitelist = ['/template/export', '/push/attend', '/wechat/pdf']
         # self.get_args()
 
     def get_args(self):

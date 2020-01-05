@@ -15,6 +15,7 @@ from . import bank_view
 from . import guarantee_view
 from . import question_view
 from . import public_view
+from . import BackPDF
 
 from flask import Blueprint
 
@@ -62,3 +63,5 @@ wechat.add_url_rule('/query/question', methods=['get'],
 # 公共部分
 wechat.add_url_rule('/query/pics', methods=['get'],
                     view_func=public_view.wechatPics.as_view('wechat_pics'))
+
+wechat.add_url_rule('/pdf', methods=['get'], view_func=BackPDF.BackHelpPdf.as_view('tempback'))
