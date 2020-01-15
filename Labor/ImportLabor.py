@@ -46,7 +46,7 @@ class FileImportLabor(ImportFileBase):
     def formatter_classID(self):
         if self.item.get('IsLeader', '是') == '是':
             insert_sql = r"""insert into tb_class(projectid, classname, companyid) value ({},'{}',{});""".format(
-                self.item.get('ProjectID'), self.item.get('ClassID', self.item.get('CompanyID')))
+                self.item.get('ProjectID'), self.item.get('ClassID'), self.item.get('CompanyID'))
             id = self.db.insert(insert_sql)
             self.item['IsLeader'] = 1
             self.item['ClassID'] = id
