@@ -30,7 +30,7 @@ class ReceiveAttend(BaseView):
         # 数据预处理
         args = self.args
         print(args)
-        if self.args_is_null('user_id', 'IdentityNo', 'date_time', 'pass_type', 'device_pos'):
+        if self.args_is_null('user_id', 'IdentityNo', 'date_time', 'pass_type', 'device_pos', 'area_no'):
             return jsonify(self.push_error)
         query_sql = r"""
             select t1.id as laborid, t2.id as projectid from tb_laborinfo as t1
