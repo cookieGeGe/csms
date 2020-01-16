@@ -48,11 +48,11 @@ class PushAttend:
     def insert_or_update(self, is_insert, in_out, pos):
         if is_insert:
             insert_sql = r"""insert into tb_attendance(laborid, projectid, year, month, day, {0}, {1})
-                value ({laborid}, {projectid}, {year},{month},{day}, '{date_time}','{area_no}');
+                value ({laborid}, {projectid}, {year},{month},{day}, '{date_time}','{device_no}');
                 """.format(in_out, pos, **self.args)
             self.db.insert(insert_sql)
         else:
-            update_sql = r"""update tb_attendance set {0}='{date_time}', {1}='{area_no}'
+            update_sql = r"""update tb_attendance set {0}='{date_time}', {1}='{device_no}'
                 where laborid='{laborid}' and projectid='{projectid}' and year='{year}' and month='{month}' and day='{day}';
              """.format(in_out, pos, **self.args)
             self.db.update(update_sql)

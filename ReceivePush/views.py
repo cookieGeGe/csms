@@ -29,8 +29,10 @@ class ReceiveAttend(BaseView):
     def views(self):
         # 数据预处理
         args = self.args
+        if 'pic1' in self.args.keys():
+            del args['pic1']
         print(args)
-        if self.args_is_null('user_id', 'IdentityNo', 'date_time', 'pass_type', 'device_pos', 'area_no'):
+        if self.args_is_null('user_id', 'IdentityNo', 'date_time', 'pass_type', 'device_pos', 'device_no'):
             return jsonify(self.push_error)
         query_sql = r"""
             select t1.id as laborid, t2.id as projectid from tb_laborinfo as t1
@@ -42,4 +44,5 @@ class ReceiveAttend(BaseView):
             return jsonify(self.push_error)
         args.update(result[0])
         deal_push_attend.delay(args)
+        print('success!')
         return jsonify({'code': 10001, 'messages': 'SUCCESS'})
