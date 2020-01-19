@@ -131,6 +131,8 @@ class QueryAttend(AttendBase):
                 if item['DepartureDate'] < datetime.datetime.now():
                     item['isDeparture'] = True
                     continue
+            if item['Avatar'] is None:
+                item['Avatar'] = ''
             item['isDeparture'] = False
         total = self._db.query("""SELECT FOUND_ROWS() as total_row;""")
         success = deepcopy(status_code.SUCCESS)
