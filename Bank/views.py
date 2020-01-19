@@ -1,11 +1,15 @@
 import datetime
 import os
+import random
+import time
 
 from copy import deepcopy
 
 from flask import request, jsonify, session
 
-from APP.settings import static_dir
+from APP.settings import static_dir, BASE_DIR
+from ReadXlsx.baseModel import BankModel
+from ReadXlsx.parseCSVBase import analyseFile
 from User.util import save_image
 from utils import status_code
 from utils.BaseView import BaseView
@@ -257,20 +261,45 @@ class AddBankReceipt(BankBase):
     def __init__(self):
         super(AddBankReceipt, self).__init__()
 
+    def save_excel_file(self, image_file, base='static/media/ava'):
+        img_name = image_file.filename
+        ticket = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890'
+        temp = ''
+        for i in range(10):
+            temp += random.choice(ticket)
+        new_base = os.path.join(*base.split(r'/'))
+        new_name = str(int(time.time())) + '_' + temp + '.' + img_name.split('.')[-1]
+        save_name = os.path.join(new_base, new_name)
+        url = os.path.join(BASE_DIR, save_name)
+        image_file.save(url)
+        img_url = '/' + base + '/' + new_name
+        return img_url, url
+
+    def save_file(self, files):
+        img_dir = os.path.join(static_dir, 'media', 'bankreceipt')
+        if not os.path.exists(img_dir):
+            os.makedirs(img_dir)
+        img_url, sys_file_path = self.save_excel_file(files[0], 'static/media/bankreceipt')
+        update_sql = r"""update tb_wage set receipt='{}', rectime='{}' where id={};""".format(
+            img_url, datetime.datetime.now(), self.args.get('ID')
+        )
+        self._db.update(update_sql)
+
+    def check_file_data(self, url, db, args):
+        bank_model_obj = BankModel(db, args)
+        parse_obj = analyseFile(url, bank_model_obj)
+        parse_obj.check_file_type(url)
+        parse_obj.get_none_data()
+        parse_obj.model_check_data()
+
     def views(self):
         if self.args_is_null('ID'):
             return jsonify(status_code.CONTENT_IS_NULL)
         files = request.files.getlist('file')
         if not files:
             return jsonify(status_code.FILE_NOT_EXISTS)
-        img_dir = os.path.join(static_dir, 'media', 'bankreceipt')
-        if not os.path.exists(img_dir):
-            os.makedirs(img_dir)
-        img_url = save_image(files[0], 'static/media/bankreceipt')
-        update_sql = r"""update tb_wage set receipt='{}', rectime='{}' where id={};""".format(
-            img_url, datetime.datetime.now(), self.args.get('ID')
-        )
-        self._db.update(update_sql)
+        # 保存文件
+        self.save_file(files)
         return jsonify(self.success)
 
 
