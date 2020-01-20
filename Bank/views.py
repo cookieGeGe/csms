@@ -289,9 +289,9 @@ class AddBankReceipt(BankBase):
     def check_file_data(self, url, db, args):
         bank_model_obj = BankModel(db, args)
         parse_obj = analyseFile(url, bank_model_obj)
-        parse_obj.check_file_type(url)
-        parse_obj.get_none_data()
-        parse_obj.model_check_data()
+        if not parse_obj.check_file_type(url):
+            parse_obj.get_none_data()
+            parse_obj.model_check_data()
 
     def views(self):
         if self.args_is_null('ID'):
@@ -301,6 +301,7 @@ class AddBankReceipt(BankBase):
             return jsonify(status_code.FILE_NOT_EXISTS)
         # 保存文件
         sysurl = self.save_file(files)
+
         # 检查文件内容
         self.check_file_data(sysurl, self._db, self.args.get('ID'))
         return jsonify(self.success)
