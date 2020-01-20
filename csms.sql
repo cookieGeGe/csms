@@ -3892,4 +3892,9 @@ ADD COLUMN `recTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '银�
 ALTER TABLE `csms`.`tb_area`
 ADD COLUMN `Code` varchar(255) NULL COMMENT '区域代码' AFTER `HasChild`;
 
+
+-- 2020-1-20 添加自贡银行回单
+ALTER TABLE `csms_zigong`.`tb_salary`
+ADD COLUMN `realtotal` varchar(255) NULL DEFAULT '' COMMENT '银行回单金额' AFTER `month`;
+
 SET FOREIGN_KEY_CHECKS = 1;

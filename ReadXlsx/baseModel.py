@@ -24,7 +24,7 @@ class BaseXlsxModel(metaclass=ABCMeta):
     def check_columns_func(self, check_func):
         self.parsefile.not_has_none_datas = self.parsefile.not_has_none_datas[
             self.parsefile.not_has_none_datas.apply(check_func, axis=1)]
-        print(self.parsefile.not_has_none_datas)
+        # print(self.parsefile.not_has_none_datas)
 
     def check_field(self, parsefile: object):
         """
@@ -41,18 +41,18 @@ class BaseXlsxModel(metaclass=ABCMeta):
 class BankModel(BaseXlsxModel):
     columns_map = {
         "name": "姓名",
-        "number": "身份证号码",
-        "type": "工资",
+        "number": "身份证",
+        "type": "金额",
     }
 
     def __init__(self, db, wage_id):
-        super(BaseXlsxModel, self).__init__()
+        super(BankModel, self).__init__()
         self.db = db
         self.wage_id = wage_id
 
     def set_check_columns_map(self) -> dict:
         return {
-            "工资": self.check_wage,
+            "金额": self.check_wage,
         }
 
     def formatter_wage(self, value):
@@ -68,12 +68,12 @@ class BankModel(BaseXlsxModel):
             select t2.id,t2.total from tb_wage as t1
             left join tb_salary as t2 on t1.year=t2.year and t1.month = t2.month
             left join tb_laborinfo as t3 on t1.projectid = t3.ProjectID
-            where t1.id = {} and t3.IDCard = {}
-        """.format(self.wage_id, item['身份证号码'])
+            where t1.id = {} and t3.IDCard = '{}'
+        """.format(self.wage_id, item['身份证'])
         result = self.db.query(query_sql)
         if result:
-            if self.formatter_wage(result[0]['totel']) == self.formatter_wage(item['工资']):
-                update_sql = """
-                    update tb_salary set realtotal='{}' where id='{}';
-                """.format(item['工资'])
-                self.db.update(update_sql)
+            update_sql = """
+                update tb_salary set realtotal='{}' where id='{}';
+            """.format(item['金额'], result[-1]['id'])
+            self.db.update(update_sql)
+        return True

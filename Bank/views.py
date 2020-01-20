@@ -284,6 +284,7 @@ class AddBankReceipt(BankBase):
             img_url, datetime.datetime.now(), self.args.get('ID')
         )
         self._db.update(update_sql)
+        return sys_file_path
 
     def check_file_data(self, url, db, args):
         bank_model_obj = BankModel(db, args)
@@ -299,7 +300,9 @@ class AddBankReceipt(BankBase):
         if not files:
             return jsonify(status_code.FILE_NOT_EXISTS)
         # 保存文件
-        self.save_file(files)
+        sysurl = self.save_file(files)
+        # 检查文件内容
+        self.check_file_data(sysurl, self._db, self.args.get('ID'))
         return jsonify(self.success)
 
 

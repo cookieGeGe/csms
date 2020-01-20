@@ -24,7 +24,7 @@ DATABASE = {
     # 数据库驱动
     'DRIVER': 'pymysql',
     # 使用的数据库
-    'NAME': 'csms',
+    'NAME': 'csms_zigong',
 }
 
 SQLALCHEMY_DATABASE_URI = get_db_uri(DATABASE)
