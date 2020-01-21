@@ -283,6 +283,8 @@ class ExportProgressWord(ExportDocxBase):
         persons = loads(persons)
         person_list = []
         for person in persons:
+            if person.get('id', None) is None:
+                continue
             query_sql = r"""
             select t1.name, t1.phone, t1.EntryDate as time, t2.ClassName as class from tb_laborinfo as t1
             left join tb_class as t2 on t1.ClassID = t2.id

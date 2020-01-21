@@ -115,8 +115,8 @@ def get_all_files(path):
 
 
 # if __name__ == '__main__':
-#     path = r'C:\Users\zhang\Desktop\csms-1009\pics'
-#     # path = r'/home/app/csms/static/media'
+#     # path = r'C:\Users\zhang\Desktop\csms-1009\pics'
+#     path = r'/home/app/csms/static/media'
 #     img_list = get_all_files(path)
 #     for img in img_list:
 #         try:
