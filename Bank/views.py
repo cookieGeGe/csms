@@ -289,7 +289,7 @@ class AddBankReceipt(BankBase):
     def check_file_data(self, url, db, args):
         bank_model_obj = BankModel(db, args)
         parse_obj = analyseFile(url, bank_model_obj)
-        if not parse_obj.check_file_type(url):
+        if parse_obj.check_file_type(url):
             parse_obj.get_none_data()
             parse_obj.model_check_data()
 

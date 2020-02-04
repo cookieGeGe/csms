@@ -30,7 +30,7 @@ class analyseFile:
     def check_file_type(file_path: str) -> bool:
         """
         检查文件类型
-        :return:
+        :return:如果格式正确则返回True
         """
         if file_path.split('.')[1].lower() not in ['xls', 'xlsx']:
             return False
