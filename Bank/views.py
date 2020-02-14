@@ -292,6 +292,8 @@ class AddBankReceipt(BankBase):
         if parse_obj.check_file_type(url):
             parse_obj.get_none_data()
             parse_obj.model_check_data()
+        error_data = parse_obj.error_data['姓名'].to_list()
+        return error_data
 
     def views(self):
         if self.args_is_null('ID'):
@@ -303,7 +305,10 @@ class AddBankReceipt(BankBase):
         sysurl = self.save_file(files)
 
         # 检查文件内容
-        self.check_file_data(sysurl, self._db, self.args.get('ID'))
+        data = self.check_file_data(sysurl, self._db, self.args.get('ID'))
+        self.success['error'] = ''
+        if data:
+            self.success['error'] = ','.join(data)
         return jsonify(self.success)
 
 
@@ -312,13 +317,28 @@ class DeleteBankOneInfo(BankBase):
     def __init__(self):
         super(DeleteBankOneInfo, self).__init__()
 
+    def check_file_data(self, url, db, args):
+        bank_model_obj = BankModel(db, args, 'del')
+        parse_obj = analyseFile(url, bank_model_obj)
+        if parse_obj.check_file_type(url):
+            parse_obj.get_none_data()
+            parse_obj.model_check_data()
+
     def views(self):
         if self.args_is_null('id'):
             return jsonify(status_code.CONTENT_IS_NULL)
-        print(self.args)
+        temp_id = self.args.get('id')
+        query_sql = r"""
+            select receipt from tb_wage where id={};
+        """.format(temp_id)
+        result = self._db.query(query_sql)
+        if not result:
+            return jsonify(status_code.OTHER_ERROR)
+        file_path = os.path.join(BASE_DIR, *result[0]['receipt'][1:].split('/'))
+        self.check_file_data(file_path, self._db, temp_id)
         delete_sql = r"""
             delete from tb_wage where id={}
-        """.format(self.args.get('id'))
+        """.format(temp_id)
         try:
             self._db.delete(delete_sql)
             return jsonify(self.success)

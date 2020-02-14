@@ -25,6 +25,8 @@ class BaseXlsxModel(metaclass=ABCMeta):
         self.parsefile.not_has_none_datas = self.parsefile.not_has_none_datas[
             self.parsefile.not_has_none_datas.apply(check_func, axis=1)]
         # print(self.parsefile.not_has_none_datas)
+        # print('-' * 50)
+        # print(self.parsefile.error_data)
 
     def check_field(self, parsefile: object):
         """
@@ -45,10 +47,11 @@ class BankModel(BaseXlsxModel):
         "type": "金额",
     }
 
-    def __init__(self, db, wage_id):
+    def __init__(self, db, wage_id, method='add'):
         super(BankModel, self).__init__()
         self.db = db
         self.wage_id = wage_id
+        self.method = method
 
     def set_check_columns_map(self) -> dict:
         return {
@@ -66,14 +69,19 @@ class BankModel(BaseXlsxModel):
         # return True if item['电话'] % 2 == 1 else False
         query_sql = r"""
             select t2.id,t2.total from tb_wage as t1
-            left join tb_salary as t2 on t1.year=t2.year and t1.month = t2.month
-            left join tb_laborinfo as t3 on t1.projectid = t3.ProjectID
+            right join tb_salary as t2 on (t1.year=t2.year and t1.month = t2.month)
+            left join tb_laborinfo as t3 on t2.laborid = t3.id
             where t1.id = {} and t3.IDCard = '{}'
         """.format(self.wage_id, item['身份证'])
         result = self.db.query(query_sql)
         if result:
+            realtotal = item['金额']
+            if self.method != 'add':
+                realtotal = ''
             update_sql = """
                 update tb_salary set realtotal='{}' where id='{}';
-            """.format(item['金额'], result[-1]['id'])
+            """.format(realtotal, result[-1]['id'])
             self.db.update(update_sql)
-        return True
+            return True
+        else:
+            return False
