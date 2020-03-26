@@ -52,7 +52,7 @@ class FileImportLabor(ImportFileBase):
             self.item['ClassID'] = id
             return False
         else:
-            query_sql = r"""select id from tb_class where projectid={} and companyid={} and classname='{}';""".format(
+            query_sql = r"""select id from tb_class where projectid='{}' and companyid='{}' and classname='{}';""".format(
                 self.item.get('ProjectID'),
                 self.item.get('CompanyID'),
                 self.item.get('ClassID'))

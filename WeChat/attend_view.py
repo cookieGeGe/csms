@@ -43,7 +43,7 @@ class QueryAttend(AttendBase):
 
     def query_company(self):
         query_sql = r"""
-            select t1.*, t2.name,t3.total from (
+            select SQL_CALC_FOUND_ROWS t1.*, t2.name,t3.total from (
                 select t2.companyid,t2.companyid as id,t1.year,t1.month,t1.day,count(t1.id) as punch from tb_attendance as t1
                 left join tb_laborinfo as t2 on t1.laborid = t2.id
                 where t1.amin != '' or t1.amout!= '' or t1.pmin != '' or t1.pmout != '' GROUP BY companyid,year,month,day order by year desc,month desc, day desc
@@ -98,7 +98,7 @@ class QueryAttend(AttendBase):
 
     def query_project(self):
         query_sql = r"""
-            select t1.*, t2.name,t3.total from (select projectid,projectid as id,year,month,day,count(id) as punch from tb_attendance where amin != '' or amout!= '' or pmin != '' or pmout != '' GROUP BY projectid,year,month,day order by year desc,month desc, day desc) as t1
+            select SQL_CALC_FOUND_ROWS t1.*, t2.name,t3.total from (select projectid,projectid as id,year,month,day,count(id) as punch from tb_attendance where amin != '' or amout!= '' or pmin != '' or pmout != '' GROUP BY projectid,year,month,day order by year desc,month desc, day desc) as t1
             left join tb_project as t2 on t1.projectid = t2.id
             left join (select projectid,count(id) as total from tb_laborinfo group by projectid) as t3 on t1.projectid = t3.projectid
         """

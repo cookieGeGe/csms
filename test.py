@@ -1,3 +1,6 @@
+from utils.sqlutils import OPMysql
+
+
 def dict_deal(dict_data):
     temp = {}
     for key, value in dict_data.items():
@@ -23,19 +26,19 @@ def deal_list(data_list):
     return temp
 
 
+def main():
+    db = OPMysql()
+    query_sql = db.query("""
+    select b.id as id from tb_attendance as b group by b.year,b.month,b.day,b.laborid having count(laborid)>0
+    """)
+    ids_list = [str(item['id']) for item in query_sql]
+    print(len(ids_list), ids_list)
+
+    delete_sql = """
+    select id from tb_attendance where projectid = 116 and id not in ({})
+    """.format(','.join(ids_list))
+    print(delete_sql)
+
+
 if __name__ == '__main__':
-    dict_data = {
-        'A': 'a',
-        'B': ['a', {
-            'C': 12
-        }],
-        'D': {
-            "E": 'e',
-            "F": [1, 2,{
-                "G":123
-            }]
-        }
-    }
-    list_data = [dict_data] * 3
-    print(dict_deal(dict_data))
-    print(deal_list(list_data))
+    main()

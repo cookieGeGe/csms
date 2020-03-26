@@ -55,6 +55,13 @@ class ImportAttend(AttendBase):
                     laborinfo = self.get_labor_id(item['idcard'])
                     # laborinfo = {'id': 1, 'projectid': 2}
                     if laborinfo is not None:
+                        check_exsits_sql = f"""
+                                                select id from tb_attendance where laborid={laborinfo['id']} and projectid={laborinfo['projectid']}
+                                                and year={item['atime'].year} and month = {item['atime'].month} and day={item['atime'].day};
+                                            """
+                        is_exists = self._db.query(check_exsits_sql)
+                        if len(is_exists):
+                            continue
                         insert_sql = r"""insert into tb_attendance(laborid, projectid, amin,amout,pmin,pmout, year,month,day) value 
                                         ({},{},'{}','{}','{}','{}','{}','{}','{}');""".format(laborinfo['id'],
                                                                                               laborinfo['projectid'],
