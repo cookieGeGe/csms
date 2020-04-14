@@ -32,8 +32,10 @@ class ImportAttend(AttendBase):
     def __init__(self):
         super(ImportAttend, self).__init__()
 
-    def get_labor_id(self, idcard):
-        query_sql = r"""select id,projectid from tb_laborinfo where idcard={}""".format(idcard)
+    def get_labor_id(self, labor):
+        query_sql = r"""select t1.id,t1.projectid from tb_laborinfo as t1
+                    left join tb_project as t2 on t1.projectid=t2.id
+                    where idcard='{}' and t2.name = '{}'""".format(labor['idcard'], labor['project'])
         result = self._db.query(query_sql)
         temp = None
         if result:
@@ -52,7 +54,7 @@ class ImportAttend(AttendBase):
                 excel = Data_Excel(f, TempColnames.ATTEND)
                 excel_data = excel.excel_data()
                 for item in excel_data:
-                    laborinfo = self.get_labor_id(item['idcard'])
+                    laborinfo = self.get_labor_id(item)
                     # laborinfo = {'id': 1, 'projectid': 2}
                     if laborinfo is not None:
                         check_exsits_sql = f"""
@@ -79,6 +81,7 @@ class ImportAttend(AttendBase):
             success['error'] = error_info
             return jsonify(success)
         except Exception as e:
+            raise e
             success = {
                 'code': 50019,
                 'msg': '导入考勤失败！'
@@ -96,9 +99,18 @@ class QueryAttend(AttendBase):
         self.ids = self.set_ids(query_sql)
         return self.views()
 
+    def check_queryType(self, info):
+        if str(info['ispm']) == "1":
+            return "管理员"
+        else:
+            if str(info['isleader']) == '1':
+                return "班组长"
+            else:
+                return "普通员工"
+
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.JobType,t1.IDCard,t1.Avatar,t1.ProjectID,t2.Name as CompanyName,t3.Name as ProjectName,
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.ID,t1.Name,t1.JobType,t1.IDCard,t1.Avatar,t1.ProjectID,t2.Name as CompanyName,t3.Name as ProjectName,t1.ispm, t1.isleader,
                 t4.Count,t4.year,t4.month,t5.ClassName,t1.CompanyID,t1.Avatar, t1.DepartureDate from tb_laborinfo as t1
                 left join tb_company as t2 on t2.ID = t1.CompanyID
                 left JOIN tb_project as t3 on t3.ID = t1.ProjectID
@@ -121,6 +133,16 @@ class QueryAttend(AttendBase):
         if args.get('Month', '') != '':
             query_time = datetime.datetime.strptime(args.get('Month'), "%Y-%m")
             where_sql.append(r""" t4.year = {} and t4.month = {}""".format(query_time.year, query_time.month))
+        # 按照管理员，班组长，普通人员查询
+        if args.get('queryType', 0) != 0:
+            queryType = str(args.get('queryType'))
+            if queryType == '1':
+                where_sql.append(r""" t1.isPM = 1""")
+            elif queryType == '2':
+                where_sql.append(r""" t1.IsLeader = 1""")
+            elif queryType == '3':
+                where_sql.append(r""" t1.isPM != 1 """)
+                where_sql.append(r""" t1.IsLeader != 1""")
         temp = ''
         if where_sql:
             temp = ' where '

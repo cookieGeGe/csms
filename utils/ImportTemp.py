@@ -6,7 +6,7 @@ from xlrd import xldate_as_datetime
 
 
 class TempColnames():
-    ATTEND = ['name', 'idcard', 'atime', 'amin', 'amout', 'pmin', 'pmout']
+    ATTEND = ['name', 'idcard', 'project', 'atime', 'amin', 'amout', 'pmin', 'pmout']
     COMPANY = ['Name', 'Leage', 'Address', 'Type', 'Province', 'City', 'District', 'Connection', 'Description',
                'HasBadRecord', 'OtherInfo']
     PROJECT = ['Name', 'Type', 'GuaranType', 'Price', 'Duration', 'GAmount', 'PrinPical', 'WagePercent', 'StartTime',
@@ -18,7 +18,7 @@ class TempColnames():
              'IsLeader', 'Remark', 'FeeStand', 'isFeeStand', 'Badrecord', 'Train', 'isbadrecord']
     GUARANTEE = ['ProjectID', 'CompanyID', 'GuaCompany', 'Capital', 'Nature', 'Number', 'Amount', 'Kind', 'SignTime',
                  'Deadline', 'Expiretime', 'Totalrate', 'Total', 'RealAC', 'Marginratio', 'Margin', 'Bene', 'Category',
-                 'Duration', 'Province', 'City', 'District', 'Description', 'Address']
+                 'Duration', 'Province', 'City', 'District', 'Description', 'Address', 'createUser']
 
 
 class Data_Excel():

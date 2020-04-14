@@ -169,7 +169,7 @@ class WechatBankInfo(WechatBankBase):
 
     def views(self):
         query_bank_info = r"""
-                    select t1.*, t2.workers from tb_wage as t1
+                    select t1.*, t1.works as workers from tb_wage as t1
                     left join tb_progress as t2 on t1.ProjectID = t2.ProjectID and t1.year=t2.year and t1.month =t2.month
                     where t1.id = {} order by t1.year+0, t1.month+0
                 """.format(self.args.get('id'))

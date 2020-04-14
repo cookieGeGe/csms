@@ -501,6 +501,16 @@ class QueryLabor(LaborBase):
             where_sql_list.append(r""" t1.JobType='{}' """.format(int(args.get('JobType'))))
         if int(args.get('Education', 7)) != 7:
             where_sql_list.append(r""" t1.Education='{}' """.format(int(args.get('Education'))))
+        # 按照管理员，班组长，普通人员查询
+        if args.get('queryType', 0) != 0:
+            queryType = str(args.get('queryType'))
+            if queryType == '1':
+                where_sql_list.append(r""" t1.isPM = 1""")
+            elif queryType == '2':
+                where_sql_list.append(r""" t1.IsLeader = 1""")
+            elif queryType == '3':
+                where_sql_list.append(r""" t1.isPM != 1 """)
+                where_sql_list.append(r""" t1.IsLeader != 1""")
         temp = ''
         if where_sql_list:
             temp = ' where '

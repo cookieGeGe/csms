@@ -20,6 +20,17 @@ class GuaranteeBase(BaseView):
 
     def admin(self):
         self.is_admin = 1
+        query_sql = r"""
+                    select guarantee_pren from tb_user where id={};
+                """.format(self._uid)
+        result = self._db.query(query_sql)
+        result = result[0]
+        self.show_useer_id_list = []
+        self.show_useer_id_list.append(str(self._uid))
+        if result['guarantee_pren'] is None:
+            result['guarantee_pren'] = ''
+        if result['guarantee_pren'] != '':
+            self.show_useer_id_list.extend(result['guarantee_pren'].split(','))
         return self.views()
 
     def views(self):
@@ -46,6 +57,9 @@ class GuaranteeQuery(GuaranteeBase):
                     self.args.get('name')
                 )
             )
+        if self.is_admin == 1:
+            if len(self.show_useer_id_list):
+                where_sql_list.append(r""" t1.CreateUser in ({}) """.format(','.join(self.show_useer_id_list)))
         if int(self.args.get('type', '9')) != 9:
             where_sql_list.append(r""" t1.category={} """.format(self.args.get('type')))
         if int(self.args.get('pid', '0')) != 0:
@@ -63,7 +77,6 @@ class GuaranteeQuery(GuaranteeBase):
         page = int(self.args.get('page', '1'))
         limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
         total_query_sql = query_sql + where_sql + limit_sql
-        print(total_query_sql)
         result, total = self.get_total_query(total_query_sql)
         for item in result:
             item['signtime'] = '' if item['signtime'] is None or item['signtime'] == '' else item['signtime'].strftime(

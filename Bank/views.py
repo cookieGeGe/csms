@@ -41,7 +41,7 @@ class CreateBank(BankBase):
         self.api_permission = 'bank_edit'
 
     def views(self):
-        if self.args_is_null('ProjectID', 'WTime', 'RPay', 'Status', 'ActualPay'):
+        if self.args_is_null('ProjectID', 'WTime', 'RPay', 'works', 'Status', 'ActualPay'):
             return jsonify(status_code.CONTENT_IS_NULL)
         args = self.args
         args['WTime'] = datetime.datetime.strptime(args['WTime'], "%Y-%m")
@@ -55,12 +55,12 @@ class CreateBank(BankBase):
             result = self._db.query(query_sql)
             if result:
                 return jsonify(status_code.BANK_INFO_EXISTS)
-            insert_sql = r"""insert into tb_wage(ProjectID, Status,WTime, RPay,year,month,actualpay) value 
-                            ({ProjectID}, {Status}, '{WTime}', '{RPay}', '{Year}', '{Month}', '{ActualPay}')""".format(
+            insert_sql = r"""insert into tb_wage(ProjectID, Status,WTime, RPay,year,month,actualpay, works) value 
+                            ({ProjectID}, {Status}, '{WTime}', '{RPay}', '{Year}', '{Month}', '{ActualPay}', '{works}')""".format(
                 **args)
             self._db.insert(insert_sql)
         else:
-            update_sql = r"""update tb_wage set Status={Status}, WTime='{WTime}', RPay='{RPay}', ActualPay='{ActualPay}'
+            update_sql = r"""update tb_wage set Status={Status}, works='{works}',WTime='{WTime}', RPay='{RPay}', ActualPay='{ActualPay}'
                             where id={ID}""".format(**args)
             self._db.update(update_sql)
         return jsonify(status_code.SUCCESS)
@@ -137,7 +137,7 @@ class QueryBank(BankBase):
         :param month:  那一月
         :return:
         """
-        query_sql = r"""select t1.*, t2.Workers from tb_wage as t1 
+        query_sql = r"""select t1.*, t1.works as Workers from tb_wage as t1 
                         left join tb_progress as t2 on t1.year = t2.year and t1.month = t2.month and t1.projectid = t2.projectid 
                         where t1.year = {} and t1.month={} and t1.projectid = {};""".format(
             year, month, args['ID']
@@ -206,7 +206,7 @@ class QueryBank(BankBase):
     def views(self):
         args = self.args
         query_sql = r"""select SQL_CALC_FOUND_ROWS distinct(t1.ID), t1.Name,t1.Price,t1.WagePercent,t1.TotalMonth, 
-                          t1.StartTime, t1.EndTime, t3.TotalPay,t1.Duration, t4.Name as BankName, t1.Account 
+                          t1.StartTime, t1.EndTime, t3.TotalPay,t1.Duration, t4.Name as BankName, t1.Account
                         from tb_project as t1 
                         left join (select projectid,sum(rpay) as totalpay from tb_wage GROUP BY ProjectID) as t3 on t3.projectid = t1.id
                         left JOIN tb_wage as t2 on t2.ProjectID = t1.id

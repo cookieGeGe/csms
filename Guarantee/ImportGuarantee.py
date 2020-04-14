@@ -43,9 +43,24 @@ class FileImportGuarantee(ImportFileBase):
         self.item['Name'] = self.item['Number']
         field_is_null = self.check_field_is_null()
         in_category = self.formatter_category()
-        if field_is_null or in_category:
+        not_exsits_user = self.not_exists_user()
+        if field_is_null or in_category or not_exsits_user:
             return True
         return False
+
+    def not_exists_user(self):
+        user = self.item.get('createUser', '')
+        if user == '':
+            return True
+        query_user = r"""
+            select id from tb_user where loginname='{}';
+            """.format(user)
+        result = self.db.query(query_user)
+        if len(result) == 0:
+            return True
+        self.item['createUser'] = result[0]['id']
+        return False
+
 
     def check_mysql(self):
         query_sql = r"""select id from {} where Number='{}'""".format(self.table_name, self.item.get('Number'))

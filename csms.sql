@@ -3897,4 +3897,12 @@ ADD COLUMN `Code` varchar(255) NULL COMMENT '区域代码' AFTER `HasChild`;
 ALTER TABLE `csms_zigong`.`tb_salary`
 ADD COLUMN `realtotal` varchar(255) NULL DEFAULT '' COMMENT '银行回单金额' AFTER `month`;
 
+
+-- 2020-04-12
+ALTER TABLE `csms`.`tb_user`
+ADD COLUMN `guarantee_pren` varchar(1024) NULL COMMENT '可查看保函出单用户' AFTER `permission`;
+
+ALTER TABLE `csms`.`tb_wage`
+ADD COLUMN `works` int(255) NULL DEFAULT 0 COMMENT '开卡数' AFTER `recTime`;
+
 SET FOREIGN_KEY_CHECKS = 1;

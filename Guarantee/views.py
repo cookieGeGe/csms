@@ -117,6 +117,17 @@ class QueryGuarantee(GuaranteeBase):
         #                 where t1.id in ({})""".format(','.join(self.get_project_ids()))
         # self.ids = self.set_ids(query_sql)
         self.is_admin = 1
+        query_sql = r"""
+            select guarantee_pren from tb_user where id={};
+        """.format(self._uid)
+        result = self._db.query(query_sql)
+        result = result[0]
+        self.show_useer_id_list = []
+        self.show_useer_id_list.append(str(self._uid))
+        if result['guarantee_pren'] is None:
+            result['guarantee_pren'] = ''
+        if result['guarantee_pren'] != '':
+            self.show_useer_id_list.extend(result['guarantee_pren'].split(','))
         return self.views()
 
     def main_query(self, query_sql, args, has_limit):
@@ -126,7 +137,8 @@ class QueryGuarantee(GuaranteeBase):
         #         self.ids = [0, ]
         #     where_list.append(r""" t1.ID in ({}) """.format(self.to_sql_where_id()))
         if self.is_admin == 1:
-            where_list.append(r""" t1.CreateUser = {} """.format(self._uid))
+            if len(self.show_useer_id_list):
+                where_list.append(r""" t1.CreateUser in ({}) """.format(','.join(self.show_useer_id_list)))
         for name in ('Number', 'Kind', 'Bene', 'Total'):
             if args.get(name, '') != '':
                 where_list.append(r""" CONCAT(IFNULL(t1.{},'')) LIKE '%{}%' """.format(name, args.get(name)))
@@ -146,6 +158,8 @@ class QueryGuarantee(GuaranteeBase):
         if args.get('EndTime', '') != '':
             endtime = str_to_date(args['EndTime'])
             where_list.append(r""" t1.SignTime <= '{}' """.format(endtime))
+        if args.get('CreateUser') != '' and int(args.get('CreateUser', 0)) != 0:
+            where_list.append(r""" t1.CreateUser = '{}' """.format(args.get('CreateUser')))
         if int(args.get('Category', 9)) != 9:
             where_list.append(r""" t1.Category = {} """.format(args.get('Category')))
         temp = ''
@@ -171,14 +185,18 @@ class QueryGuarantee(GuaranteeBase):
 
     def views(self):
         args = self.args
-        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
+        query_sql = r"""select SQL_CALC_FOUND_ROWS t1.*, t7.loginname as CreateUserName, t4.name as Pname,t5.name as Cname, t6.name as Dname from tb_guarantee as t1
                         INNER JOIN tb_area as t4 on t1.PID = t4.id
                         INNER JOIN tb_area as t5 on t1.CID = t5.id
-                        INNER JOIN tb_area as t6 on t1.DID = t6.id"""
+                        INNER JOIN tb_area as t6 on t1.DID = t6.id
+                        inner join tb_user as t7 on t1.createuser=t7.id
+                        """
         total_query_sql = r"""select SQL_CALC_FOUND_ROWS sum(t1.amount) as amount_total, sum(RealAC) as realac_total from tb_guarantee as t1
                         INNER JOIN tb_area as t4 on t1.PID = t4.id
                         INNER JOIN tb_area as t5 on t1.CID = t5.id
-                        INNER JOIN tb_area as t6 on t1.DID = t6.id"""
+                        INNER JOIN tb_area as t6 on t1.DID = t6.id
+                        inner join tb_user as t7 on t1.createuser=t7.id
+                        """
         if int(args.get('ID', 0)) == 0:
             if int(args.get('export', '0')) == 0:
                 query_sql = self.main_query(query_sql, args, 1)
@@ -217,7 +235,6 @@ class QueryGuarantee(GuaranteeBase):
             return jsonify(success)
         else:
             return self.export_file('guarantee', temp_result)
-
 
 
 class UpdateGuarantee(GuaranteeBase):

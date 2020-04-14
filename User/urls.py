@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from User.permission_view import Permission
 from User.views import UserLogin, UserRegist, UserDelete, StopUser, UserLogout, UpdateUser, QueryUser, GetAllPermission, \
-    SuperAdminAddPer
+    SuperAdminAddPer, allUser, SetShowGua, currentUser
 
 user = Blueprint('user', __name__)
 
@@ -18,3 +18,8 @@ user.add_url_rule('/permission/get', methods=['GET', ], view_func=GetAllPermissi
 
 # 超级管理员添加权限
 user.add_url_rule('/addper', methods=['get'], view_func=SuperAdminAddPer.as_view('add_permission'))
+
+# 查看保函管理权限
+user.add_url_rule('/get_user_gua', methods=['GET', ], view_func=allUser.as_view('get_user_gua'))
+user.add_url_rule('/set_user_gua', methods=['POST', ], view_func=SetShowGua.as_view('set_user_gua'))
+user.add_url_rule('/get_user', methods=['GET'], view_func=currentUser.as_view("ger_query_user_qua"))

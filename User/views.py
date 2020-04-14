@@ -566,3 +566,86 @@ class SuperAdminAddPer(BaseView):
             insert_sql = r"""insert into tb_user_per(uid, pid) values {};""".format(','.join(values))
             self._db.insert(insert_sql)
         return jsonify(self.success)
+
+
+class allUser(BaseView):
+
+    def __init__(self):
+        super(allUser, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        query_sql = r"""select id,username,loginname from tb_user where admintype=1;"""
+        result = self._db.query(query_sql)
+        query_all_gua = r"""select guarantee_pren from tb_user where id = {};""".format(self.args.get("ID"))
+        gua_result = self._db.query(query_all_gua)
+        gua_result = gua_result[0]
+        if gua_result['guarantee_pren'] is None:
+            gua_result['guarantee_pren'] = ''
+        for user in result:
+            if str(user['id']) in gua_result['guarantee_pren']:
+                user['check'] = 1
+            else:
+                user['check'] = 0
+        self.success['data'] = result
+        self.success['admintype'] = session['AdminType']
+        return jsonify(self.success)
+
+
+class SetShowGua(BaseView):
+
+    def __init__(self):
+        super(SetShowGua, self).__init__()
+
+    def administrator(self):
+        return self.views()
+
+    def admin(self):
+        return self.views()
+
+    def views(self):
+        if self.args_is_null('ID'):
+            return jsonify(status_code.CONTENT_IS_NULL)
+        if session['AdminType'] != 0:
+            return jsonify(status_code.PERMISSION_NOT_EXISTS)
+        ID = self.args.get('ID')
+        check = self.args.get('check', '')
+        update_sql = """
+            update tb_user set guarantee_pren='{}' where id={};
+        """.format(check.strip(','), ID)
+        self._db.update(update_sql)
+        return jsonify(self.success)
+
+
+class currentUser(BaseView):
+
+    def __init__(self):
+        super(currentUser, self).__init__()
+
+    def administrator(self):
+        query_user = r"""
+            select id, loginname, username from tb_user where admintype!=0;
+        """
+        self.result = self._db.query(query_user)
+        return self.views()
+
+    def admin(self):
+        query_all_gua = r"""select guarantee_pren from tb_user where id = {};""".format(self._uid)
+        gua_result = self._db.query(query_all_gua)
+        gua_result = gua_result[0]
+        if gua_result['guarantee_pren'] is None:
+            gua_result['guarantee_pren'] = ''
+        query_user = r"""
+                    select id, loginname, username from tb_user where id in ({});
+                """.format(gua_result['guarantee_pren'])
+        self.result = self._db.query(query_user)
+        return self.views()
+
+    def views(self):
+        self.success['data'] = self.result
+        return jsonify(self.success)
