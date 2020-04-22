@@ -58,7 +58,7 @@ class CreateProject(BaseView):
                                    'WagePercent', 'Bank', 'Account')
         subcompany_is_null = 0
         if self.args.get('subCompany', '[]') == '' or self.args.get('subCompany', '[]') == '[]':
-            subcompany_is_null = 1
+            subcompany_is_null = 0
         if isnull or subcompany_is_null:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
@@ -148,7 +148,7 @@ class UpdateProject(BaseView):
                                    'Bank', 'Account')
         subcompany_is_null = 0
         if self.args.get('subCompany', '[]') == '' or self.args.get('subCompany', '[]') == '[]':
-            subcompany_is_null = 1
+            subcompany_is_null = 0
         if isnull or subcompany_is_null:
             return jsonify(status_code.CONTENT_IS_NULL)
         if eval(self.args.get('WagePercent')) == 0:
@@ -896,6 +896,7 @@ class ProjectMainQuery(BaseView):
         query_sql_base = r"""select SQL_CALC_FOUND_ROWS t1.*,t1.Issue as oldissue, t2.Name as ConsName,t7.Name as BuildName, t4.Status as WStatus, t6.rapy as Issue from tb_project as t1
             left join tb_company as t2 on t2.id = t1.cons
             left join tb_company as t7 on t7.id = t1.build
+            left join tb_bank as t8 on t1.bank = t8.id
             left join (select sum(t5.rpay) as rapy,t5.ProjectID from tb_wage as t5 GROUP BY ProjectID) as t6 on t6.ProjectID = t1.id 
             {left} join (select id,projectID,Status from tb_wage {WStatus} group by projectID) as t4 on t4.ProjectID = t1.id  
             """
@@ -918,6 +919,9 @@ class ProjectMainQuery(BaseView):
         if args.get('CompanyName', '') != '':
             where_sql_list.append(
                 r""" CONCAT(IFNULL(t2.Name,''),IFNULL(t7.Name,'')) LIKE '%{}%' """.format(args.get('CompanyName')))
+        if args.get('BankName', '') != '':
+            where_sql_list.append(
+                r""" CONCAT(IFNULL(t8.Name,'')) LIKE '%{}%' """.format(args.get('BankName')))
         if int(args.get('DID', 0)) != 0:
             where_sql_list.append(r""" t1.DID={} """.format(int(args.get('DID'))))
         if int(args.get('CID', 0)) != 0:
