@@ -75,7 +75,7 @@ class GuaranteeQuery(GuaranteeBase):
             print(self.args.get('time'))
         where_sql = self.get_where_sql(where_sql_list)
         page = int(self.args.get('page', '1'))
-        limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
+        limit_sql = r"""order by t1.CreateTime desc limit {},{} """.format((page - 1) * 10, 10)
         total_query_sql = query_sql + where_sql + limit_sql
         result, total = self.get_total_query(total_query_sql)
         for item in result:

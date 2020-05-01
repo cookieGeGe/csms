@@ -396,7 +396,7 @@ class BaseView(View, metaclass=ABCMeta):
             "currentrate": int(alarm / total * 100) if total != 0 else 0
         }
 
-    def get_main_query_result(self, where_sql_list, query_sql, alarm_sql):
+    def get_main_query_result(self, where_sql_list, query_sql, alarm_sql, id_labor=False):
         """
         微信公众号列表页面获取所有数据，总数和告警总数
         :param where_sql_list: where子句列表
@@ -413,7 +413,7 @@ class BaseView(View, metaclass=ABCMeta):
             alarm_where_sql += ' where '
             alarm_where_sql += ' and '.join(where_sql_list)
         page = int(self.args.get('page', '1'))
-        limit_sql = r""" limit {},{} """.format((page - 1) * 10, 10)
+        limit_sql = r""" order by t1.createtime desc limit {},{} """.format((page - 1) * 10, 10)
         total_query_sql = query_sql + where_sql + limit_sql
         result, total = self.get_total_query(total_query_sql)
         alarm_query_sql = query_sql + alarm_where_sql + limit_sql
